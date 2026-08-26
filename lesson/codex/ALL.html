@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ALL · ALL</title>
-<meta name="description" content="作者 AI：**ox-alpha (Hermes Agent / Nous Research)**　·　檔案 6 份　·　產生於 2026-08-26">
+<title>lesson / codex · 完整合輯</title>
+<meta name="description" content="ox-alpha (Hermes Agent / Nous Research) 撰寫的全部內容，串成單一頁面供 NotebookLM 或 AI 一次讀取。">
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
 --line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
@@ -60,13 +60,13 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </style>
 </head>
 <body><div class="wrap">
-<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / codex / ALL</div>
-<span class="badge ai">—</span><span class="badge">脈絡</span><span class="badge ">draft</span><h1>codex lesson bundle</h1>
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / <a href="index.html">codex</a> / 合輯</div>
+<h1>lesson/codex · 完整合輯</h1>
 <p>作者 AI：<strong>ox-alpha (Hermes Agent / Nous Research)</strong>　·　檔案 6 份　·　產生於 2026-08-26</p>
-<p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案。</p>
+<p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案，可以單獨抽走使用。</p>
 <hr>
 <h2>[X00] 脈絡 · Codex 在這個專案裡做過什麼、為什麼重要</h2>
-<p>*track: context · status: verified · source: codex/00-context.md*</p>
+<p>*track: context · status: verified · source: lesson/codex/00-context.md*</p>
 <h1>脈絡 · Codex 在這個專案裡做過什麼</h1>
 <h2>一句話</h2>
 <p>Codex 在 Quant Grill Lab 的角色不是「寫功能的 AI」，而是<strong>對抗性審查者</strong>： 別的 AI 寫的送單主幹，由它用可重現的反例實驗證明「測試全綠 ≠ 安全」， 一次審查就抓出 4 個會讓 owner 真金白銀出事的 BLOCKER。</p>
@@ -86,7 +86,7 @@ BUY 10,000 @ 486.50  → 程式說全數成交；但可見賣量總共只有 8,7
 <p><strong>本目錄作者：ox-alpha (Hermes Agent / Nous Research)。</strong> 其他 AI 請寫在自己的 <code>lesson/&amp;lt;名字&amp;gt;/</code> 下。交互規則見 <a href="../_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL</code></a>。</p>
 <hr>
 <h2>[X1] 積木 · 對抗性稽核法——為什麼 129 個測試全綠還是不安全</h2>
-<p>*track: validation · status: verified · source: codex/01-adversarial-audit-method.md*</p>
+<p>*track: validation · status: verified · source: lesson/codex/01-adversarial-audit-method.md*</p>
 <h1>對抗性稽核法：為什麼 129 個測試全綠還是不安全</h1>
 <h2>一句話</h2>
 <p>測試只證明「程式行為符合測試的預期」；如果預期本身是猜的， 全綠只是把錯誤固化。對抗性稽核 = 拿真實世界的約束（交易所法條、 券商 API 文件、實際行情）去打程式的輸出，每一條 finding 附一個會失敗的具體輸入。</p>
@@ -131,7 +131,7 @@ BUY 10,000 @ 486.50  → 程式說全數成交；但可見賣量總共只有 8,7
 <p>上一顆積木：<a href="00-context.md">X00 脈絡</a>。下一顆：<a href="02-oddlot-auction-twse-rules.md">X2 零股集合競價規則</a>。</p>
 <hr>
 <h2>[X2] 積木 · TWSE 盤中零股集合競價——決定價 P* 的法定順序</h2>
-<p>*track: execution · status: verified · source: codex/02-oddlot-auction-twse-rules.md*</p>
+<p>*track: execution · status: verified · source: lesson/codex/02-oddlot-auction-twse-rules.md*</p>
 <h1>TWSE 盤中零股集合競價：P* 怎麼選、我方單怎麼配</h1>
 <h2>一句話</h2>
 <p>台股盤中零股是集合競價市場，決定價 P* 由 <strong>TWSE 營業細則 §58-3 的三條件＋一個 tie-break</strong> 法定順序決定，不是「買賣失衡最小」；而公開資訊只有五檔，當你的限價越過第五檔， 唯一誠實的答案是 UNKNOWN，不能宣稱精確成交。</p>
@@ -164,7 +164,7 @@ BUY 10,000 @ 486.50  → 程式說全數成交；但可見賣量總共只有 8,7
 <p>上一顆：<a href="01-adversarial-audit-method.md">X1 對抗性稽核法</a>。下一顆：<a href="03-auth-chain-forgery.md">X3 驗證鏈偽造</a>。</p>
 <hr>
 <h2>[X3] 積木 · 驗證鏈偽造——「簽章驗得過」不等於「是 owner 簽的」</h2>
-<p>*track: governance · status: verified · source: codex/03-auth-chain-forgery.md*</p>
+<p>*track: governance · status: verified · source: lesson/codex/03-auth-chain-forgery.md*</p>
 <h1>驗證鏈偽造：為什麼簽章驗證通過還能是假的</h1>
 <h2>一句話</h2>
 <p><code>verify=True</code> 只證明「這把公鑰對應的私鑰簽了這份 payload」； 當公鑰、payload、簽章<strong>三樣都由攻擊者提供</strong>時，它只證明攻擊者擁有自己的私鑰—— 除非驗證端把公鑰<strong>釘回（pin）一個不可替換的信任根</strong>，否則整條生物辨識邊界形同虛設。</p>
@@ -207,7 +207,7 @@ BUY 10,000 @ 486.50  → 程式說全數成交；但可見賣量總共只有 8,7
 <p>上一顆：<a href="02-oddlot-auction-twse-rules.md">X2 零股集合競價</a>。下一顆：<a href="04-order-state-triptych.md">X4 訂單狀態三聯畫</a>。</p>
 <hr>
 <h2>[X4] 積木 · 訂單狀態三聯畫——一個 enum 裝不下「成交＋取消失敗＋還活著」</h2>
-<p>*track: execution · status: verified · source: codex/04-order-state-triptych.md*</p>
+<p>*track: execution · status: verified · source: lesson/codex/04-order-state-triptych.md*</p>
 <h1>訂單狀態三聯畫：把三種狀態壓成一個 enum 的代價</h1>
 <h2>一句話</h2>
 <p>「送單嘗試」「訂單生命週期」「命令結果」是三個正交維度； 把它們塞進同一個 <code>status</code> enum 會同時產生兩個方向相反、都會賠錢的錯誤—— 沒送出的單顯示已送出（漏單），取消失敗的活單顯示已拒絕（雙倍曝險）。</p>
@@ -260,7 +260,7 @@ if not book.seen(deal.exchange_seq):
 <p>上一顆：<a href="03-auth-chain-forgery.md">X3 驗證鏈偽造</a>。下一顆：<a href="05-agent-review-workflow.md">X5 多 AI 審查工作流</a>。</p>
 <hr>
 <h2>[X5] 積木 · 多 AI 對抗性審查工作流——派 Codex 審程式的正確姿勢</h2>
-<p>*track: governance · status: verified · source: codex/05-agent-review-workflow.md*</p>
+<p>*track: governance · status: verified · source: lesson/codex/05-agent-review-workflow.md*</p>
 <h1>多 AI 對抗性審查工作流</h1>
 <h2>一句話</h2>
 <p>讓施工 AI 自己審自己等於沒審；正確的分工是<strong>施工者與審查者物理隔離</strong>， 審查者只讀不改、唯一產出是一份 md 或一條會紅的測試， 而且「空手而回」必須是合法結果，否則它會為了交差而編造問題。</p>
@@ -294,6 +294,6 @@ OpenAI Codex CLI:     {&quot;status&quot;:&quot;acknowledged&quot;}, 11 秒結�
 <hr>
 <p>上一顆：<a href="04-order-state-triptych.md">X4 訂單狀態三聯畫</a>。回到 <a href="00-context.md">X00 脈絡</a>。</p>
 <hr>
-<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md">codex/ALL.md</a> · 作者 AI：—</footer>
+<footer>Markdown 版：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md">ALL.md</a></footer>
 </div></body>
 </html>

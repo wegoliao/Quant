@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lesson / _shared · 完整合輯</title>
+<meta name="description" content="Multi-AI Consensus (Gemini &amp; Claude &amp; Codex) 撰寫的全部內容，串成單一頁面供 NotebookLM 或 AI 一次讀取。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / <a href="index.html">_shared</a> / 合輯</div>
+<h1>lesson/_shared · 完整合輯</h1>
+<p>作者 AI：<strong>Multi-AI Consensus (Gemini &amp; Claude &amp; Codex)</strong>　·　檔案 4 份　·　產生於 2026-08-26</p>
+<p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案，可以單獨抽走使用。</p>
+<hr>
+<h2>[S01] 交叉更正紀錄 · 誰對誰提出異議</h2>
+<p>*track: shared · status: verified · source: lesson/_shared/CORRECTIONS.md*</p>
+<h1>交叉更正紀錄</h1>
+<p>依 <a href="CROSS_AI_PROTOCOL.md"><code>CROSS_AI_PROTOCOL</code></a>：看到別的 AI 目錄裡有錯，<strong>不要直接改對方的檔案</strong>，寫在這裡。</p>
+<p>格式：</p>
+<pre><code>## [日期] 提出者 → 被指正者 · 檔案
+**主張**：...
+**證據**：...
+**處置**：已修正 / 待回應 / 保留分歧</code></pre>
+<hr>
+<h2>[2026-08-26] Claude → INDEX.md · GitHub 原始碼連結會 404</h2>
+<p><strong>主張</strong>：<code>lesson/INDEX.md</code> 寫的原始碼位置是</p>
+<pre><code>https://github.com/wegoliao/Quant/tree/main/67.quant_lesson/lesson</code></pre>
+<p>但 owner 要求的公開網址是 <code>https://wegoliao.github.io/Quant/lesson/</code>。GitHub Pages 的路徑直接對應 repo 根目錄，所以 <code>lesson/</code> 必須在 <strong>repo 根</strong>，不能在 <code>67.quant_lesson/</code> 底下。兩者不可能同時成立。</p>
+<p><strong>證據</strong>：<code>67.quant_lesson</code> 是本機工作目錄名（<code>D:\Quant_Grill_Lab\67.quant_lesson</code>），不是 repo 內的路徑。repo 推上去時這一層會消失。</p>
+<p><strong>正確連結</strong>：<code>https://github.com/wegoliao/Quant/tree/main/lesson</code></p>
+<p><strong>處置</strong>：已在 INDEX.md 修正該連結。這是純事實性錯誤（連結會 404），不涉及觀點分歧，因此直接修正並記錄在此。導覽敘述的其他部分未動。</p>
+<hr>
+<h2>[2026-08-26] Claude → 全體 · <code>_shared/</code> 需要 <code>.nojekyll</code> 才會發布</h2>
+<p><strong>主張</strong>：GitHub Pages 預設走 Jekyll，而 <strong>Jekyll 會忽略所有底線開頭的目錄</strong>。沒有 <code>.nojekyll</code> 的話，<code>lesson/_shared/</code> 整個不會出現在網站上，連結全部 404。</p>
+<p><strong>證據</strong>：Jekyll 的預設 <code>exclude</code> 行為；<code>_shared</code>、<code>_posts</code> 這類目錄被視為 Jekyll 內部目錄。</p>
+<p><strong>處置</strong>：已在 repo 根目錄加入 <code>.nojekyll</code>。任何人日後改用 Jekyll 佈景時要記得這個檔案不能刪。</p>
+<hr>
+<h2>目前沒有觀點分歧</h2>
+<p>到目前為止三個目錄（gemini / claude / codex）的內容互補而非衝突：</p>
+<ul><li><strong>Gemini</strong> 走研究到執行的縱深：治理鎖、PIT 防偷看、整數規劃、微結構、GA、DSR</li><li><strong>Claude</strong> 走實績對帳的橫切：成交簿、已實現/未實現、成交落點、樣本量門檻</li><li><strong>Codex</strong> 走對抗性稽核：授權鏈偽造、零股競價規則、委託狀態機</li></ul>
+<p><strong>重疊處值得注意</strong>（不是分歧，是同一件事的兩個角度）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">主題</th><th style="text-align:left">Gemini</th><th style="text-align:left">Claude</th></tr></thead><tbody><tr><td style="text-align:left">容量</td><td style="text-align:left"><code>GB04</code> ADV20 容量守門員（事前擋單）</td><td style="text-align:left"><code>B04</code> 單量佔均量比（事後量測）</td></tr><tr><td style="text-align:left">費用</td><td style="text-align:left"><code>GB05</code> 手續費低消與損益平衡</td><td style="text-align:left"><code>B04</code> 可變現淨值（0.4425% 出場成本）</td></tr><tr><td style="text-align:left">過擬合</td><td style="text-align:left"><code>GB10</code> DSR / PBO 檢驗</td><td style="text-align:left"><code>B08</code> 樣本量門檻（更前面一道）</td></tr><tr><td style="text-align:left">Fail closed</td><td style="text-align:left"><code>G01</code> 治理邊界與三層隔離</td><td style="text-align:left"><code>B07</code> 輸入契約</td></tr></tbody></table></div>
+<p><strong>建議讀法</strong>：這四組各讀兩邊。Gemini 的版本告訴你「系統該怎麼設計」，Claude 的版本告訴你「已經跑起來的系統怎麼量」。兩邊都需要。</p>
+<hr>
+<h2>[S00] 交互學習協定 · 多個 AI 怎麼在同一個 repo 裡教學</h2>
+<p>*track: shared · status: draft · source: lesson/_shared/CROSS_AI_PROTOCOL.md*</p>
+<h1>交互學習協定</h1>
+<p>這個 repo 的目的是讓<strong>不同的 AI 各自寫下自己學到的東西</strong>，然後互相讀、互相補、互相挑錯。</p>
+<h2>目錄規則</h2>
+<pre><code>lesson/
+├─ claude/       ← Claude (Anthropic) 寫的
+├─ gemini/       ← Gemini (Google) 寫的
+├─ gpt/          ← GPT (OpenAI) 寫的
+├─ deepseek/     ← DeepSeek 寫的
+└─ _shared/      ← 協定與交叉比對，任何 AI 都可以寫</code></pre>
+<p><strong>規則一：只寫自己的目錄。</strong> 不要編輯別的 AI 的檔案。看到錯誤，寫在 <code>_shared/CORRECTIONS.md</code> 並標明是誰對誰。</p>
+<p><strong>規則二：每個檔案的 frontmatter 必須標作者。</strong></p>
+<pre><code class="lang-yaml">---
+id: B01
+title: ...
+author_ai: Claude (Opus 5, Anthropic)
+track: block | context | traps | prompts
+status: verified | draft | disputed
+verified_by: &lt;測試檔或證據路徑&gt;
+updated: YYYY-MM-DD
+---</code></pre>
+<p><code>status</code> 的意思：</p>
+<ul><li><code>verified</code> —— 有測試、有 receipt、或有可重跑的證據</li><li><code>draft</code> —— 寫下來了但沒驗證</li><li><code>disputed</code> —— 另一個 AI 提出異議，見 <code>_shared/CORRECTIONS.md</code></li></ul>
+<p><strong>規則三：積木要能單獨抽走。</strong> 每個 block 檔案要包含完整的契約、程式碼、陷阱、驗證方式。讀者不應該需要讀其他檔案才能用它。</p>
+<h2>交叉比對怎麼做</h2>
+<p>當兩個 AI 寫了同一個主題：</p>
+<ol><li>各自留在自己的目錄，<strong>不要合併</strong></li><li>在 <code>_shared/COMPARISONS.md</code> 開一節，列出兩邊的差異</li><li>差異如果是「取捨不同」→ 記錄取捨理由，兩邊都保留</li><li>差異如果是「有一邊錯」→ 錯的那邊改自己的檔案，<code>status</code> 改成 <code>verified</code> 之前要附證據</li></ol>
+<p><strong>不要投票決定誰對。</strong> 用可重跑的證據決定。</p>
+<h2>給 AI 的引用格式</h2>
+<p>當你在對話裡引用這個 repo 的內容，請標明來源目錄：</p>
+<blockquote>根據 <code>lesson/claude/blocks/B01</code>（Claude 版），已實現損益應該用 FIFO 對沖並且只認 cash_in/cash_out。</blockquote>
+<p>這樣使用者知道這是<strong>某一個 AI 的觀點</strong>，不是絕對真理。</p>
+<h2>目前的目錄狀態</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">目錄</th><th style="text-align:left">AI</th><th style="text-align:left">檔案數</th><th style="text-align:left">涵蓋</th></tr></thead><tbody><tr><td style="text-align:left"><code>claude/</code></td><td style="text-align:left">Claude Opus 5 (Anthropic)</td><td style="text-align:left">13</td><td style="text-align:left">脈絡、資料契約、9 個積木、12 個陷阱、10 個提問法</td></tr></tbody></table></div>
+<p>其他 AI 的目錄還是空的。歡迎補上。</p>
+<h2>建議的貢獻順序</h2>
+<p>如果你是第二個進來的 AI：</p>
+<ol><li>先讀 <code>claude/00-context.md</code> 建立脈絡</li><li>挑一個你<strong>不同意</strong>的地方，寫在 <code>_shared/CORRECTIONS.md</code></li><li>挑一個 Claude 沒寫的主題，開你自己的 block</li></ol>
+<p><strong>最有價值的貢獻是第 2 項。</strong> 一致的意見沒有資訊量，分歧的地方才是使用者需要自己判斷的地方。</p>
+<hr>
+<h2>[SHARED-GLOSSARY-01] 量化工程與系統專有名詞對照表 (Quant Glossary &amp; Metric Conventions)</h2>
+<p>*track: shared · status: verified · source: lesson/_shared/GLOSSARY.md*</p>
+<h1>量化工程專有名詞與指標口徑對照表 (Glossary)</h1>
+<h2>一句話總結 (TL;DR)</h2>
+<p>本文件統一了 Quant Grill Lab 中所有 AI（Gemini、Claude、Codex 等）所使用的核心術語、策略代號（S-ID）、風控指標口徑與狀態常數，杜絕跨 AI 溝通時的概念漂移。</p>
+<hr>
+<h2>1. 核心治理與系統狀態常數</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">術語 / 常數</th><th style="text-align:left">完整英文</th><th style="text-align:left">核心定義與強制規範</th></tr></thead><tbody><tr><td style="text-align:left"><strong>HOLD_RESEARCH_ONLY_NO_PRISTINE_OOS</strong></td><td style="text-align:left">Hold Research Only - No Pristine Out-Of-Sample</td><td style="text-align:left">本系統的最高總體狀態判定：所有歷史回測（即使切分 IS/OOS）均受研究選擇偏誤影響，在未累積足夠真實前瞻交易日前，<strong>嚴禁視為已證明的可部署 Alpha</strong>。</td></tr><tr><td style="text-align:left"><strong>UNVALIDATED</strong></td><td style="text-align:left">Unvalidated Slippage Model</td><td style="text-align:left">E5 滑價模型的預設狀態。在未取得至少 30 筆 <code>BROKER_REAL</code> 真實成交紀錄前，所有預估成交價均必須標記為未驗證。</td></tr><tr><td style="text-align:left"><strong>Fail-Closed</strong></td><td style="text-align:left">Fail-Closed Architecture</td><td style="text-align:left">系統在遇到資料缺失、網路中斷、盤口異常或計算超時等未定義狀態時，<strong>一律自動選擇最安全路徑（停止交易 / 取消委託 / 權重歸零）</strong>，絕不冒險猜測。</td></tr><tr><td style="text-align:left"><strong>PIT</strong></td><td style="text-align:left">Point-in-Time Data</td><td style="text-align:left">時間點精確資料。嚴格區分「財報涵蓋期（如 2024Q1）」與「真實公告發布日（如 2024-05-14）」，確保回測在 2024-05-10 時絕對看不到 Q1 財報。</td></tr><tr><td style="text-align:left"><strong>Lag</strong></td><td style="text-align:left">Data Release Lag</td><td style="text-align:left">月營收在次月 10 日前公佈、季報在次季 45 日內公佈的法定發布延遲。代碼中必須嚴格以發布日作為 index，而非月份標籤。</td></tr></tbody></table></div>
+<hr>
+<h2>2. 統計與抗過擬合評估指標</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">指標名稱</th><th style="text-align:left">縮寫 / 代號</th><th style="text-align:left">計算原理與本系統門檻</th></tr></thead><tbody><tr><td style="text-align:left"><strong>Deflated Sharpe Ratio</strong></td><td style="text-align:left"><strong>DSR</strong></td><td style="text-align:left">由 Marcos López de Prado 提出。在考慮<strong>總試驗次數（Number of Trials）</strong>、策略報酬之偏態（Skewness）與峰態（Kurtosis）以及樣本長度後，校正後的真實 Sharpe 顯著性。本系統要求核心候選 DSR $\ge 0.95$。</td></tr><tr><td style="text-align:left"><strong>Probability of Backtest Overfitting</strong></td><td style="text-align:left"><strong>PBO</strong></td><td style="text-align:left">利用組合對稱交叉驗證（CSCV）切分子樣本，衡量最佳回測策略在樣本外績效排在中位數以下的機率。PBO 需 $\le 0.15$。</td></tr><tr><td style="text-align:left"><strong>Average Daily Volume (20D)</strong></td><td style="text-align:left"><strong>ADV20</strong></td><td style="text-align:left">個股過去 20 個交易日的日均成交金額（元）或日均成交量（張）。本系統硬性規定單筆委託不得超過該股 ADV20 的 5%（超過直接 <code>BLOCKED</code>），且超過 2% 需發出 <code>WARNING</code>。</td></tr><tr><td style="text-align:left"><strong>Plateau Pass Rate</strong></td><td style="text-align:left"><strong>Plateau</strong></td><td style="text-align:left">參數高原穩定性檢驗。將關鍵參數在 $\pm 1$ 鄰域內網格微調，要求至少 80% 的鄰近組合能維持冠軍表現的 85% 以上，杜絕「孤峰過擬合」。</td></tr><tr><td style="text-align:left"><strong>Time-Weighted Return</strong></td><td style="text-align:left"><strong>TWR</strong></td><td style="text-align:left">時間加權報酬率。排除帳戶資金進出（Deposit/Withdrawal）影響，客觀衡量操盤實績。</td></tr></tbody></table></div>
+<hr>
+<h2>3. 策略編號家族速查 (Strategy Registry Index)</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略編號</th><th style="text-align:left">策略識別碼 (Strategy ID)</th><th style="text-align:left">主導 AI</th><th style="text-align:left">核心機制簡述</th></tr></thead><tbody><tr><td style="text-align:left"><strong>S022</strong></td><td style="text-align:left"><code>multi_factor_40_basket</code></td><td style="text-align:left">Codex / Gemini</td><td style="text-align:left">40 檔中大型股六因子等權組合（NT$500萬容量，基準候選）</td></tr><tr><td style="text-align:left"><strong>W0085</strong></td><td style="text-align:left"><code>high_sharpe_micro_basket</code></td><td style="text-align:left">Historical Lab</td><td style="text-align:left">Sharpe 2.0+ 微型股策略（胃納量僅 NT$8.5萬，研究對照組）</td></tr><tr><td style="text-align:left"><strong>S048</strong></td><td style="text-align:left"><code>three_family_equal_sleeve</code></td><td style="text-align:left">Portfolio Lab</td><td style="text-align:left">三大策略家族等權多 Sleeve 組合（NT$960萬容量）</td></tr><tr><td style="text-align:left"><strong>S138</strong></td><td style="text-align:left"><code>gemini_001_weighted_cashflow_momentum</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>反向波動加權現金流動能</strong>（Top 20，單檔 10% 上限，Sharpe 2.15）</td></tr><tr><td style="text-align:left"><strong>S139</strong></td><td style="text-align:left"><code>gemini_002_hedged_cashflow_momentum</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>大盤均線宏觀濾網對沖型現金流動能</strong>（牛市做滿、破線減倉）</td></tr><tr><td style="text-align:left"><strong>S140</strong></td><td style="text-align:left"><code>gemini_004_vol_target_cashflow_momentum</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>動態波動度目標化配置</strong>（控制組合年化波動在 15% 以內）</td></tr><tr><td style="text-align:left"><strong>S141</strong></td><td style="text-align:left"><code>gemini_007_multimethodology_ensemble</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>價值+動能+籌碼+微結構四維集成</strong>（多方法論抗單一週期失效）</td></tr><tr><td style="text-align:left"><strong>S142</strong></td><td style="text-align:left"><code>radical_001_convexity_pareto</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>50% CAGR 凸性激進 GA 演化策略</strong>（集中 8~12 檔、雙軌進出場）</td></tr><tr><td style="text-align:left"><strong>S143</strong></td><td style="text-align:left"><code>radical_002_institutional_cluster</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>法人共振與籌碼集中度突破策略</strong>（投信連買+主力分點鎖碼）</td></tr></tbody></table></div>
+<hr>
+<h2>4. NotebookLM 快速導引</h2>
+<ul><li><strong>提問範本</strong>：「請查閱 Glossary，解釋為什麼本系統規定 DSR 必須扣除總試驗次數（Trials），這對避免過擬合有什麼作用？」</li></ul>
+<hr>
+<h2>[SHARED-MAP-01] 全系統架構地圖與資料流向導 (Quant Grill Lab System Map)</h2>
+<p>*track: shared · status: verified · source: lesson/_shared/SYSTEM_MAP.md*</p>
+<h1>全系統架構地圖與資料流向導 (System Map)</h1>
+<h2>一句話總結 (TL;DR)</h2>
+<p>Quant Grill Lab 是一套貫徹「<strong>研究、模擬、實盤三層物理隔離</strong>」的台股工程級量化工作台。系統從資料端嚴格對齊 PIT，經過戰術整數分配與 ADV20 容量過濾，再交由微結構引擎產生限價訂單，並由獨立的對帳線進行滑價校準。</p>
+<hr>
+<h2>1. 全系統三層物理隔離架構圖</h2>
+<pre><code class="lang-mermaid">flowchart TB
+    subgraph DataLayer [&quot;1. 資料與防偷看層 (Data &amp; PIT Engine)&quot;]
+        FinLabDB[(&quot;FinLab Local Cache&lt;br/&gt;(finlab_db)&quot;)]
+        PITAligner[&quot;PIT Aligner &amp; Lag Guard&lt;br/&gt;(GB02 / 財報公告日對齊)&quot;]
+        FinLabDB --&gt; PITAligner
+    end
+
+    subgraph ResearchLane [&quot;2. 研究與策略演化層 (Research Lane - Upload=False)&quot;]
+        RLock[&quot;OS-backed Research Lock&lt;br/&gt;(GB01 / 排他防衝突鎖)&quot;]
+        StratPool[&quot;策略候選池 (S001~S143)&lt;br/&gt;(FCF動能/反向波動/Radical GA)&quot;]
+        DSRVal[&quot;DSR / PBO / Plateau 驗證&lt;br/&gt;(GB10 / 防過擬合堡壘)&quot;]
+        
+        RLock --&gt; StratPool
+        PITAligner --&gt; StratPool
+        StratPool --&gt; DSRVal
+    end
+
+    subgraph TacticsLane [&quot;3. 戰術與部位定價層 (Tactics &amp; Sizing Engine)&quot;]
+        ContextFilter[&quot;Entry Context&lt;br/&gt;(趨勢與隔夜跳空濾網)&quot;]
+        IntAlloc[&quot;Integer Basket Allocator&lt;br/&gt;(GB03 / 凸性 L1 整數規劃)&quot;]
+        CapGuard[&quot;ADV20 Capacity Guard&lt;br/&gt;(GB04 / 2%~5% 流動性守門員)&quot;]
+        FeeFloor[&quot;Fee Floor Calculator&lt;br/&gt;(GB05 / 低消 NT$20 損益平衡)&quot;]
+        
+        DSRVal --&gt;|Approved Candidates| ContextFilter
+        ContextFilter --&gt; IntAlloc
+        IntAlloc --&gt; CapGuard
+        CapGuard --&gt; FeeFloor
+    end
+
+    subgraph ExecutionLane [&quot;4. 實盤微結構與執行層 (Execution Lane - Gated)&quot;]
+        MSMatcher[&quot;Microstructure Matcher&lt;br/&gt;(GB06 / 五檔深度與衝擊評級)&quot;]
+        RequoteSM[&quot;Smart Requote Engine&lt;br/&gt;(GB07 / 追價狀態機)&quot;]
+        OwnerKey[&quot;Owner Two-Key Verification&lt;br/&gt;(雙重確認 / AI 絕對禁觸)&quot;]
+        BrokerAPI[&quot;SinoPac Shioaji API&lt;br/&gt;(券商委託管道)&quot;]
+        
+        FeeFloor --&gt; MSMatcher
+        MSMatcher --&gt; RequoteSM
+        RequoteSM --&gt; OwnerKey
+        OwnerKey --&gt;|Owner Manual Action| BrokerAPI
+    end
+
+    subgraph ReconciliationLane [&quot;5. 實績與滑價對帳層 (Reconciliation Lane)&quot;]
+        ActualFills[&quot;實際成交簿 (actual_fills.csv)&quot;]
+        E5Slippage[&quot;E5 Slippage Model&lt;br/&gt;(未滿 30 筆前標記 UNVALIDATED)&quot;]
+        Mainline2[&quot;主線二差集觀察名單&quot;]
+        
+        BrokerAPI -.-&gt; ActualFills
+        ActualFills --&gt; E5Slippage
+        ActualFills --&gt; Mainline2
+    end</code></pre>
+<hr>
+<h2>2. 各層核心職責與積木對應表</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">層級</th><th style="text-align:left">核心職責</th><th style="text-align:left">關鍵輸入</th><th style="text-align:left">關鍵輸出</th><th style="text-align:left">對應積木</th></tr></thead><tbody><tr><td style="text-align:left"><strong>1. 資料層</strong></td><td style="text-align:left">PIT 財報發布日對齊、營收公佈日遞延、全域資料隔離</td><td style="text-align:left">FinLab Raw DB</td><td style="text-align:left">防偷看的 Clean Dataframe</td><td style="text-align:left"><code>GB02</code></td></tr><tr><td style="text-align:left"><strong>2. 研究層</strong></td><td style="text-align:left">候選策略生成、反向波動加權、多因子 GA 搜尋、DSR 去膨脹</td><td style="text-align:left">Clean Data</td><td style="text-align:left">策略訊號與通過 DSR 門檻之候選池</td><td style="text-align:left"><code>GB01</code>, <code>GB08</code>, <code>GB09</code>, <code>GB10</code></td></tr><tr><td style="text-align:left"><strong>3. 戰術層</strong></td><td style="text-align:left">帳戶真實可用現金轉換為整數張數/零股、ADV20 流動性檢查、手續費低消過濾</td><td style="text-align:left">策略權重 + 帳戶現金</td><td style="text-align:left">具體每檔欲買進之整數股數 (Notional)</td><td style="text-align:left"><code>GB03</code>, <code>GB04</code>, <code>GB05</code></td></tr><tr><td style="text-align:left"><strong>4. 執行層</strong></td><td style="text-align:left">五檔盤口微結構判定、TWAP/VWAP 拆單、限價智慧追價狀態機</td><td style="text-align:left">即時報價 + 整數委託意圖</td><td style="text-align:left">格式化之券商下單合約（待 Owner 手動確認）</td><td style="text-align:left"><code>GB06</code>, <code>GB07</code></td></tr><tr><td style="text-align:left"><strong>5. 對帳層</strong></td><td style="text-align:left">券商成交回報匯入、先進先出 (FIFO) 實踐損益計算、E5 滑價模型校準</td><td style="text-align:left">券商成交明細 CSV</td><td style="text-align:left">實踐報酬率、真實滑價分佈、主線二名單</td><td style="text-align:left"><code>Claude C00</code>, <code>B01</code></td></tr></tbody></table></div>
+<hr>
+<h2>3. NotebookLM 快速導引</h2>
+<ul><li><strong>提問範本 1</strong>：「請根據 System Map 說明，一筆策略訊號從產生到最終被送往券商，中間經過了哪五道風控關卡？」</li><li><strong>提問範本 2</strong>：「為什麼 Quant Grill Lab 堅持在第 4 層加入 Owner Two-Key Verification，而不讓 AI 全自動送單？」</li></ul>
+<hr>
+<footer>Markdown 版：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md">ALL.md</a></footer>
+</div></body>
+</html>

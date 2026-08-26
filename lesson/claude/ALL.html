@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ALL · ALL</title>
-<meta name="description" content="作者 AI：**Claude (Opus 5, Anthropic)**　·　檔案 13 份　·　產生於 2026-08-26">
+<title>lesson / claude · 完整合輯</title>
+<meta name="description" content="Claude (Opus 5, Anthropic) 撰寫的全部內容，串成單一頁面供 NotebookLM 或 AI 一次讀取。">
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
 --line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
@@ -60,13 +60,13 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </style>
 </head>
 <body><div class="wrap">
-<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / ALL</div>
-<span class="badge ai">—</span><span class="badge">脈絡</span><span class="badge ">draft</span><h1>claude lesson bundle</h1>
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / <a href="index.html">claude</a> / 合輯</div>
+<h1>lesson/claude · 完整合輯</h1>
 <p>作者 AI：<strong>Claude (Opus 5, Anthropic)</strong>　·　檔案 13 份　·　產生於 2026-08-26</p>
-<p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案。</p>
+<p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案，可以單獨抽走使用。</p>
 <hr>
 <h2>[C00] 脈絡 · 這個系統到底在做什麼</h2>
-<p>*track: context · status: verified · source: claude/00-context.md*</p>
+<p>*track: context · status: verified · source: lesson/claude/00-context.md*</p>
 <h1>脈絡 · 這個系統到底在做什麼</h1>
 <p>如果你只讀一份文件，讀這份。其他所有積木都假設你已經知道這裡的分層。</p>
 <h2>一句話</h2>
@@ -109,7 +109,7 @@ TWSE/TPEx OpenAPI ──&gt; inputs/price_history.csv ─┤
 <p><strong>本目錄作者：Claude (Opus 5, Anthropic)。</strong> 其他 AI 請寫在 <code>lesson/&amp;lt;你的名字&amp;gt;/</code>，不要改這一份。交互學習的規則見 <a href="../_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL</code></a>。</p>
 <hr>
 <h2>[C01] 資料契約 · 四個 CSV 就是全部</h2>
-<p>*track: context · status: verified · source: claude/01-contracts.md*</p>
+<p>*track: context · status: verified · source: lesson/claude/01-contracts.md*</p>
 <h1>資料契約 · 四個 CSV 就是全部</h1>
 <p>積木之間不靠函式呼叫溝通，靠<strong>檔案格式</strong>。這是刻意的：CSV 可以被人眼檢查、被 git diff、被任何語言讀，而且不會因為你換了框架就壞掉。</p>
 <h2>契約設計的三條規則</h2>
@@ -152,7 +152,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>本目錄作者：Claude (Opus 5, Anthropic)。</strong></p>
 <hr>
 <h2>[C20] 陷阱清單 · 這個專案真的踩到的坑</h2>
-<p>*track: traps · status: verified · source: claude/20-traps.md*</p>
+<p>*track: traps · status: verified · source: lesson/claude/20-traps.md*</p>
 <h1>陷阱清單</h1>
 <p>每一條都是<strong>真的發生過</strong>的，不是教科書上的假設。附上發現方式，因為「怎麼被發現的」比「是什麼」更有價值。</p>
 <hr>
@@ -229,7 +229,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
 <hr>
 <h2>[C30] 問題寫法 · 怎麼問才會拿到真話</h2>
-<p>*track: prompts · status: verified · source: claude/30-prompts.md*</p>
+<p>*track: prompts · status: verified · source: lesson/claude/30-prompts.md*</p>
 <h1>問題寫法 · 怎麼問才會拿到真話</h1>
 <p>這一份不是「prompt 模板大全」。它記錄的是<strong>在這個專案裡實際產生高價值輸出的提問結構</strong>，以及它們為什麼有效。</p>
 <hr>
@@ -310,7 +310,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
 <hr>
 <h2>[B01] 已實現損益 · FIFO 對沖，只認落袋現金</h2>
-<p>*track: block · status: verified · verified_by: tests/test_realized.py (5 tests) · source: claude/blocks/B01-realized-pnl-fifo.md*</p>
+<p>*track: block · status: verified · verified_by: tests/test_realized.py (5 tests) · source: lesson/claude/blocks/B01-realized-pnl-fifo.md*</p>
 <h1>B01 · 已實現損益（FIFO）</h1>
 <h2>它解決什麼</h2>
 <p>賣掉的部位會從庫存表消失。庫存表消失 → 畫面上找不到 → 你以為沒發生。</p>
@@ -384,7 +384,7 @@ as_of(lots, day) -&gt; list[Lot]        # 只取 day 以前結算的</code></pre
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/realized.py</code></p>
 <hr>
 <h2>[B02] 分價分布 · 用日線做出 volume-at-price</h2>
-<p>*track: block · status: verified · verified_by: output/mainline2_receipt.json (7 names profiled) · source: claude/blocks/B02-volume-profile.md*</p>
+<p>*track: block · status: verified · verified_by: output/mainline2_receipt.json (7 names profiled) · source: lesson/claude/blocks/B02-volume-profile.md*</p>
 <h1>B02 · 分價分布（volume-at-price）</h1>
 <h2>它解決什麼</h2>
 <p>「這個價格算高還是低？」</p>
@@ -455,7 +455,7 @@ while covered &lt; total * 0.70 and (low_index &gt; 0 or high_index &lt; bins - 
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::volume_profile</code></p>
 <hr>
 <h2>[B03] 成交落點 · 唯一能對「進場點」說的實證</h2>
-<p>*track: block · status: verified · verified_by: output/mainline2_receipt.json (22 buys, 1 sell) · source: claude/blocks/B03-fill-landing.md*</p>
+<p>*track: block · status: verified · verified_by: output/mainline2_receipt.json (22 buys, 1 sell) · source: lesson/claude/blocks/B03-fill-landing.md*</p>
 <h1>B03 · 成交落點（fill landing）</h1>
 <h2>它解決什麼</h2>
 <p>每個人都想知道「最適合的入場點在哪」。這是一個<strong>預測問題</strong>，而且沒有人有答案。</p>
@@ -501,7 +501,7 @@ fill_landings(fills, bars) -&gt; list[Landing]</code></pre>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::range_position</code></p>
 <hr>
 <h2>[B04] 可變現淨值 · 帳面值不是你拿得到的錢</h2>
-<p>*track: block · status: verified · source: claude/blocks/B04-liquidation-value.md*</p>
+<p>*track: block · status: verified · source: lesson/claude/blocks/B04-liquidation-value.md*</p>
 <h1>B04 · 可變現淨值</h1>
 <h2>它解決什麼</h2>
 <p><code>股數 × 收盤價</code> 是<strong>毛值</strong>。你賣掉拿不到那麼多，因為出場要付手續費和證交稅。</p>
@@ -537,7 +537,7 @@ capacity_twd = avg_volume_20d * PARTICIPATION_CAP * price</code></pre>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_dashboard.py::estimated_liquidation_value</code></p>
 <hr>
 <h2>[B05] 履約落差 · 策略卡報的價，帳戶付的價</h2>
-<p>*track: block · status: verified · source: claude/blocks/B05-signal-fill-slippage.md*</p>
+<p>*track: block · status: verified · source: lesson/claude/blocks/B05-signal-fill-slippage.md*</p>
 <h1>B05 · 訊號 → 成交 履約落差</h1>
 <h2>它解決什麼</h2>
 <p>策略卡說「進場 97.1」。帳戶實際成交 <strong>97.80</strong>。</p>
@@ -576,7 +576,7 @@ def basis_points(reference):
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/analytics.py::build_slippage_ledger</code></p>
 <hr>
 <h2>[B06] watchlist 驅動抓取 · 別讓賣掉的股票資料斷線</h2>
-<p>*track: block · status: verified · source: claude/blocks/B06-watchlist-driven-fetch.md*</p>
+<p>*track: block · status: verified · source: lesson/claude/blocks/B06-watchlist-driven-fetch.md*</p>
 <h1>B06 · watchlist 驅動抓取</h1>
 <h2>它解決什麼（一個真的踩到的洞）</h2>
 <p>抓行情要先決定「抓誰」。最自然的做法是：<strong>抓我持有的</strong>。</p>
@@ -620,7 +620,7 @@ for candidate in order:
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/fetch_prices.py::load_universe</code></p>
 <hr>
 <h2>[B07] Fail closed · 寧可炸掉，不要安靜地算錯</h2>
-<p>*track: block · status: verified · source: claude/blocks/B07-fail-closed-inputs.md*</p>
+<p>*track: block · status: verified · source: lesson/claude/blocks/B07-fail-closed-inputs.md*</p>
 <h1>B07 · Fail closed 輸入契約</h1>
 <h2>它解決什麼</h2>
 <p>金融資料管線最危險的不是崩潰，是<strong>安靜地算出一個看起來合理的錯誤數字</strong>。</p>
@@ -676,7 +676,7 @@ volume = 0.0 if volume is None else volume</code></pre>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_dashboard.py::required_float</code></p>
 <hr>
 <h2>[B08] 樣本量門檻 · 敢顯示 N/A 才是專業</h2>
-<p>*track: block · status: verified · source: claude/blocks/B08-sample-size-gate.md*</p>
+<p>*track: block · status: verified · source: lesson/claude/blocks/B08-sample-size-gate.md*</p>
 <h1>B08 · 樣本量門檻</h1>
 <h2>它解決什麼</h2>
 <p>Sharpe = 平均日報酬 / 日報酬標準差 × √252</p>
@@ -719,7 +719,7 @@ MDD      -0.76% OK</code></pre>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/analytics.py::MIN_RISK_RETURN_OBS</code></p>
 <hr>
 <h2>[B09] 推導式狀態 · 能算出來的絕不另存一份</h2>
-<p>*track: block · status: verified · source: claude/blocks/B09-derived-state.md*</p>
+<p>*track: block · status: verified · source: lesson/claude/blocks/B09-derived-state.md*</p>
 <h1>B09 · 推導式狀態</h1>
 <h2>它解決什麼</h2>
 <p>「我想追蹤那些有訊號但我沒買的股票。」</p>
@@ -765,6 +765,6 @@ def build_roster(signals, bars, held):
 <hr>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::build_roster</code></p>
 <hr>
-<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md">claude/ALL.md</a> · 作者 AI：—</footer>
+<footer>Markdown 版：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md">ALL.md</a></footer>
 </div></body>
 </html>

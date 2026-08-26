@@ -391,6 +391,20 @@ def build() -> dict:
         (LESSON / name / "ALL.md").write_text(
             "\n".join(bundle), encoding="utf-8", newline="\n"
         )
+        # a web-readable twin of the bundle: one URL, whole directory
+        (LESSON / name / "ALL.html").write_text(
+            page(
+                f"lesson / {name} · 完整合輯",
+                f"{author} 撰寫的全部內容，串成單一頁面供 NotebookLM 或 AI 一次讀取。",
+                markdown("\n".join(bundle)),
+                f'<div class="crumb"><a href="../../index.html">Quant</a> / '
+                f'<a href="../index.html">lesson</a> / '
+                f'<a href="index.html">{html.escape(name)}</a> / 合輯</div>',
+                footer=f'Markdown 版：<a href="{RAW_ORIGIN}/lesson/{name}/ALL.md">ALL.md</a>',
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
 
         cards = "".join(
             f'<a class="card" href="{d["path"].split("/", 1)[1][:-3]}.html">'
