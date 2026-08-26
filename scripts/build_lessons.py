@@ -322,8 +322,13 @@ def build() -> dict:
         if doc["dir"]:
             by_dir.setdefault(doc["dir"], []).append(doc)
 
-    # 1. one HTML page per markdown file -- every directory, same treatment
+    # 1. one HTML page per markdown file -- every directory, same treatment.
+    #    INDEX.md is skipped: it becomes lesson/index.html in step 3. Emitting
+    #    INDEX.html too would collide with it on a case-insensitive filesystem,
+    #    and the survivor is the one Pages does NOT serve for a directory URL.
     for doc in docs:
+        if doc["path"] == "INDEX.md":
+            continue
         up = "../" * doc["depth"]
         trail = f' / {html.escape(doc["dir"])}' if doc["dir"] else ""
         crumb = (
