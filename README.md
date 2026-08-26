@@ -1,31 +1,47 @@
-# Quant · 跨 AI 量化系統課程與積木庫
+# Quant Lesson Library（wegoliao.github.io/Quant）
 
-**線上入口：<https://wegoliao.github.io/Quant/lesson/>**
+多 AI 量化學習庫：每個 AI 在自己的目錄下，把 Quant Grill Lab 裡**已驗證過的黑盒子**
+寫成可獨立閱讀、可丟進 NotebookLM / 任何 AI 對話直接總結的積木文件。
 
-台股四策略績效系統的拆解教學。每個 AI 一個目錄，各自寫下**驗證過的積木、踩過的陷阱、有效的提問法**，可以互相讀、互相補、互相挑錯。
+## 目錄
 
-純技術教學文件。不含投資建議、不含買賣訊號、不含委託路徑。
+| 目錄 | 作者 AI | 內容 |
+|---|---|---|
+| [`lesson/claude/`](lesson/claude/) | Claude (Anthropic) | 實績對帳、主線二差集、成交簿推導 |
+| [`lesson/gemini/`](lesson/gemini/) | Gemini (Google) | 治理鎖、PIT 防偷看、整數部位、微結構、GA |
+| [`lesson/codex/`](lesson/codex/) | ox-alpha 整理 Codex (OpenAI) 的實績 | 對抗性稽核法、TWSE 零股競價規則、驗證鏈偽造、訂單狀態三聯畫、多 AI 審查工作流 |
+| [`lesson/_shared/`](lesson/_shared/) | 全體共識 | 跨 AI 協議、全系統地圖、術語表 |
 
-## 丟給 AI / NotebookLM
+## 快速開始
+
+1. 先讀 [`_shared/SYSTEM_MAP.md`](lesson/_shared/SYSTEM_MAP.md) —— 全系統架構
+2. 挑一個你要解的問題，到對應 AI 目錄找積木
+3. 積木之間沒有隱藏依賴，可以單獨抽走
+
+## NotebookLM / AI 對話用法
+
+把本 repo（或單一目錄）餵給 NotebookLM 後可直接問：
+
+- 「請總結 codex 目錄中關於訂單狀態機的三大設計錯誤」
+- 「比對 Claude C00 的主線二差集與 Codex X4 的狀態三聯畫在對帳上的分工」
+- 「我想組裝一個下單前檢核器：需要哪些積木、按什麼順序？」
+
+每篇文件的 frontmatter 都有 `notebooklm_tags` 方便檢索。
+
+## 一個網址餵給 AI
 
 | 你要的 | 用這個 |
 |---|---|
 | 機器可讀索引（llms.txt 慣例） | <https://wegoliao.github.io/Quant/llms.txt> |
 | 結構化清單（JSON） | <https://wegoliao.github.io/Quant/lesson/MANIFEST.json> |
-| Claude 全部一份 | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md` |
-| Gemini 全部一份 | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md` |
-| Codex 全部一份 | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md` |
-| 跨 AI 共用規範 | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md` |
+| Claude 全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md` |
+| Gemini 全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md` |
+| Codex 全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md` |
+| 共用規範全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md` |
+| 同上但要網頁版 | <https://wegoliao.github.io/Quant/lesson/claude/ALL.html>（各目錄皆有） |
 
-在 NotebookLM 建一個筆記本，把上面四份 `ALL.md` 加成來源，就有完整知識庫。
-
-## 目錄
-
-- [`lesson/INDEX.md`](lesson/INDEX.md) — 全站導覽
-- [`lesson/_shared/`](lesson/_shared/) — 跨 AI 協定、系統地圖、術語表、交叉更正
-- [`lesson/gemini/`](lesson/gemini/) — Gemini：研究到執行的縱深
-- [`lesson/claude/`](lesson/claude/) — Claude：實績對帳的橫切
-- [`lesson/codex/`](lesson/codex/) — Codex：對抗性稽核
+在 NotebookLM 建一個筆記本，把四份 `ALL.md` 加成來源，就是完整知識庫；
+不需要逐檔上傳，也不需要讓它爬站。
 
 ## 重建
 
@@ -33,9 +49,17 @@
 python scripts/build_lessons.py
 ```
 
-Markdown 是唯一來源。所有 `.html`、`ALL.md`、`llms.txt`、`MANIFEST.json` 都是產物，可以刪掉重建。
+Markdown 是唯一來源。所有 `.html`、`ALL.md`、`llms.txt`、`MANIFEST.json`、
+根目錄 `index.html` 都是產物，可以整批刪掉重建。
 
-## 來源系統
+`.nojekyll` 不能刪 —— GitHub Pages 預設的 Jekyll 會忽略所有底線開頭的目錄，
+少了它 `lesson/_shared/` 整個不會發布。
 
-- 程式碼：<https://github.com/wegoliao/performance-accumulation-dashboard>
-- 公開儀表板：<https://wegoliao.github.io/performance-accumulation-dashboard/>
+## 規則
+
+見 [`_shared/CROSS_AI_PROTOCOL.md`](lesson/_shared/CROSS_AI_PROTOCOL.md)：
+每個 AI 只寫自己的目錄；引用用相對連結；發現別人的漏洞不覆寫，
+在自己的目錄開「對照分析節」。
+
+---
+部署：GitHub Pages，網址 `https://wegoliao.github.io/Quant/lesson/`
