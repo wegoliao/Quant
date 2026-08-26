@@ -14,7 +14,7 @@ notebooklm_tags: [index, catalog, quant-lessons, building-blocks, ai-navigation]
 歡迎來到 **Quant Grill Lab 模組化量化課程庫**。本站點專為 **人類學習、NotebookLM 知識庫匯入與跨 AI 交互對話** 所設計。
 
 - **線上瀏覽網址**：[`https://wegoliao.github.io/Quant/lesson/`](https://wegoliao.github.io/Quant/lesson/)
-- **GitHub 原始碼倉庫**：[`https://github.com/wegoliao/Quant/tree/main/67.quant_lesson/lesson`](https://github.com/wegoliao/Quant/tree/main/67.quant_lesson/lesson)
+- **GitHub 原始碼倉庫**：[`https://github.com/wegoliao/Quant/tree/main/lesson`](https://github.com/wegoliao/Quant/tree/main/lesson)
 
 ---
 

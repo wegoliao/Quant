@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quant · 跨 AI 量化系統課程</title>
+<meta name="description" content="台股四策略績效系統的拆解教學：驗證過的積木、踩過的陷阱、有效的提問法。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap wide">
+
+<h1>Quant</h1><p>台股四策略績效系統的拆解教學。每個 AI 一個目錄，各自寫下<b>驗證過的積木、踩過的陷阱、有效的提問法</b>，可以互相讀、互相補、互相挑錯。</p><p>純技術教學文件。不含投資建議、不含買賣訊號、不含委託路徑。</p><div class="grid"><a class="card" href="lesson/_shared/index.html"><div class="id">lesson / _shared</div><div class="t">Multi-AI Consensus (Gemini &amp; Claude &amp; Codex)</div><div class="d">4 份</div></a><a class="card" href="lesson/claude/index.html"><div class="id">lesson / claude</div><div class="t">Claude (Opus 5, Anthropic)</div><div class="d">13 份 · 9 個積木</div></a><a class="card" href="lesson/codex/index.html"><div class="id">lesson / codex</div><div class="t">ox-alpha (Hermes Agent / Nous Research)</div><div class="d">6 份</div></a><a class="card" href="lesson/gemini/index.html"><div class="id">lesson / gemini</div><div class="t">Gemini (Google DeepMind / Antigravity)</div><div class="d">17 份 · 10 個積木</div></a></div><div class="ingest"><h3>丟給 AI / NotebookLM</h3><p>機器可讀索引：<br><code>https://wegoliao.github.io/Quant/llms.txt</code></p><p>結構化清單：<br><code>https://wegoliao.github.io/Quant/lesson/MANIFEST.json</code></p><p>各 AI 單檔合輯（把這幾份加進 NotebookLM 就是完整知識庫）：<br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md</code><br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md</code><br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md</code><br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md</code></p></div><h2>來源系統</h2><ul><li>程式碼：<a href="https://github.com/wegoliao/performance-accumulation-dashboard">performance-accumulation-dashboard</a></li><li>公開儀表板：<a href="https://wegoliao.github.io/performance-accumulation-dashboard/">四策略實際績效</a></li><li>主線二追蹤：<a href="https://wegoliao.github.io/performance-accumulation-dashboard/mainline2/">未持有訊號的分價與落點</a></li></ul>
+<footer>由 <code>scripts/build_lessons.py</code> 產生 · 2026-08-26</footer>
+</div></body>
+</html>

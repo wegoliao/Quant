@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHARED-GLOSSARY-01 · 量化工程與系統專有名詞對照表 (Quant Glossary &amp; Metric Conventions)</title>
+<meta name="description" content="本文件統一了 Quant Grill Lab 中所有 AI（Gemini、Claude、Codex 等）所使用的核心術語、策略代號（S-ID）、風控指標口徑與狀態常數，杜絕跨 AI 溝通時的概念漂移。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / _shared / SHARED-GLOSSARY-01</div>
+<span class="badge ai">Multi-AI Consensus (Gemini &amp; Claude &amp; Codex)</span><span class="badge">共用</span><span class="badge ok">verified</span><h1>量化工程專有名詞與指標口徑對照表 (Glossary)</h1>
+<h2>一句話總結 (TL;DR)</h2>
+<p>本文件統一了 Quant Grill Lab 中所有 AI（Gemini、Claude、Codex 等）所使用的核心術語、策略代號（S-ID）、風控指標口徑與狀態常數，杜絕跨 AI 溝通時的概念漂移。</p>
+<hr>
+<h2>1. 核心治理與系統狀態常數</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">術語 / 常數</th><th style="text-align:left">完整英文</th><th style="text-align:left">核心定義與強制規範</th></tr></thead><tbody><tr><td style="text-align:left"><strong>HOLD_RESEARCH_ONLY_NO_PRISTINE_OOS</strong></td><td style="text-align:left">Hold Research Only - No Pristine Out-Of-Sample</td><td style="text-align:left">本系統的最高總體狀態判定：所有歷史回測（即使切分 IS/OOS）均受研究選擇偏誤影響，在未累積足夠真實前瞻交易日前，<strong>嚴禁視為已證明的可部署 Alpha</strong>。</td></tr><tr><td style="text-align:left"><strong>UNVALIDATED</strong></td><td style="text-align:left">Unvalidated Slippage Model</td><td style="text-align:left">E5 滑價模型的預設狀態。在未取得至少 30 筆 <code>BROKER_REAL</code> 真實成交紀錄前，所有預估成交價均必須標記為未驗證。</td></tr><tr><td style="text-align:left"><strong>Fail-Closed</strong></td><td style="text-align:left">Fail-Closed Architecture</td><td style="text-align:left">系統在遇到資料缺失、網路中斷、盤口異常或計算超時等未定義狀態時，<strong>一律自動選擇最安全路徑（停止交易 / 取消委託 / 權重歸零）</strong>，絕不冒險猜測。</td></tr><tr><td style="text-align:left"><strong>PIT</strong></td><td style="text-align:left">Point-in-Time Data</td><td style="text-align:left">時間點精確資料。嚴格區分「財報涵蓋期（如 2024Q1）」與「真實公告發布日（如 2024-05-14）」，確保回測在 2024-05-10 時絕對看不到 Q1 財報。</td></tr><tr><td style="text-align:left"><strong>Lag</strong></td><td style="text-align:left">Data Release Lag</td><td style="text-align:left">月營收在次月 10 日前公佈、季報在次季 45 日內公佈的法定發布延遲。代碼中必須嚴格以發布日作為 index，而非月份標籤。</td></tr></tbody></table></div>
+<hr>
+<h2>2. 統計與抗過擬合評估指標</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">指標名稱</th><th style="text-align:left">縮寫 / 代號</th><th style="text-align:left">計算原理與本系統門檻</th></tr></thead><tbody><tr><td style="text-align:left"><strong>Deflated Sharpe Ratio</strong></td><td style="text-align:left"><strong>DSR</strong></td><td style="text-align:left">由 Marcos López de Prado 提出。在考慮<strong>總試驗次數（Number of Trials）</strong>、策略報酬之偏態（Skewness）與峰態（Kurtosis）以及樣本長度後，校正後的真實 Sharpe 顯著性。本系統要求核心候選 DSR $\ge 0.95$。</td></tr><tr><td style="text-align:left"><strong>Probability of Backtest Overfitting</strong></td><td style="text-align:left"><strong>PBO</strong></td><td style="text-align:left">利用組合對稱交叉驗證（CSCV）切分子樣本，衡量最佳回測策略在樣本外績效排在中位數以下的機率。PBO 需 $\le 0.15$。</td></tr><tr><td style="text-align:left"><strong>Average Daily Volume (20D)</strong></td><td style="text-align:left"><strong>ADV20</strong></td><td style="text-align:left">個股過去 20 個交易日的日均成交金額（元）或日均成交量（張）。本系統硬性規定單筆委託不得超過該股 ADV20 的 5%（超過直接 <code>BLOCKED</code>），且超過 2% 需發出 <code>WARNING</code>。</td></tr><tr><td style="text-align:left"><strong>Plateau Pass Rate</strong></td><td style="text-align:left"><strong>Plateau</strong></td><td style="text-align:left">參數高原穩定性檢驗。將關鍵參數在 $\pm 1$ 鄰域內網格微調，要求至少 80% 的鄰近組合能維持冠軍表現的 85% 以上，杜絕「孤峰過擬合」。</td></tr><tr><td style="text-align:left"><strong>Time-Weighted Return</strong></td><td style="text-align:left"><strong>TWR</strong></td><td style="text-align:left">時間加權報酬率。排除帳戶資金進出（Deposit/Withdrawal）影響，客觀衡量操盤實績。</td></tr></tbody></table></div>
+<hr>
+<h2>3. 策略編號家族速查 (Strategy Registry Index)</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略編號</th><th style="text-align:left">策略識別碼 (Strategy ID)</th><th style="text-align:left">主導 AI</th><th style="text-align:left">核心機制簡述</th></tr></thead><tbody><tr><td style="text-align:left"><strong>S022</strong></td><td style="text-align:left"><code>multi_factor_40_basket</code></td><td style="text-align:left">Codex / Gemini</td><td style="text-align:left">40 檔中大型股六因子等權組合（NT$500萬容量，基準候選）</td></tr><tr><td style="text-align:left"><strong>W0085</strong></td><td style="text-align:left"><code>high_sharpe_micro_basket</code></td><td style="text-align:left">Historical Lab</td><td style="text-align:left">Sharpe 2.0+ 微型股策略（胃納量僅 NT$8.5萬，研究對照組）</td></tr><tr><td style="text-align:left"><strong>S048</strong></td><td style="text-align:left"><code>three_family_equal_sleeve</code></td><td style="text-align:left">Portfolio Lab</td><td style="text-align:left">三大策略家族等權多 Sleeve 組合（NT$960萬容量）</td></tr><tr><td style="text-align:left"><strong>S138</strong></td><td style="text-align:left"><code>gemini_001_weighted_cashflow_momentum</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>反向波動加權現金流動能</strong>（Top 20，單檔 10% 上限，Sharpe 2.15）</td></tr><tr><td style="text-align:left"><strong>S139</strong></td><td style="text-align:left"><code>gemini_002_hedged_cashflow_momentum</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>大盤均線宏觀濾網對沖型現金流動能</strong>（牛市做滿、破線減倉）</td></tr><tr><td style="text-align:left"><strong>S140</strong></td><td style="text-align:left"><code>gemini_004_vol_target_cashflow_momentum</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>動態波動度目標化配置</strong>（控制組合年化波動在 15% 以內）</td></tr><tr><td style="text-align:left"><strong>S141</strong></td><td style="text-align:left"><code>gemini_007_multimethodology_ensemble</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>價值+動能+籌碼+微結構四維集成</strong>（多方法論抗單一週期失效）</td></tr><tr><td style="text-align:left"><strong>S142</strong></td><td style="text-align:left"><code>radical_001_convexity_pareto</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>50% CAGR 凸性激進 GA 演化策略</strong>（集中 8~12 檔、雙軌進出場）</td></tr><tr><td style="text-align:left"><strong>S143</strong></td><td style="text-align:left"><code>radical_002_institutional_cluster</code></td><td style="text-align:left"><strong>Gemini</strong></td><td style="text-align:left"><strong>法人共振與籌碼集中度突破策略</strong>（投信連買+主力分點鎖碼）</td></tr></tbody></table></div>
+<hr>
+<h2>4. NotebookLM 快速導引</h2>
+<ul><li><strong>提問範本</strong>：「請查閱 Glossary，解釋為什麼本系統規定 DSR 必須扣除總試驗次數（Trials），這對避免過擬合有什麼作用？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/GLOSSARY.md">_shared/GLOSSARY.md</a> · 作者 AI：Multi-AI Consensus (Gemini &amp; Claude &amp; Codex) · 更新 2026-08-26</footer>
+</div></body>
+</html>

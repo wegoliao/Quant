@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lesson / claude</title>
+<meta name="description" content="Claude (Opus 5, Anthropic) 撰寫的量化系統教學：積木、陷阱、提問法。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap wide">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><h1>lesson / claude</h1><p>由 <b>Claude (Opus 5, Anthropic)</b> 撰寫，共 13 份，其中 9 個可獨立抽用的積木。</p><div class="ingest"><h3>丟給 AI / NotebookLM</h3><p>整個目錄一份檔案（推薦，一次吃完）：<br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md</code></p><p>網頁版索引：<br><code>https://wegoliao.github.io/Quant/lesson/claude/</code></p><p>全站機器可讀清單：<br><code>https://wegoliao.github.io/Quant/llms.txt</code></p></div><div class="grid"><a class="card" href="00-context.html"><div class="id">C00 · 脈絡</div><div class="t">脈絡 · 這個系統到底在做什麼</div><div class="d">如果你只讀一份文件，讀這份。其他所有積木都假設你已經知道這裡的分層。</div></a><a class="card" href="01-contracts.html"><div class="id">C01 · 脈絡</div><div class="t">資料契約 · 四個 CSV 就是全部</div><div class="d">積木之間不靠函式呼叫溝通，靠**檔案格式**。這是刻意的：CSV 可以被人眼檢查、被 git diff、被任何語言讀，而且不會因為你換了框架就壞掉。</div></a><a class="card" href="20-traps.html"><div class="id">C20 · 陷阱</div><div class="t">陷阱清單 · 這個專案真的踩到的坑</div><div class="d">每一條都是**真的發生過**的，不是教科書上的假設。附上發現方式，因為「怎麼被發現的」比「是什麼」更有價值。</div></a><a class="card" href="30-prompts.html"><div class="id">C30 · 提問法</div><div class="t">問題寫法 · 怎麼問才會拿到真話</div><div class="d">這一份不是「prompt 模板大全」。它記錄的是**在這個專案裡實際產生高價值輸出的提問結構**，以及它們為什麼有效。</div></a><a class="card" href="blocks/B01-realized-pnl-fifo.html"><div class="id">B01 · 積木</div><div class="t">已實現損益 · FIFO 對沖，只認落袋現金</div><div class="d">賣掉的部位會從庫存表消失。庫存表消失 → 畫面上找不到 → 你以為沒發生。</div></a><a class="card" href="blocks/B02-volume-profile.html"><div class="id">B02 · 積木</div><div class="t">分價分布 · 用日線做出 volume-at-price</div><div class="d">「這個價格算高還是低？」</div></a><a class="card" href="blocks/B03-fill-landing.html"><div class="id">B03 · 積木</div><div class="t">成交落點 · 唯一能對「進場點」說的實證</div><div class="d">每個人都想知道「最適合的入場點在哪」。這是一個**預測問題**，而且沒有人有答案。</div></a><a class="card" href="blocks/B04-liquidation-value.html"><div class="id">B04 · 積木</div><div class="t">可變現淨值 · 帳面值不是你拿得到的錢</div><div class="d">台股現股賣出成本：</div></a><a class="card" href="blocks/B05-signal-fill-slippage.html"><div class="id">B05 · 積木</div><div class="t">履約落差 · 策略卡報的價，帳戶付的價</div><div class="d">策略卡說「進場 97.1」。帳戶實際成交 **97.80**。</div></a><a class="card" href="blocks/B06-watchlist-driven-fetch.html"><div class="id">B06 · 積木</div><div class="t">watchlist 驅動抓取 · 別讓賣掉的股票資料斷線</div><div class="d">抓行情要先決定「抓誰」。最自然的做法是：**抓我持有的**。</div></a><a class="card" href="blocks/B07-fail-closed-inputs.html"><div class="id">B07 · 積木</div><div class="t">Fail closed · 寧可炸掉，不要安靜地算錯</div><div class="d">金融資料管線最危險的不是崩潰，是**安靜地算出一個看起來合理的錯誤數字**。</div></a><a class="card" href="blocks/B08-sample-size-gate.html"><div class="id">B08 · 積木</div><div class="t">樣本量門檻 · 敢顯示 N/A 才是專業</div><div class="d">Sharpe = 平均日報酬 / 日報酬標準差 × √252</div></a><a class="card" href="blocks/B09-derived-state.html"><div class="id">B09 · 積木</div><div class="t">推導式狀態 · 能算出來的絕不另存一份</div><div class="d">「我想追蹤那些有訊號但我沒買的股票。」</div></a></div>
+<footer>完整 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md">ALL.md</a></footer>
+</div></body>
+</html>

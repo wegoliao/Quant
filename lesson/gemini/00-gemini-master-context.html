@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G00 · Gemini 全景脈絡 · 拆解黑盒子與工程級量化哲學</title>
+<meta name="description" content="本文件是 **Gemini (Google DeepMind / Antigravity)** 在 Quant Grill Lab 系統中的主脈絡導覽。我們將原本晦澀的量化「黑盒子」徹底拆解為具備清晰數學定義、純函數實作與單元測試的 **1">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / gemini / G00</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">脈絡</span><span class="badge ok">verified</span><h1>Gemini 全景脈絡 · 拆解黑盒子與工程級量化哲學</h1>
+<h2>一句話總結 (TL;DR)</h2>
+<p>本文件是 <strong>Gemini (Google DeepMind / Antigravity)</strong> 在 Quant Grill Lab 系統中的主脈絡導覽。我們將原本晦澀的量化「黑盒子」徹底拆解為具備清晰數學定義、純函數實作與單元測試的 <strong>10 大獨立積木（Building Blocks）</strong>，並確立「研究不碰實盤、無摩擦不代表真收益、防過擬合高於漂亮回測」的工程量化哲學。</p>
+<hr>
+<h2>1. 為什麼要重整整個系統？</h2>
+<p>當散戶或初階量化工程師踏入台股量化時，最常陷入以下「<strong>三大黑盒子幻覺</strong>」：</p>
+<pre><code>                    【量化初學者的三大致命幻覺】
+┌─────────────────────────────────────────────────────────────┐
+│ 1. 回測幻覺 ── 忽視月營收在10號才公佈，回測在1號就偷看成交      │
+│ 2. 資金幻覺 ── 數學上的 5% 權重，在實盤帳戶連 1 張股票都買不起  │
+│ 3. 滑價幻覺 ── 假設掛單就能在次日開盤價全部成交，忽略深度衝擊  │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+<p>本專案經過 Opus、Codex、Claude 與 Gemini 的多代演化，我們在 Gemini 這一階段的核心任務就是： <strong>「把所有的模糊假設全部程式化、合約化，將龐大系統拆成可自由組裝的積木，並讓任何 AI 都能在 3 分鐘內看懂全貌。」</strong></p>
+<hr>
+<h2>2. Gemini 在系統中完成了什麼？（六大核心領域）</h2>
+<pre><code class="lang-mermaid">graph TD
+    A[Gemini 量化工程貢獻] --&gt; B[1. 治理與排他鎖]
+    A --&gt; C[2. 資料防偷看 PIT]
+    A --&gt; D[3. 凸性整數部位分配]
+    A --&gt; E[4. 微結構與容量守門]
+    A --&gt; F[5. 核心策略與次世代 GA]
+    A --&gt; G[6. DSR 與前瞻驗證]
+
+    B --&gt; B1[解決多程序並發衝突 / OS Lock]
+    C --&gt; C1[修復月營收發布日 Lag 與全域污染]
+    D --&gt; D1[精確求解 L1 追蹤誤差整數規劃]
+    E --&gt; E1[ADV20 限流 / 手續費低消地板 / 追價狀態機]
+    F --&gt; F1[S138-S141 波動加權 / S142-S143 50% CAGR]
+    G --&gt; G1[Deflated Sharpe Ratio / 4000+ Trials 去膨脹]</code></pre>
+<h3>1. 基礎設施與治理 (Governance &amp; Research Lock)</h3>
+<ul><li><strong>問題</strong>：多個 AI 或批次回測同時執行時，爭奪資料庫與網站生成資源，造成回測中斷與狀態污染。</li><li><strong>解決方案</strong>：實作全域 OS-backed <code>RESEARCH_LOCK.json</code>，提供 <code>OFFICIAL_SIM</code>、<code>REGISTRY_WRITE</code>、<code>SITE_BUILD</code> 三種互斥鎖與逾時自動回收機制（見 <a href="01-governance-and-fail-closed.md">G01</a> 及 <a href="blocks/GB01-research-lock.md">GB01</a>）。</li></ul>
+<h3>2. 資料管線與防偷看防禦 (Data &amp; PIT Safe)</h3>
+<ul><li><strong>問題</strong>：月營收與季報的「時間標籤」容易被誤當作「發布日」（Lookahead Bias），且 <code>data.set_universe()</code> 會污染全域進程。</li><li><strong>解決方案</strong>：建立嚴格的 PIT 對齊器與 Lag 守衛，強制所有財報與營收訊號遞延至法定公告日次日（見 <a href="02-data-pit-and-leakage-defense.md">G02</a> 及 <a href="blocks/GB02-pit-lag-aligner.md">GB02</a>）。</li></ul>
+<h3>3. 進出場戰術與整數部位分配 (Tactics &amp; Integer Sizing)</h3>
+<ul><li><strong>問題</strong>：策略產出連續權重（如 3.2%），但在真實帳戶只有 NT$50 萬時，高價股買不起整張，隨便四捨五入會完全摧毀策略原本的多因子結構。</li><li><strong>解決方案</strong>：提出<strong>凸性 L1 追蹤誤差整數規劃演算法（Pareto Frontier Sweep）</strong>，在現金預算與單檔上限約束下，求解出最貼近策略理想權重的整數張數與零股配置（見 <a href="03-tactics-and-integer-sizing.md">G03</a> 及 <a href="blocks/GB03-integer-basket-allocator.md">GB03</a>）。</li></ul>
+<h3>4. 微結構與執行工程 (Microstructure &amp; Capacity)</h3>
+<ul><li><strong>問題</strong>：高 Sharpe 策略常偷偷買入無成交量的「殭屍股」，實盤根本無法承載百萬資金。</li><li><strong>解決方案</strong>：建立 <strong>ADV20 容量守門員（單檔限制 ≤ 2%~5% ADV）</strong>、<strong>手續費低消地板（NT$20 門檻檢查）</strong>、<strong>五檔盤口衝擊評級</strong> 與 <strong>限價智慧追價狀態機</strong>（見 <a href="04-microstructure-and-execution.md">G04</a> 及 <a href="blocks/GB04-adv-capacity-guard.md">GB04</a>~<a href="blocks/GB07-smart-requote-engine.md">GB07</a>）。</li></ul>
+<h3>5. 核心策略演化與 GA 藍圖 (Alpha Strategies &amp; Radical GA)</h3>
+<ul><li><strong>問題</strong>：等權重與單一月調倉使策略受限於 CAGR 25% 的均值回歸天花板。</li><li><strong>解決方案</strong>：</li><li>開發 <strong>Gemini 001~007 策略家族（S138~S141）</strong>：導入反向波動度加權（Inverse Volatility Sizing）、波動度目標控管與多方法論集成。</li><li>提出 <strong>次世代 50% CAGR 遺傳演算法（GA）藍圖（S142~S143）</strong>：採用 8~12 檔帕雷托集中持股與雙軌混合進出場機制（見 <a href="05-alpha-strategies-and-ga.md">G05</a> 及 <a href="blocks/GB08-volatility-target-sizer.md">GB08</a>~<a href="blocks/GB09-fcf-momentum-core.md">GB09</a>）。</li></ul>
+<h3>6. 嚴格防過擬合與前瞻驗證 (Validation &amp; Forward SIM)</h3>
+<ul><li><strong>問題</strong>：跑了數千次試驗後挑出的最佳策略，極可能只是隨機噪聲。</li><li><strong>解決方案</strong>：導入 <strong>Deflated Sharpe Ratio (DSR)</strong> 與 <strong>PBO</strong>，強制將 4,000+ 次試驗納入分母進行顯著性折價懲罰；並建立不可回填的 <strong>Forward SIM 追蹤鏈</strong>（見 <a href="06-validation-dsr-and-forward-sim.md">G06</a> 及 <a href="blocks/GB10-dsr-pbo-validator.md">GB10</a>）。</li></ul>
+<hr>
+<h2>3. 10 大獨立黑盒子積木（Building Blocks）索引</h2>
+<p>每個積木均為無狀態或自包含模組，附帶完整單元測試，可直接在其他專案中引用：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">編號</th><th style="text-align:left">積木名稱</th><th style="text-align:left">核心功能</th><th style="text-align:left">原始代碼位置</th></tr></thead><tbody><tr><td style="text-align:left"><a href="blocks/GB01-research-lock.md"><code>GB01</code></a></td><td style="text-align:left"><strong>全域排他研究鎖</strong></td><td style="text-align:left">多程序並發安全防衝突、心跳逾時自動回收</td><td style="text-align:left"><code>scripts/research_lock.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB02-pit-lag-aligner.md"><code>GB02</code></a></td><td style="text-align:left"><strong>PIT 財報營收對齊器</strong></td><td style="text-align:left">嚴格依照法定公告日對齊，根除偷看未來資料</td><td style="text-align:left"><code>src/quant_grill_lab/strategies/claude_core.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB03-integer-basket-allocator.md"><code>GB03</code></a></td><td style="text-align:left"><strong>凸性整數規劃分配器</strong></td><td style="text-align:left">給定預算與權重，精確求解最佳整數股數組合</td><td style="text-align:left"><code>src/quant_grill_lab/tactics/allocation.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB04-adv-capacity-guard.md"><code>GB04</code></a></td><td style="text-align:left"><strong>ADV20 容量守門員</strong></td><td style="text-align:left">檢查單檔委託是否超過 20 日均量 2%~5%</td><td style="text-align:left"><code>src/quant_grill_lab/execution/capacity_guard.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB05-fee-floor-calculator.md"><code>GB05</code></a></td><td style="text-align:left"><strong>手續費低消計算器</strong></td><td style="text-align:left">評估小額委託手續費佔比，過濾被低消吃掉的標的</td><td style="text-align:left"><code>src/quant_grill_lab/execution/fee_floor.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB06-microstructure-matcher.md"><code>GB06</code></a></td><td style="text-align:left"><strong>五檔微結構評級器</strong></td><td style="text-align:left">根據買賣五檔深度與 Spread 判定最佳掛單方式</td><td style="text-align:left"><code>src/quant_grill_lab/execution/strategy_microstructure_matcher.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB07-smart-requote-engine.md"><code>GB07</code></a></td><td style="text-align:left"><strong>限價智慧追價狀態機</strong></td><td style="text-align:left">委託未成交時的超時重報、滑價保護與撤單狀態機</td><td style="text-align:left"><code>src/quant_grill_lab/execution/requote.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB08-volatility-target-sizer.md"><code>GB08</code></a></td><td style="text-align:left"><strong>波動度目標部位調節器</strong></td><td style="text-align:left">依近期市場與個股波動動態縮放持股水位</td><td style="text-align:left"><code>src/quant_grill_lab/strategies/gemini_004_vol_target_cashflow_momentum.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB09-fcf-momentum-core.md"><code>GB09</code></a></td><td style="text-align:left"><strong>現金流營收動能因子核心</strong></td><td style="text-align:left">結合營運現金流、營業毛利與動能的選股核心</td><td style="text-align:left"><code>src/quant_grill_lab/strategies/gemini_001_weighted_cashflow_momentum.py</code></td></tr><tr><td style="text-align:left"><a href="blocks/GB10-dsr-pbo-validator.md"><code>GB10</code></a></td><td style="text-align:left"><strong>DSR / PBO 過擬合檢驗器</strong></td><td style="text-align:left">納入多重試驗次數懲罰的統計顯著性檢驗</td><td style="text-align:left"><code>src/quant_grill_lab/strategy_selection/</code></td></tr></tbody></table></div>
+<hr>
+<h2>4. 如何在 NotebookLM 與各家 AI 中使用本教材？</h2>
+<ol><li><strong>整體架構速讀</strong>：將本篇 <a href="00-gemini-master-context.md">G00</a> 與 <a href="../_shared/SYSTEM_MAP.md">_shared/SYSTEM_MAP.md</a> 匯入 NotebookLM，詢問：</li></ol>
+<p>&gt; 「請用大白話解釋 Quant Grill Lab 如何將『策略研究』與『實盤下單』進行物理隔離？」</p>
+<ol><li><strong>黑盒子積木拼裝</strong>：將 <a href="blocks/GB03-integer-basket-allocator.md">GB03</a> 與 <a href="blocks/GB04-adv-capacity-guard.md">GB04</a> 匯入 ChatGPT 或 Claude，詢問：</li></ol>
+<p>&gt; 「我有一筆 100 萬資金與 10 檔股票目標權重，請用 GB03 與 GB04 幫我寫出計算真實下單張數的 Python 腳本。」</p>
+<ol><li><strong>跨 AI 交互學習</strong>：將 Claude 專區的 <a href="../claude/00-context.md">C00</a> 與本篇 <a href="00-gemini-master-context.md">G00</a> 同時提供給 AI，詢問：</li></ol>
+<p>&gt; 「Claude 的『實績對帳主線』與 Gemini 的『戰術整數分配』如何協同運作？」</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/00-gemini-master-context.md">gemini/00-gemini-master-context.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

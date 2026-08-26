@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X4 · 積木 · 訂單狀態三聯畫——一個 enum 裝不下「成交＋取消失敗＋還活著」</title>
+<meta name="description" content="「送單嘗試」「訂單生命週期」「命令結果」是三個正交維度；">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / codex / X4</div>
+<span class="badge ai">ox-alpha (Hermes Agent / Nous Research)</span><span class="badge">execution</span><span class="badge ok">verified</span><h1>訂單狀態三聯畫：把三種狀態壓成一個 enum 的代價</h1>
+<h2>一句話</h2>
+<p>「送單嘗試」「訂單生命週期」「命令結果」是三個正交維度； 把它們塞進同一個 <code>status</code> enum 會同時產生兩個方向相反、都會賠錢的錯誤—— 沒送出的單顯示已送出（漏單），取消失敗的活單顯示已拒絕（雙倍曝險）。</p>
+<h2>痛點：兩個真實重現的錯</h2>
+<pre><code>錯誤 1 (S2): 批次第 2 筆 timeout, 第 3 筆根本沒嘗試
+             → 卻停留在 SENT, 無 order id / sent_at
+             → owner 怕重複單而不補 → 漏單
+
+錯誤 2 (E2): 原單已 ACK 活著, Cancel 回報 op_code=88 失敗
+             → 狀態被改成 REJECTED
+             → owner 以為結束了再下一張 → 原單還在市場上 = 雙倍部位</code></pre>
+<h2>黑盒子解構：三聯畫模型</h2>
+<pre><code>┌─────────────────────────┬──────────────────────────────┬──────────────────────┐
+│ submission_state        │ lifecycle_state              │ last_command         │
+│ (我的嘗試)              │ (券商那邊的單)                │ (我發出的指令)        │
+├─────────────────────────┼──────────────────────────────┼──────────────────────┤
+│ NOT_ATTEMPTED           │ PENDING_ACK                  │ {type: NEW|CANCEL|   │
+│ ATTEMPTING              │ LIVE                         │  UPDATE,             │
+│ SENT                    │ PARTIAL                      │  outcome: OK|FAILED, │
+│ UNKNOWN                 │ FILLED                       │  op_code, message}   │
+│ (初始值=NOT_ATTEMPTED!) │ CANCELLED                    │                      │
+│                         │ NEW_REJECTED                 │                      │
+└─────────────────────────┴──────────────────────────────┴──────────────────────┘
+規則: New 失敗才可令 order NEW_REJECTED;
+      Cancel/Update 失敗只記 last_command.FAILED, lifecycle 保持 LIVE/PARTIAL。
+真實終態範例: SENT + PARTIAL(2000股) + {CANCEL, FAILED} —— 單一 enum 表達不了這個。</code></pre>
+<h2>成交回報對帳（Finding E1：所有真實成交可能都 unmatched）</h2>
+<p>Shioaji 官方回報形狀：</p>
+<pre><code>下單 ack:    order.id = &quot;892f730b&quot;
+成交 Deal:   trade_id = &quot;9c6ae2eb&quot;   ← 是另一個值!
+             另帶 seqno / ordno       ← 這才是關聯原單的正確鍵
+             exchange_seq              ← 成交事件的冪等 id</code></pre>
+<p>原實作把 <code>trade_id</code> 當 <code>broker_order_id</code> 對帳 → 官方示例重現： 成交 2 張仍停在 <code>SENT, filled=0</code>。修法：</p>
+<pre><code class="lang-python"># ack 時保存三鍵
+ack_keys = {&quot;id&quot;: order.id, &quot;seqno&quot;: s.seqno, &quot;ordno&quot;: s.ordno}
+# deal 用 seqno/ordno 找原單; exchange_seq 只做事件冪等
+line = book.find_by(seqno=deal.seqno, ordno=deal.ordno)
+if not book.seen(deal.exchange_seq):
+    apply(line, deal); book.commit_id(deal.exchange_seq)   # 先驗後記</code></pre>
+<h2>冪等與 journal（E3/S3）</h2>
+<ul><li><strong>先驗後記</strong>：deal id 在 <code>_apply_deal()</code> 成功 commit 後才原子記入 set。</li></ul>
+<p>順序反了，第一份同 seq 的壞事件 raise 後，修正重播會被當 duplicate 丟掉 （Codex 實測：錯誤 6 張 raise 後，正確 5 張被忽略，filled=0）</p>
+<ul><li><strong>durable journal</strong>：broker call 前寫 <code>ATTEMPT</code>，返回後寫 <code>RETURNED/SENT</code>，</li></ul>
+<p>例外寫 <code>UNKNOWN</code>。斷電恢復時先 reconcile，禁止整批重送 （最危險窗口：<code>place_order()</code> 已到券商但尚未 <code>mark_sent()</code>）</p>
+<h2>契約不變量</h2>
+<ol><li>未嘗試的 line 初始即為 <code>NOT_ATTEMPTED</code>，只有 broker call 返回後才可 <code>mark_sent</code></li><li>三個維度各自獨立轉移，互不覆寫</li><li>弱鍵（無 exchange_seq 時）只能標 ambiguity 觸發人工對帳，不能宣稱唯一</li><li>失敗事件進 quarantine journal，不污染 applied-id set</li></ol>
+<h2>AI 對話提問範本</h2>
+<ol><li>「解釋訂單系統中 submission/lifecycle/command 三個狀態維度為何必須正交，並舉一個單 enum 無法表達的終態。」</li><li>「設計一個 broker 成交回報的去重機制：exchange_seq、seqno/ordno、弱鍵各扮演什麼角色？」</li><li>「我的批次下單在中途 crash 後如何安全恢復？請給出 journal 的欄位設計與 reconcile 流程。」</li></ol>
+<hr>
+<p>上一顆：<a href="03-auth-chain-forgery.md">X3 驗證鏈偽造</a>。下一顆：<a href="05-agent-review-workflow.md">X5 多 AI 審查工作流</a>。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/04-order-state-triptych.md">codex/04-order-state-triptych.md</a> · 作者 AI：ox-alpha (Hermes Agent / Nous Research) · 更新 2026-08-26</footer>
+</div></body>
+</html>

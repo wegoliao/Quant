@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B03 · 成交落點 · 唯一能對「進場點」說的實證</title>
+<meta name="description" content="每個人都想知道「最適合的入場點在哪」。這是一個**預測問題**，而且沒有人有答案。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B03</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>output/mainline2_receipt.json (22 buys, 1 sell)</code></p><h1>B03 · 成交落點（fill landing）</h1>
+<h2>它解決什麼</h2>
+<p>每個人都想知道「最適合的入場點在哪」。這是一個<strong>預測問題</strong>，而且沒有人有答案。</p>
+<p>但有一個相鄰的問題是<strong>可量測的</strong>，而且幾乎沒有人在量：</p>
+<blockquote>你已經下的單，實際落在當天價格區間的哪裡？</blockquote>
+<p>把每一筆成交價放回<strong>它自己那天的最高／最低</strong>之間，正規化成 0..1：</p>
+<pre><code>0% = 當日最低（買到最便宜）
+100% = 當日最高（買到最貴）</code></pre>
+<p>買進落點越低越省，賣出落點越高越好。這不預測任何事 —— 它衡量已經發生的執行品質。</p>
+<h2>為什麼這個指標比 slippage 更早可用</h2>
+<p>訊號→成交的履約落差（<a href="B05-signal-fill-slippage.md">B05</a>）需要「訊號價」，而訊號價只在你有完整訊號紀錄時存在。成交落點<strong>只需要成交簿和日線</strong>，回溯期有多長就能算多長。</p>
+<p>換句話說：<strong>這是你今天就能算的東西，而且過去所有成交都算得到。</strong></p>
+<h2>契約</h2>
+<pre><code class="lang-python">range_position(bar, price) -&gt; float | None   # 0..1；span==0 時回 None
+fill_landings(fills, bars) -&gt; list[Landing]</code></pre>
+<p><code>Landing</code> 產出：<code>position</code>（區間位置）、<code>vs_close</code>（對當日收盤 %）、<code>vs_open</code>（對當日開盤 %）、<code>status</code></p>
+<p><strong>不變量</strong></p>
+<ul><li>找不到對應日線 → <code>status=&amp;quot;NO_BAR&amp;quot;</code>、<code>position=None</code>，<strong>不要跳過、不要當 0</strong></li><li>一字板（<code>high == low</code>）→ <code>None</code>，因為區間位置沒有定義</li></ul>
+<h2>程式碼</h2>
+<pre><code class="lang-python">def range_position(bar, price):
+    span = bar[&quot;high&quot;] - bar[&quot;low&quot;]
+    if span &lt;= 0:
+        return None                      # 一字板：位置無定義
+    return max(0.0, min(1.0, (price - bar[&quot;low&quot;]) / span))</code></pre>
+<p>三行。整個 block 最有價值的部分不是程式碼，是<strong>想到要算它</strong>。</p>
+<h2>陷阱</h2>
+<p><strong>陷阱 1（真的踩到了）：平倉的股票行情會斷線。</strong></p>
+<p>原本抓取宇宙來自持股清單。3702 賣掉之後從持股消失 → 行情停更 → 它的<strong>買進和賣出兩筆成交都對不到日線</strong> → 賣出樣本數顯示 0。</p>
+<p>一個只有 1 筆賣出的系統，把那 1 筆弄丟了，就等於完全沒有出場資料。修法見 <a href="B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
+<p><strong>陷阱 2：n=22 不能下結論。</strong> 平均 40% 看起來不錯，但 22 筆買進、1 筆賣出的樣本量不足以說「你的執行很好」。系統把這句話<strong>印在頁面上</strong>，不是藏在 README：</p>
+<blockquote>目前 22 筆買進的樣本量還不足以下結論，任何「改用限價／改掛開盤」的決定都應該等樣本夠了再談。</blockquote>
+<p><strong>陷阱 3：把落點好壞當成損益好壞。</strong> 最有價值的一個發現剛好反過來 —— 見下。</p>
+<h2>真實產出</h2>
+<p>22 筆買進，平均落在當日區間 <strong>40%</strong>（低於中點），平均比當日收盤低 <strong>0.75%</strong>。1 筆賣出落在 <strong>89%</strong>。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">股票</th><th style="text-align:right">落點</th></tr></thead><tbody><tr><td style="text-align:left">最好</td><td style="text-align:left">2609 陽明</td><td style="text-align:right">4%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">2408 南亞科</td><td style="text-align:right">12%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">6672 騰輝</td><td style="text-align:right">15%</td></tr><tr><td style="text-align:left">最差</td><td style="text-align:left">2395 研華</td><td style="text-align:right">82%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">3702 大聯大</td><td style="text-align:right">79%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">2301 光寶科</td><td style="text-align:right">68%</td></tr></tbody></table></div>
+<p><strong>最有價值的一句話：3702 的虧損不是賣錯，是買錯。</strong></p>
+<p>買在當日 79% 高位、賣在 89% 高位 —— 兩邊執行都不差。錢是在 8/11 到 8/19 之間跌掉的，那是選股／持有期的問題，不是下單技巧的問題。</p>
+<p>沒有這個指標，你會花時間去優化下單方式（限價？分批？掛開盤？），而真正的問題在完全不同的地方。<strong>這就是量測的價值：它告訴你不要優化什麼。</strong></p>
+<h2>延伸</h2>
+<p>累積到 30 筆以上之後可以做的事（現在還不行）：</p>
+<ul><li>按策略分組：哪個策略的進場執行比較差</li><li>按下單時段分組：需要 <code>fill_time</code>（成交簿已經留了這一欄，目前多數是空的）</li><li>對照當日振幅：波動大的日子落點是不是更糟</li></ul>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::range_position</code></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B03-fill-landing.md">claude/blocks/B03-fill-landing.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

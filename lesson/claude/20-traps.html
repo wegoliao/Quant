@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C20 · 陷阱清單 · 這個專案真的踩到的坑</title>
+<meta name="description" content="每一條都是**真的發生過**的，不是教科書上的假設。附上發現方式，因為「怎麼被發現的」比「是什麼」更有價值。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C20</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">陷阱</span><span class="badge ok">verified</span><h1>陷阱清單</h1>
+<p>每一條都是<strong>真的發生過</strong>的，不是教科書上的假設。附上發現方式，因為「怎麼被發現的」比「是什麼」更有價值。</p>
+<hr>
+<h2>T01 · 一條曲線兩種估值口徑</h2>
+<p><strong>症狀</strong>：績效曲線在最後一天憑空掉 0.44%，看起來像當天虧損。</p>
+<p><strong>原因</strong>：歷史日用毛值（<code>股數 × 收盤</code>），最新日用可變現淨值（扣賣出費稅）。<strong>換了尺，不是變了值。</strong></p>
+<p><strong>教訓</strong>：口徑必須整條線一致。如果要改，整條一起改。</p>
+<p><strong>怎麼發現的</strong>：把日報酬列出來看，最後一天的數字和個股漲跌對不上。</p>
+<hr>
+<h2>T02 · 已實現損益沒有名字</h2>
+<p><strong>症狀</strong>：owner 讀了三天畫面，問「大聯大的虧損你是不是漏算了？」</p>
+<p><strong>原因</strong>：數學沒漏 —— sleeve 曲線一直含這筆虧損。但<strong>整個 repo 沒有任何地方叫做「已實現」</strong>，所有標籤都寫「未實現」。賣掉的股票離開庫存表，畫面上就找不到了。</p>
+<p><strong>教訓</strong>：正確的數字放在錯誤的標籤下面，等於錯的。<strong>一個你指不出來的虧損，你不會從它身上學到東西。</strong></p>
+<p><strong>怎麼發現的</strong>：使用者讀畫面讀出來的，不是測試抓到的。這類問題測試抓不到 —— 測試只驗證計算，不驗證「人看得懂嗎」。</p>
+<hr>
+<h2>T03 · 賣掉的股票資料斷線</h2>
+<p><strong>症狀</strong>：成交落點分析裡，賣出樣本數 = 0。系統只有 1 筆賣出，那 1 筆是空的。</p>
+<p><strong>原因</strong>：抓行情的宇宙來自持股清單。3702 平倉後離開持股 → 行情停更 → 它的兩筆成交都對不到日線。</p>
+<p><strong>教訓</strong>：<strong>你最需要一檔股票資料的時刻，正好是它剛賣掉的時候。</strong></p>
+<p><strong>修法</strong>：<a href="blocks/B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a></p>
+<hr>
+<h2>T04 · 只存收盤價</h2>
+<p><strong>症狀</strong>：想做分價分布和成交落點，發現做不了。</p>
+<p><strong>原因</strong>：<code>price_history.csv</code> 早期只有 <code>close</code>。分價分布需要 <code>high/low/volume</code>，成交落點需要 <code>high/low</code>。</p>
+<p><strong>教訓</strong>：<strong>存資料的時候多存幾欄的成本是零，事後補的成本是無限大</strong>（歷史行情可能已經不好拿了）。OHLCV 五個欄位一律全存。</p>
+<hr>
+<h2>T05 · 委託單號不唯一</h2>
+<p><strong>症狀</strong>：8/19 的 2301 光寶科和 8/25 的 2637 慧洋-KY，委託單號都是 <code>X-00ZX</code>。</p>
+<p><strong>原因</strong>：券商的委託單號在不同日期會重複。</p>
+<p><strong>教訓</strong>：<strong>不要相信外部系統的 ID 是全域唯一的。</strong> 需要唯一鍵時自己組（例如 <code>X-00ZX-20260825</code>），並且在文件裡寫明這個 ID 不唯一。</p>
+<hr>
+<h2>T06 · 用價差算損益</h2>
+<p><strong>症狀</strong>：算出來的損益永遠比對帳單好看一點點。</p>
+<p><strong>原因</strong>：<code>(賣價 − 買價) × 股數</code> 少算手續費和證交稅。3702 的價差答案 −10,647，真實答案 −11,003。</p>
+<p><strong>教訓</strong>：差 356 元不多，但<strong>它永遠往好的方向錯</strong>。100 筆之後你的策略評估會系統性偏樂觀。永遠從 <code>cash_out</code> / <code>cash_in</code> 出發。</p>
+<hr>
+<h2>T07 · 資料來源自相矛盾，然後被抹平</h2>
+<p><strong>症狀</strong>：策略卡表頭印 +3.7%，但畫面上六檔成分股的可見數字平均是 +4.33%，差 0.63pp。</p>
+<p><strong>正確處理</strong>：<strong>原樣保存，標註不一致</strong>。</p>
+<pre><code>quality_note: PRINTED_PCT_VS_ENTRY_CLOSE_GAP:printed=37.8+,implied=+36.4</code></pre>
+<p><strong>錯誤處理</strong>：改其中一格讓驗算過關。</p>
+<p><strong>教訓</strong>：<strong>資料的矛盾是資訊。</strong> 抹平它就是銷毀證據。三個月後你想查「這個策略卡的表頭是怎麼算的」，只剩下你自己改過的版本。</p>
+<hr>
+<h2>T08 · 成本口徑差 NT$653</h2>
+<p><strong>症狀</strong>：成交簿累加的在庫實付 1,178,519，券商快照的在庫成本 1,177,866。</p>
+<p><strong>處理</strong>：<strong>揭露，不抹平。</strong> 四策略實績以逐筆成交現金流為準，並在頁面上寫出這個差額。</p>
+<p><strong>教訓</strong>：兩個來源不一致時，選一個當主，另一個當對照，<strong>並且把差額顯示出來</strong>。偷偷用其中一個是最糟的選擇。</p>
+<hr>
+<h2>T09 · 樣本 11 筆算 Sharpe</h2>
+<p><strong>症狀</strong>：Sharpe 顯示 3.2，看起來很棒。</p>
+<p><strong>原因</strong>：標準差在小樣本下極不穩定，年化再乘 √252 ≈ 15.9 倍把雜訊放大。</p>
+<p><strong>教訓</strong>：見 <a href="blocks/B08-sample-size-gate.md"><code>B08 樣本量門檻</code></a>。<strong>敢顯示 N/A 才是專業。</strong></p>
+<hr>
+<h2>T10 · 把快照倒推一年當歷史</h2>
+<p><strong>症狀</strong>：曾經有一版把 2026-08-24 的持股股數倒推到一年前，算出一條「一年績效曲線」。</p>
+<p><strong>原因</strong>：想要有 CAGR / Sharpe / MDD 可以看。</p>
+<p><strong>為什麼是災難</strong>：那條曲線描述的是「如果你一年前就持有今天這些股票會怎樣」。這是<strong>完美的後見之明</strong>，和你的實際績效無關，而且必然很好看（因為今天持有的是活下來的那些）。</p>
+<p><strong>教訓</strong>：<strong>倖存者偏誤最常見的形式，就是拿今天的持股回推歷史。</strong> 這一版已被移除。</p>
+<hr>
+<h2>T11 · 一字板除以零</h2>
+<p><strong>症狀</strong>：分價分布在某些標的上崩潰。</p>
+<p><strong>原因</strong>：漲跌停的日子 <code>high == low</code>，<code>span = 0</code>。</p>
+<p><strong>教訓</strong>：台股有漲跌停，任何用到 <code>(price - low) / (high - low)</code> 的公式都必須處理 <code>span == 0</code>。</p>
+<hr>
+<h2>T12 · 抓取安靜失敗</h2>
+<p><strong>症狀</strong>：某檔一直沒資料，三週後才發現。</p>
+<p><strong>教訓</strong>：<code>kept == 0</code> 要進 failures 清單並顯示在 receipt 裡。<strong>安靜的失敗是所有資料管線最大的敵人。</strong></p>
+<hr>
+<h2>一個統計</h2>
+<p>12 條裡面，<strong>有 5 條是「數字是對的但呈現是錯的」或「資料是缺的但沒有人被告知」</strong>（T02, T03, T07, T08, T12）。</p>
+<p>只有 4 條是真正的計算錯誤（T01, T06, T10, T11）。</p>
+<blockquote>這個比例值得記住：<strong>在資料系統裡，「沒有被說出來」造成的傷害，比「算錯」更多。</strong></blockquote>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/20-traps.md">claude/20-traps.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

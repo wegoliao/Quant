@@ -1,0 +1,442 @@
+{
+  "name": "Quant lesson",
+  "generated": "2026-08-26",
+  "site": "https://wegoliao.github.io/Quant",
+  "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main",
+  "source_system": "https://github.com/wegoliao/performance-accumulation-dashboard",
+  "disclaimer": "技術教學文件，不含投資建議、不含買賣訊號、不含委託路徑。",
+  "directories": [
+    {
+      "dir": "_shared",
+      "author_ai": "Multi-AI Consensus (Gemini & Claude & Codex)",
+      "bundle": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md",
+      "index": "https://wegoliao.github.io/Quant/lesson/_shared/",
+      "documents": [
+        {
+          "id": "S01",
+          "title": "交叉更正紀錄 · 誰對誰提出異議",
+          "track": "shared",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CORRECTIONS.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/_shared/CORRECTIONS.html"
+        },
+        {
+          "id": "S00",
+          "title": "交互學習協定 · 多個 AI 怎麼在同一個 repo 裡教學",
+          "track": "shared",
+          "status": "draft",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CROSS_AI_PROTOCOL.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/_shared/CROSS_AI_PROTOCOL.html"
+        },
+        {
+          "id": "SHARED-GLOSSARY-01",
+          "title": "量化工程與系統專有名詞對照表 (Quant Glossary & Metric Conventions)",
+          "track": "shared",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/GLOSSARY.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/_shared/GLOSSARY.html"
+        },
+        {
+          "id": "SHARED-MAP-01",
+          "title": "全系統架構地圖與資料流向導 (Quant Grill Lab System Map)",
+          "track": "shared",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/SYSTEM_MAP.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/_shared/SYSTEM_MAP.html"
+        }
+      ]
+    },
+    {
+      "dir": "claude",
+      "author_ai": "Claude (Opus 5, Anthropic)",
+      "bundle": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md",
+      "index": "https://wegoliao.github.io/Quant/lesson/claude/",
+      "documents": [
+        {
+          "id": "C00",
+          "title": "脈絡 · 這個系統到底在做什麼",
+          "track": "context",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/00-context.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/00-context.html"
+        },
+        {
+          "id": "C01",
+          "title": "資料契約 · 四個 CSV 就是全部",
+          "track": "context",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/01-contracts.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/01-contracts.html"
+        },
+        {
+          "id": "C20",
+          "title": "陷阱清單 · 這個專案真的踩到的坑",
+          "track": "traps",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/20-traps.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/20-traps.html"
+        },
+        {
+          "id": "C30",
+          "title": "問題寫法 · 怎麼問才會拿到真話",
+          "track": "prompts",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/30-prompts.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/30-prompts.html"
+        },
+        {
+          "id": "B01",
+          "title": "已實現損益 · FIFO 對沖，只認落袋現金",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "tests/test_realized.py (5 tests)",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B01-realized-pnl-fifo.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B01-realized-pnl-fifo.html"
+        },
+        {
+          "id": "B02",
+          "title": "分價分布 · 用日線做出 volume-at-price",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "output/mainline2_receipt.json (7 names profiled)",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B02-volume-profile.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B02-volume-profile.html"
+        },
+        {
+          "id": "B03",
+          "title": "成交落點 · 唯一能對「進場點」說的實證",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "output/mainline2_receipt.json (22 buys, 1 sell)",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B03-fill-landing.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B03-fill-landing.html"
+        },
+        {
+          "id": "B04",
+          "title": "可變現淨值 · 帳面值不是你拿得到的錢",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B04-liquidation-value.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B04-liquidation-value.html"
+        },
+        {
+          "id": "B05",
+          "title": "履約落差 · 策略卡報的價，帳戶付的價",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B05-signal-fill-slippage.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B05-signal-fill-slippage.html"
+        },
+        {
+          "id": "B06",
+          "title": "watchlist 驅動抓取 · 別讓賣掉的股票資料斷線",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B06-watchlist-driven-fetch.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B06-watchlist-driven-fetch.html"
+        },
+        {
+          "id": "B07",
+          "title": "Fail closed · 寧可炸掉，不要安靜地算錯",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B07-fail-closed-inputs.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B07-fail-closed-inputs.html"
+        },
+        {
+          "id": "B08",
+          "title": "樣本量門檻 · 敢顯示 N/A 才是專業",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B08-sample-size-gate.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B08-sample-size-gate.html"
+        },
+        {
+          "id": "B09",
+          "title": "推導式狀態 · 能算出來的絕不另存一份",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B09-derived-state.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B09-derived-state.html"
+        }
+      ]
+    },
+    {
+      "dir": "codex",
+      "author_ai": "ox-alpha (Hermes Agent / Nous Research)",
+      "bundle": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md",
+      "index": "https://wegoliao.github.io/Quant/lesson/codex/",
+      "documents": [
+        {
+          "id": "X00",
+          "title": "脈絡 · Codex 在這個專案裡做過什麼、為什麼重要",
+          "track": "context",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/00-context.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/codex/00-context.html"
+        },
+        {
+          "id": "X1",
+          "title": "積木 · 對抗性稽核法——為什麼 129 個測試全綠還是不安全",
+          "track": "validation",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/01-adversarial-audit-method.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/codex/01-adversarial-audit-method.html"
+        },
+        {
+          "id": "X2",
+          "title": "積木 · TWSE 盤中零股集合競價——決定價 P* 的法定順序",
+          "track": "execution",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/02-oddlot-auction-twse-rules.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/codex/02-oddlot-auction-twse-rules.html"
+        },
+        {
+          "id": "X3",
+          "title": "積木 · 驗證鏈偽造——「簽章驗得過」不等於「是 owner 簽的」",
+          "track": "governance",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/03-auth-chain-forgery.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/codex/03-auth-chain-forgery.html"
+        },
+        {
+          "id": "X4",
+          "title": "積木 · 訂單狀態三聯畫——一個 enum 裝不下「成交＋取消失敗＋還活著」",
+          "track": "execution",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/04-order-state-triptych.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/codex/04-order-state-triptych.html"
+        },
+        {
+          "id": "X5",
+          "title": "積木 · 多 AI 對抗性審查工作流——派 Codex 審程式的正確姿勢",
+          "track": "governance",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/05-agent-review-workflow.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/codex/05-agent-review-workflow.html"
+        }
+      ]
+    },
+    {
+      "dir": "gemini",
+      "author_ai": "Gemini (Google DeepMind / Antigravity)",
+      "bundle": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md",
+      "index": "https://wegoliao.github.io/Quant/lesson/gemini/",
+      "documents": [
+        {
+          "id": "G00",
+          "title": "Gemini 全景脈絡 · 拆解黑盒子與工程級量化哲學",
+          "track": "context",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/00-gemini-master-context.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/00-gemini-master-context.html"
+        },
+        {
+          "id": "G01",
+          "title": "治理邊界、排他研究鎖與 Fail-Closed 防禦架構",
+          "track": "governance",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/01-governance-and-fail-closed.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/01-governance-and-fail-closed.html"
+        },
+        {
+          "id": "G02",
+          "title": "資料防偷看防禦 · FinLab 資料管線與 PIT 財報公告日對齊",
+          "track": "data",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/02-data-pit-and-leakage-defense.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/02-data-pit-and-leakage-defense.html"
+        },
+        {
+          "id": "G03",
+          "title": "戰術分配 · 凸性整數規劃與真實帳戶部位定價",
+          "track": "tactics",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/03-tactics-and-integer-sizing.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/03-tactics-and-integer-sizing.html"
+        },
+        {
+          "id": "G04",
+          "title": "微結構與執行工程 · 委託簿深度、ADV 容量守門員與滑價校準",
+          "track": "execution",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/04-microstructure-and-execution.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/04-microstructure-and-execution.html"
+        },
+        {
+          "id": "G05",
+          "title": "核心策略演化 · 波動度加權與 50% CAGR 遺傳演算法 (GA) 藍圖",
+          "track": "strategy",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/05-alpha-strategies-and-ga.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/05-alpha-strategies-and-ga.html"
+        },
+        {
+          "id": "G06",
+          "title": "防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈",
+          "track": "validation",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/06-validation-dsr-and-forward-sim.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/06-validation-dsr-and-forward-sim.html"
+        },
+        {
+          "id": "GB01",
+          "title": "積木 · 全域排他研究鎖 (OS-backed Research Lock)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB01-research-lock.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB01-research-lock.html"
+        },
+        {
+          "id": "GB02",
+          "title": "積木 · PIT 財報與營收防偷看對齊器 (PIT & Lag Aligner)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB02-pit-lag-aligner.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB02-pit-lag-aligner.html"
+        },
+        {
+          "id": "GB03",
+          "title": "積木 · 凸性整數規劃投組權重分配器 (Integer Basket Allocator)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB03-integer-basket-allocator.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB03-integer-basket-allocator.html"
+        },
+        {
+          "id": "GB04",
+          "title": "積木 · ADV20 流動性與容量守門員 (ADV20 Capacity Guard)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB04-adv-capacity-guard.html"
+        },
+        {
+          "id": "GB05",
+          "title": "積木 · 券商手續費低消與損益平衡門檻計算器 (Fee Floor Calculator)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB05-fee-floor-calculator.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB05-fee-floor-calculator.html"
+        },
+        {
+          "id": "GB06",
+          "title": "積木 · 五檔微結構與衝擊成本評級器 (Microstructure Matcher)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB06-microstructure-matcher.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB06-microstructure-matcher.html"
+        },
+        {
+          "id": "GB07",
+          "title": "積木 · 限價智慧追價與重報價狀態機 (Smart Requote Engine)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB07-smart-requote-engine.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB07-smart-requote-engine.html"
+        },
+        {
+          "id": "GB08",
+          "title": "積木 · 動態波動度目標部位調節器 (Volatility Target Sizer)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB08-volatility-target-sizer.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB08-volatility-target-sizer.html"
+        },
+        {
+          "id": "GB09",
+          "title": "積木 · 現金流營收動能因子選股核心 (FCF & Revenue Momentum Core)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB09-fcf-momentum-core.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB09-fcf-momentum-core.html"
+        },
+        {
+          "id": "GB10",
+          "title": "積木 · DSR 與 PBO 過擬合檢驗器 (Deflated Sharpe & PBO Validator)",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB10-dsr-pbo-validator.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/gemini/blocks/GB10-dsr-pbo-validator.html"
+        }
+      ]
+    }
+  ]
+}

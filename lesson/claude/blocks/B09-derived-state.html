@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B09 · 推導式狀態 · 能算出來的絕不另存一份</title>
+<meta name="description" content="「我想追蹤那些有訊號但我沒買的股票。」">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B09</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>B09 · 推導式狀態</h1>
+<h2>它解決什麼</h2>
+<p>「我想追蹤那些有訊號但我沒買的股票。」</p>
+<p><strong>業餘做法</strong>：開一個 <code>mainline2.csv</code>，手動維護名單。</p>
+<p><strong>問題</strong>：這份名單有三種方式會腐爛。</p>
+<ul><li>你買了一檔，忘了從名單刪掉 → 重複計算</li><li>你賣光一檔，忘了加回名單 → 追蹤斷線</li><li>策略卡換成分股，名單沒跟上 → 追蹤了一檔已經不在策略裡的股票</li></ul>
+<p>三個月後這份名單和現實完全脫節，而且<strong>沒有任何機制會告訴你</strong>。</p>
+<h2>契約</h2>
+<p>不要存名單。<strong>每次重算。</strong></p>
+<pre><code>主線二 = { 今日策略卡的成員 } − { 成交簿推導出的整戶持股 }</code></pre>
+<pre><code class="lang-python">def held_positions(fills):
+    held = defaultdict(float)
+    for fill in fills:
+        held[fill[&quot;stock_code&quot;]] += fill[&quot;shares&quot;] * (1 if fill[&quot;side&quot;] == &quot;BUY&quot; else -1)
+    return {code: shares for code, shares in held.items() if shares &gt; 1e-9}
+
+
+def build_roster(signals, bars, held):
+    roster = []
+    for (strategy_id, code), signal in sorted(signals.items()):
+        if code in held:           # 有部位 → 不是主線二
+            continue
+        roster.append({...})
+    return roster</code></pre>
+<p>持股本身也是推導的 —— 從成交簿加總，不是另外存一份庫存表。</p>
+<p><strong>唯一的真相是成交簿。</strong> 其他都是它的函數。</p>
+<h2>效果</h2>
+<p>名單自己浮現、自己消失：</p>
+<ul><li>8/25 買了 2637 慧洋-KY → 它隔天自動離開主線二</li><li>假設賣光 1709 和益 → 它自動回到主線二（如果還在卡上）</li><li>策略卡拿掉某檔 → 它自動消失，不會變成孤兒</li></ul>
+<p><strong>沒有第三個地方需要同步。</strong> 這是這個系統最值得抄走的一個想法。</p>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：<code>&amp;gt; 0</code> 要用 <code>&amp;gt; 1e-9</code>。</strong> 浮點數加減後不會剛好等於 0。一檔完全賣光的股票可能留下 <code>-4.5e-16</code>，用 <code>&amp;gt; 0</code> 判斷會讓它憑空消失或憑空出現。</p>
+<p><strong>陷阱 2：同一檔在不同策略。</strong> 2395 研華同時出現在 YOY 卡和 BREAKOUT 卡上，但部位掛在 YOY。</p>
+<p>問題：BREAKOUT 的 2395 算不算「沒買」？</p>
+<p>系統的決定是<strong>用整戶零部位當判準</strong>（<code>code in held</code>，不看 strategy_id），因為主線二問的是「這個名字我有沒有曝險」，而曝險是整戶的。但這個決定必須寫下來，否則三個月後沒有人記得為什麼。</p>
+<blockquote><strong>推導規則本身就是需要文件的東西。</strong> 程式碼說明「怎麼算」，文件說明「為什麼這樣算」。</blockquote>
+<p><strong>陷阱 3：推導很慢的時候會有人想快取。</strong> 現在 23 筆成交，重算是瞬間的事。等到 10,000 筆的時候會有人想存中間結果。</p>
+<p>那時候的正確做法是<strong>存快照 + 存推導版本號</strong>，並且有一個測試比對快照和重算結果。不是放棄推導。</p>
+<h2>一般化</h2>
+<p>這個模式在資料庫世界叫 <strong>derived state / materialized view</strong>，在函數式程式設計叫 <strong>single source of truth</strong>。</p>
+<p>判斷準則很簡單：</p>
+<blockquote><strong>如果 A 可以從 B 算出來，那 A 不應該被儲存。</strong> 如果非存不可（效能），那必須有一個測試證明存的和算的一樣。</blockquote>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::build_roster</code></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B09-derived-state.md">claude/blocks/B09-derived-state.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

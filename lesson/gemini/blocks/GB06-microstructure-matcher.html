@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB06 · 積木 · 五檔微結構與衝擊成本評級器 (Microstructure Matcher)</title>
+<meta name="description" content="一個依據即時**買賣五檔深度（Order Book Depth）、買賣價差（Bid-Ask Spread）與即時成交筆數**，自動為策略委託分級並推薦最佳掛單策略（例如 Buy1 排隊、TWAP 拆單、市價快速吃單）的微結構評級引擎。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / gemini / GB06</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>積木 · 五檔微結構與衝擊成本評級器 (Microstructure Matcher)</h1>
+<h2>一句話定義 (TL;DR)</h2>
+<p>一個依據即時<strong>買賣五檔深度（Order Book Depth）、買賣價差（Bid-Ask Spread）與即時成交筆數</strong>，自動為策略委託分級並推薦最佳掛單策略（例如 Buy1 排隊、TWAP 拆單、市價快速吃單）的微結構評級引擎。</p>
+<hr>
+<h2>1. 黑盒子解構 (What Problem It Solves)</h2>
+<p>不同的股票具有截然不同的盤口微結構：</p>
+<ul><li><strong>高流動性大型股（如台積電、鴻海）</strong>：五檔掛單厚實、Spread 僅 1 Tick，適合直接在 Best Bid 排隊爭取零滑價。</li><li><strong>中小型成長飆股</strong>：五檔極薄、Spread 常達 3~5 Ticks，直接市價吃單會造成巨大滑價，必須採用 TWAP 分批掛單。</li></ul>
+<h3>契約不變量 (Invariants):</h3>
+<ol><li><strong>Spread 比例</strong>：$\text{Spread Ratio} = (\text{Ask}_1 - \text{Bid}_1) / \text{Mid Price}$。</li><li><strong>深度比率 (Depth Ratio)</strong>：$\text{Order Shares} / \text{Top 3 Bids Volume}$。</li><li><strong>策略推薦</strong>：</li><li>若 Spread $\le 0.1\%$ 且深度充裕 $\rightarrow$ <code>PASSIVE_LIMIT_QUEUE</code>（被動排隊）。</li><li>若 Spread 較大但欲搶進 $\rightarrow$ <code>SPLIT_TWAP</code>（智慧拆單）。</li><li>若流動性枯竭 $\rightarrow$ <code>REJECT_ILLIQUID</code>（拒絕下單）。</li></ol>
+<hr>
+<h2>2. 最小可運行積木代碼 (Minimal Runnable Pattern)</h2>
+<pre><code class="lang-python">&quot;&quot;&quot;GB06: Real-time Orderbook Microstructure Matcher.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Sequence
+
+
+@dataclass(frozen=True)
+class LevelQuote:
+    bid_prices: Sequence[float]
+    bid_volumes: Sequence[int]
+    ask_prices: Sequence[float]
+    ask_volumes: Sequence[int]
+
+
+@dataclass(frozen=True)
+class MicrostructureVerdict:
+    spread: float
+    spread_bps: float
+    top3_bid_volume: int
+    top3_ask_volume: int
+    recommended_action: str  # &quot;PASSIVE_QUEUE&quot; | &quot;TWAP_SPLIT&quot; | &quot;REJECT_ILLIQUID&quot;
+    suggested_limit_price: float
+
+
+class MicrostructureMatcher:
+    MAX_SPREAD_BPS = 25.0  # 25 bps (0.25%)
+    
+    @classmethod
+    def evaluate(
+        cls,
+        quote: LevelQuote,
+        order_shares: int,
+        side: str = &quot;BUY&quot;,
+    ) -&gt; MicrostructureVerdict:
+        if not quote.bid_prices or not quote.ask_prices:
+            return MicrostructureVerdict(0, 0, 0, 0, &quot;REJECT_ILLIQUID&quot;, 0.0)
+
+        bid1, ask1 = quote.bid_prices[0], quote.ask_prices[0]
+        mid = (bid1 + ask1) / 2.0
+        spread = ask1 - bid1
+        spread_bps = (spread / mid) * 10000.0
+
+        top3_bid_vol = sum(quote.bid_volumes[:3])
+        top3_ask_vol = sum(quote.ask_volumes[:3])
+
+        if spread_bps &gt; 50.0 or top3_ask_vol == 0:
+            return MicrostructureVerdict(
+                spread, spread_bps, top3_bid_vol, top3_ask_vol, &quot;REJECT_ILLIQUID&quot;, bid1
+            )
+
+        # 若買進量大於第 1 檔賣量，但小於前 3 檔
+        if order_shares &gt; quote.ask_volumes[0]:
+            action = &quot;TWAP_SPLIT&quot;
+            limit_price = ask1
+        else:
+            action = &quot;PASSIVE_QUEUE&quot;
+            limit_price = bid1
+
+        return MicrostructureVerdict(
+            spread=spread,
+            spread_bps=spread_bps,
+            top3_bid_volume=top3_bid_vol,
+            top3_ask_volume=top3_ask_vol,
+            recommended_action=action,
+            suggested_limit_price=limit_price,
+        )</code></pre>
+<hr>
+<h2>3. 單元測試範例 (Unit Test)</h2>
+<pre><code class="lang-python">def test_gb06_microstructure_matching():
+    # 建立深度充足之盤口
+    quote = LevelQuote(
+        bid_prices=[100.0, 99.5, 99.0],
+        bid_volumes=[50, 100, 200],
+        ask_prices=[100.5, 101.0, 101.5],
+        ask_volumes=[10, 50, 100],
+    )
+    
+    # 1. 小單 (5 股 &lt;= ask1 10 股) -&gt; 被動掛單
+    v1 = MicrostructureMatcher.evaluate(quote, order_shares=5)
+    assert v1.recommended_action == &quot;PASSIVE_QUEUE&quot;
+    assert v1.suggested_limit_price == 100.0
+
+    # 2. 較大單 (30 股 &gt; ask1 10 股) -&gt; 建議 TWAP 拆單
+    v2 = MicrostructureMatcher.evaluate(quote, order_shares=30)
+    assert v2.recommended_action == &quot;TWAP_SPLIT&quot;</code></pre>
+<hr>
+<h2>4. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>Prompt</strong>：「請解釋 GB06 積木如何透過五檔委託簿深度（Level 2 Quotes）判斷是否需要將一筆大單切分為 TWAP 拆單執行？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB06-microstructure-matcher.md">gemini/blocks/GB06-microstructure-matcher.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

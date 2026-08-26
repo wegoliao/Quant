@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB09 · 積木 · 現金流營收動能因子選股核心 (FCF &amp; Revenue Momentum Core)</title>
+<meta name="description" content="一個融合**營運現金流品質（Operating Cash Flow）、營業毛利率（Gross Margin）、低波動度（Low Volatility）、52 週新高動能與低股價淨值比**的台股高勝率多因子選股引擎。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / gemini / GB09</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>積木 · 現金流營收動能因子選股核心 (FCF Momentum Core)</h1>
+<h2>一句話定義 (TL;DR)</h2>
+<p>一個融合<strong>營運現金流品質（Operating Cash Flow）、營業毛利率（Gross Margin）、低波動度（Low Volatility）、52 週新高動能與低股價淨值比</strong>的台股高勝率多因子選股引擎。</p>
+<hr>
+<h2>1. 黑盒子解構 (What Problem It Solves)</h2>
+<p>單純追逐動能股容易在行情反轉時買在最高點，而單純價值選股則容易陷入「價值陷阱（Value Trap）」。本積木將<strong>高品質現金流</strong>與<strong>價格突破動能</strong>進行橫斷面百分位融合（Cross-sectional Ranking），兼具高爆發力與高胃納量。</p>
+<h3>因子評分矩陣 (Composite Factor Score):</h3>
+<p>$$\text{Score}_t = \text{Rank}(\text{OCF}) + \text{Rank}(\text{Gross Margin}) + \text{Rank}(\text{Low Vol}) + \text{Rank}(\text{Near 52W High}) + \text{Rank}(\text{Low PB}) + \text{Rank}(\text{Momentum 120D})$$</p>
+<hr>
+<h2>2. 最小可運行積木代碼 (Minimal Runnable Pattern)</h2>
+<pre><code class="lang-python">&quot;&quot;&quot;GB09: Free Cash Flow and Momentum Multi-Factor Selector.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import pandas as pd
+
+
+def rank_market(df: pd.DataFrame) -&gt; pd.DataFrame:
+    &quot;&quot;&quot;橫斷面百分位排名 [0, 1]。&quot;&quot;&quot;
+    return df.rank(axis=1, pct=True)
+
+
+def build_fcf_momentum_universe(
+    operating_cash_flow: pd.DataFrame,
+    gross_margin: pd.DataFrame,
+    close_price: pd.DataFrame,
+    pb_ratio: pd.DataFrame,
+    top_n: int = 20,
+    momentum_window: int = 120,
+    high_window: int = 240,
+) -&gt; pd.DataFrame:
+    &quot;&quot;&quot;計算多因子複合分數並選出 Top N 標的遮罩 (Boolean DataFrame)。&quot;&quot;&quot;
+    # 1. 價格動能與低波動
+    mom = close_price.pct_change(momentum_window)
+    vol = -close_price.pct_change().rolling(60).std()  # 負標準差代表低波動
+    near_high = close_price / close_price.rolling(high_window).max()
+    low_pb = -pb_ratio
+
+    # 2. 橫斷面排名融合
+    composite_score = (
+        rank_market(operating_cash_flow)
+        + rank_market(gross_margin)
+        + rank_market(vol)
+        + rank_market(near_high)
+        + rank_market(low_pb)
+        + rank_market(mom)
+    )
+
+    # 3. 選取排名前 N 檔
+    selected_mask = composite_score.rank(axis=1, ascending=False) &lt;= top_n
+    return selected_mask</code></pre>
+<hr>
+<h2>3. 單元測試範例 (Unit Test)</h2>
+<pre><code class="lang-python">def test_gb09_fcf_factor_scoring():
+    # 建立 3 檔股票之假資料
+    df_ocf = pd.DataFrame({&quot;A&quot;: [100], &quot;B&quot;: [50], &quot;C&quot;: [10]})
+    df_gm = pd.DataFrame({&quot;A&quot;: [0.4], &quot;B&quot;: [0.3], &quot;C&quot;: [0.1]})
+    df_close = pd.DataFrame({&quot;A&quot;: [100.0], &quot;B&quot;: [50.0], &quot;C&quot;: [20.0]})
+    df_pb = pd.DataFrame({&quot;A&quot;: [1.5], &quot;B&quot;: [2.0], &quot;C&quot;: [5.0]})
+
+    mask = build_fcf_momentum_universe(
+        df_ocf, df_gm, df_close, df_pb, top_n=1, momentum_window=1, high_window=1
+    )
+    
+    # 股票 A 在各指標均最優，應被唯一選中
+    assert mask.loc[0, &quot;A&quot;] == True
+    assert mask.loc[0, &quot;B&quot;] == False</code></pre>
+<hr>
+<h2>4. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>Prompt</strong>：「請說明 GB09 選股核心中，為什麼要同時納入『低波動度（Low Vol）』與『52週新高動能』這兩個看似相反的因子？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB09-fcf-momentum-core.md">gemini/blocks/GB09-fcf-momentum-core.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

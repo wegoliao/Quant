@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lesson / gemini</title>
+<meta name="description" content="Gemini (Google DeepMind / Antigravity) 撰寫的量化系統教學：積木、陷阱、提問法。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap wide">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / gemini</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><h1>lesson / gemini</h1><p>由 <b>Gemini (Google DeepMind / Antigravity)</b> 撰寫，共 17 份，其中 10 個可獨立抽用的積木。</p><div class="ingest"><h3>丟給 AI / NotebookLM</h3><p>整個目錄一份檔案（推薦，一次吃完）：<br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md</code></p><p>網頁版索引：<br><code>https://wegoliao.github.io/Quant/lesson/gemini/</code></p><p>全站機器可讀清單：<br><code>https://wegoliao.github.io/Quant/llms.txt</code></p></div><div class="grid"><a class="card" href="00-gemini-master-context.html"><div class="id">G00 · 脈絡</div><div class="t">Gemini 全景脈絡 · 拆解黑盒子與工程級量化哲學</div><div class="d">本文件是 **Gemini (Google DeepMind / Antigravity)** 在 Quant Grill Lab 系統中的主脈絡導覽。我們將原本晦澀的量化「黑盒子」徹底拆解為具備清晰數學定義、純函數實作與單元測試的 **1</div></a><a class="card" href="01-governance-and-fail-closed.html"><div class="id">G01 · governance</div><div class="t">治理邊界、排他研究鎖與 Fail-Closed 防禦架構</div><div class="d">在多 Agent、多腳本並發的量化環境中，任何未加鎖的寫入都會導致回測數據污染或網站生成崩潰；而在交易執行路徑上，任何不確定的狀態都必須**防禦性關閉（Fail-Closed）**。本章闡述全域排他鎖 `RESEARCH_LOCK.json</div></a><a class="card" href="02-data-pit-and-leakage-defense.html"><div class="id">G02 · data</div><div class="t">資料防偷看防禦 · FinLab 資料管線與 PIT 財報公告日對齊</div><div class="d">台股量化回測中最常見的「假聖杯」，90% 來自於**把未公開的資料當成已公開（Lookahead Bias）**。本章深度剖析月營收與季報的法定公告日延遲（Lag）、FinLab 中 `set_universe` 的全域進程污染陷阱，以及如</div></a><a class="card" href="03-tactics-and-integer-sizing.html"><div class="id">G03 · tactics</div><div class="t">戰術分配 · 凸性整數規劃與真實帳戶部位定價</div><div class="d">策略回測給的是「理想浮點數權重」（例如 5%），但真實帳戶只有「有限現金預算」（例如 NT$50 萬），必須買入「整數張數（1,000股）或零股」。簡單的四捨五入會完全摧毀策略結構；本章詳解如何用**凸性 L1 追蹤誤差整數規劃（Integ</div></a><a class="card" href="04-microstructure-and-execution.html"><div class="id">G04 · execution</div><div class="t">微結構與執行工程 · 委託簿深度、ADV 容量守門員與滑價校準</div><div class="d">回測中的完美「次日開盤成交價」，在實盤中會遭遇**委託簿買賣價差（Spread）、流動性衝擊成本（Market Impact）與券商最低手續費（Fee Floor）**的無情打擊。本章拆解執行層的四大核心守門積木：微結構特徵匹配、ADV20</div></a><a class="card" href="05-alpha-strategies-and-ga.html"><div class="id">G05 · strategy</div><div class="t">核心策略演化 · 波動度加權與 50% CAGR 遺傳演算法 (GA) 藍圖</div><div class="d">本章介紹 **Gemini 策略家族（S138~S141）** 如何透過「反向波動加權」與「波動度目標」突破傳統等權重瓶頸（Sharpe 提升至 2.15+），並解密從第一性原理出發的 **次世代 50%+ CAGR 遺傳演算法（Radic</div></a><a class="card" href="06-validation-dsr-and-forward-sim.html"><div class="id">G06 · validation</div><div class="t">防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈</div><div class="d">量化研究中最昂貴的自欺欺人，是「在電腦上跑了 1,000 次試驗，把 Sharpe 最高的那次當成真實實力」。本章詳解 Marcos López de Prado 提出的 **Deflated Sharpe Ratio (DSR)** 與 </div></a><a class="card" href="blocks/GB01-research-lock.html"><div class="id">GB01 · 積木</div><div class="t">積木 · 全域排他研究鎖 (OS-backed Research Lock)</div><div class="d">一個基於作業系統檔案鎖（OS File Lock）與 JSON 中繼資料的**跨程序排他鎖**，支援逾時心跳檢測（Heartbeat Timeout）與自動死鎖回收，徹底杜絕多 Agent 並發回測與網站建置衝突。</div></a><a class="card" href="blocks/GB02-pit-lag-aligner.html"><div class="id">GB02 · 積木</div><div class="t">積木 · PIT 財報與營收防偷看對齊器 (PIT &amp; Lag Aligner)</div><div class="d">一個確保財務報表與月營收資料在回測時**嚴格依據法定發布日期（而非財務期間標籤）遞延生效**的對齊器，徹底消除 Lookahead Bias（偷看未來資料）。</div></a><a class="card" href="blocks/GB03-integer-basket-allocator.html"><div class="id">GB03 · 積木</div><div class="t">積木 · 凸性整數規劃投組權重分配器 (Integer Basket Allocator)</div><div class="d">一個在給定帳戶現金預算、單檔上限與整張/零股約束下，以 **帕雷托前緣掃描（Pareto Frontier Sweep）精確求解 L1 追蹤誤差最小化** 的整數股數分配引擎。</div></a><a class="card" href="blocks/GB04-adv-capacity-guard.html"><div class="id">GB04 · 積木</div><div class="t">積木 · ADV20 流動性與容量守門員 (ADV20 Capacity Guard)</div><div class="d">一個在訂單送出前自動比對個股近 20 日成交金額（ADV20）的**剛性流動性守門員**：超過 2% 發出警報，超過 5% 直接阻擋下單，防止流動性幻覺與過大市場衝擊成本。</div></a><a class="card" href="blocks/GB05-fee-floor-calculator.html"><div class="id">GB05 · 積木</div><div class="t">積木 · 券商手續費低消與損益平衡門檻計算器 (Fee Floor Calculator)</div><div class="d">一個精確計算台股**券商單筆最低手續費（例如 NT$ 20 元）對交易損益平衡點影響**的評估積木，自動剔除因單筆金額過小而被手續費吃光利潤的無效標的。</div></a><a class="card" href="blocks/GB06-microstructure-matcher.html"><div class="id">GB06 · 積木</div><div class="t">積木 · 五檔微結構與衝擊成本評級器 (Microstructure Matcher)</div><div class="d">一個依據即時**買賣五檔深度（Order Book Depth）、買賣價差（Bid-Ask Spread）與即時成交筆數**，自動為策略委託分級並推薦最佳掛單策略（例如 Buy1 排隊、TWAP 拆單、市價快速吃單）的微結構評級引擎。</div></a><a class="card" href="blocks/GB07-smart-requote-engine.html"><div class="id">GB07 · 積木</div><div class="t">積木 · 限價智慧追價與重報價狀態機 (Smart Requote Engine)</div><div class="d">一個在限價單送出後未成交時，依據**等待時間、市場向上偏離幅度與最大追價次數**，自動進行「維持掛單、改價追價或安全撤單」的有限狀態機（FSM）。</div></a><a class="card" href="blocks/GB08-volatility-target-sizer.html"><div class="id">GB08 · 積木</div><div class="t">積木 · 動態波動度目標部位調節器 (Volatility Target Sizer)</div><div class="d">一個依據投組近期實現波動度（Realized Volatility），將整體曝險水位動態縮放至**預設目標年化波動度（如 15%）**的風控積木，在高波動崩跌期自動降倉、低波動穩定期加滿倉位。</div></a><a class="card" href="blocks/GB09-fcf-momentum-core.html"><div class="id">GB09 · 積木</div><div class="t">積木 · 現金流營收動能因子選股核心 (FCF &amp; Revenue Momentum Core)</div><div class="d">一個融合**營運現金流品質（Operating Cash Flow）、營業毛利率（Gross Margin）、低波動度（Low Volatility）、52 週新高動能與低股價淨值比**的台股高勝率多因子選股引擎。</div></a><a class="card" href="blocks/GB10-dsr-pbo-validator.html"><div class="id">GB10 · 積木</div><div class="t">積木 · DSR 與 PBO 過擬合檢驗器 (Deflated Sharpe &amp; PBO Validator)</div><div class="d">一個依據 López de Prado 統計理論，將**回測總試驗次數（Number of Trials）、報酬偏態與峰態**納入計算，求得去膨脹夏普值（Deflated Sharpe Ratio, DSR）與過擬合機率的統計防禦積木。</div></a></div>
+<footer>完整 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md">ALL.md</a></footer>
+</div></body>
+</html>

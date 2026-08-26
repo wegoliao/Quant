@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G06 · 防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈</title>
+<meta name="description" content="量化研究中最昂貴的自欺欺人，是「在電腦上跑了 1,000 次試驗，把 Sharpe 最高的那次當成真實實力」。本章詳解 Marcos López de Prado 提出的 **Deflated Sharpe Ratio (DSR)** 與 ">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / gemini / G06</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">validation</span><span class="badge ok">verified</span><h1>防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈</h1>
+<h2>一句話總結 (TL;DR)</h2>
+<p>量化研究中最昂貴的自欺欺人，是「在電腦上跑了 1,000 次試驗，把 Sharpe 最高的那次當成真實實力」。本章詳解 Marcos López de Prado 提出的 <strong>Deflated Sharpe Ratio (DSR)</strong> 與 <strong>PBO</strong> 數學檢驗，並說明本系統如何透過「不可回填的前瞻 SIM（Forward SIM）」建立真實抗過擬合證據鏈。</p>
+<hr>
+<h2>1. 為什麼常規 Sharpe Ratio 是嚴重欺騙？</h2>
+<p>當你測試了 $N$ 個獨立策略（或同一策略的 $N$ 組參數），即使所有策略的真實期望值都為 0（純噪聲），從中選出的「最佳 Sharpe」之期望值約為：</p>
+<p>$$E[\max_N \{ \widehat{\text{SR}} \}] \approx \sqrt{2 \ln N} \cdot \sigma_{\text{SR}}$$</p>
+<p>例如：若測試了 $N = 400$ 次試驗，就算全部是隨機拋硬幣，挑出來的最佳 Sharpe 也會輕易達到 <strong>1.5 ~ 2.0</strong>！如果直接拿去實盤，必然面臨災難性虧損。</p>
+<pre><code>【試驗次數 vs 虛假 Sharpe 膨脹關係】
+試驗次數 N = 1    ──&gt; 期望虛假 Sharpe ≈ 0.0
+試驗次數 N = 50   ──&gt; 期望虛假 Sharpe ≈ 1.2
+試驗次數 N = 400  ──&gt; 期望虛假 Sharpe ≈ 2.1  &lt;── (傳統回測在這裡誤以為發現聖杯)
+試驗次數 N = 4000 ──&gt; 期望虛假 Sharpe ≈ 2.8</code></pre>
+<hr>
+<h2>2. Deflated Sharpe Ratio (DSR) 數學公式與校正</h2>
+<p>DSR 計算的是：<strong>「在考慮了總試驗次數 $N$、樣本偏態（Skewness $\gamma_3$）、峰態（Kurtosis $\gamma_4$）與回測長度 $T$ 後，該策略真正超越虛假隨機期望值的機率」</strong>：</p>
+<p>$$\text{DSR} = \Phi\left( \frac{(\widehat{\text{SR}} - \text{SR}^*) \sqrt{T - 1}}{\sqrt{1 - \gamma_3 \widehat{\text{SR}} + \frac{\gamma_4 - 1}{4} \widehat{\text{SR}}^2}} \right)$$</p>
+<p>其中門檻 $\text{SR}^*$ 為 $N$ 次試驗下的期望最大隨機 Sharpe：</p>
+<p>$$\text{SR}^* = \sqrt{V[\{\widehat{\text{SR}}_n\}]} \left( (1 - \gamma) \Phi^{-1}\left(1 - \frac{1}{N}\right) + \gamma \Phi^{-1}\left(1 - \frac{1}{N \cdot e}\right) \right)$$</p>
+<p>（$\gamma \approx 0.5772$ 為尤拉常數）。</p>
+<h3>本系統門檻：</h3>
+<ul><li>策略宣告的試驗次數必須誠實包含所有被淘汰的試驗（如 $N \ge 400$）。</li><li>核心候選策略的 <strong>DSR 必須 $\ge 0.95$（95% 信心水準）</strong>，否則一律標記為未通過過擬合檢定。</li></ul>
+<hr>
+<h2>3. 參數高原穩定性檢定 (Plateau Test)</h2>
+<pre><code>        【孤峰過擬合 vs 參數高原】
+   孤峰 (Overfitted Spike)       高原 (Robust Plateau)
+         ▲                           ┌─────────┐
+        ╱ ╲                          │ 冠軍參數 │
+       ╱ ★ ╲                         │    ★    │
+   ───┴─────┴───                 ────┴─────────┴────
+   (參數微調即崩塌)              (鄰域變動依然穩健)</code></pre>
+<ul><li><strong>檢驗方法</strong>：將策略的視窗期、持股檔數、進出場門檻在 $\pm 1$ 檔調整（共 $3^k$ 個鄰近網格）。</li><li><strong>要求</strong>：至少 <strong>$\ge 80\%$</strong> 的鄰近參數組合，其 Sharpe 與 CAGR 必須維持在最佳參數的 $85\%$ 以上。</li></ul>
+<hr>
+<h2>4. 前瞻 SIM（Forward SIM）證據鏈</h2>
+<p>本系統的最高狀態標註為：</p>
+<pre><code class="lang-text">HOLD_RESEARCH_ONLY_NO_PRISTINE_OOS</code></pre>
+<p>這代表：任何切分歷史資料的 Walk-Forward 都只是回溯診斷（Historical Diagnostic）。 真正的 Pristine OOS 只有一種：</p>
+<ol><li><strong>策略代碼與參數 SHA-256 凍結</strong>（寫入不可篡改的封存檔）。</li><li>從凍結日的<strong>次一交易日</strong>開始，每日自動產生訊號快照。</li><li>嚴禁任何回填（Backfill），在真實時間推進下累積至少 <strong>126 個交易日</strong> 的實盤觀察。</li></ol>
+<hr>
+<h2>5. 相關積木模組索引</h2>
+<ul><li><a href="blocks/GB10-dsr-pbo-validator.md"><code>GB10 DSR / PBO 過擬合檢驗器</code></a></li></ul>
+<hr>
+<h2>6. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>提問範本 1</strong>：「請向非量化背景的投資人解釋，為什麼 Deflated Sharpe Ratio (DSR) 要把『做過多少次回測試驗』納入計算公式？」</li><li><strong>提問範本 2</strong>：「為什麼本系統認為歷史資料切分的 Walk-Forward 依然可能存在選擇偏誤，堅持必須做 Forward SIM？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/06-validation-dsr-and-forward-sim.md">gemini/06-validation-dsr-and-forward-sim.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

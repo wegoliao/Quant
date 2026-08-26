@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB04 · 積木 · ADV20 流動性與容量守門員 (ADV20 Capacity Guard)</title>
+<meta name="description" content="一個在訂單送出前自動比對個股近 20 日成交金額（ADV20）的**剛性流動性守門員**：超過 2% 發出警報，超過 5% 直接阻擋下單，防止流動性幻覺與過大市場衝擊成本。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / gemini / GB04</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>積木 · ADV20 流動性與容量守門員 (Capacity Guard)</h1>
+<h2>一句話定義 (TL;DR)</h2>
+<p>一個在訂單送出前自動比對個股近 20 日成交金額（ADV20）的<strong>剛性流動性守門員</strong>：超過 2% 發出警報，超過 5% 直接阻擋下單，防止流動性幻覺與過大市場衝擊成本。</p>
+<hr>
+<h2>1. 黑盒子解構 (What Problem It Solves)</h2>
+<p>許多回測策略透過頻繁交易成交量極低的微型股創造出驚人報酬率，但在實盤中，單筆下單若超過日成交量的 5%，將直接推動市場造成巨大滑價，甚至完全無法出清部位。</p>
+<h3>契約不變量 (Invariants):</h3>
+<ol><li><strong>硬限制 (Hard Block)</strong>：$\text{Order Notional} / \text{ADV20} &gt; 5\%$ 時，狀態判定為 <code>BLOCKED</code>，禁止下單。</li><li><strong>警示限制 (Warning)</strong>：$2\% &lt; \text{Participation Rate} \le 5\%$ 時，狀態為 <code>WARNING</code>。</li><li><strong>安全限制 (OK)</strong>：$\le 2\%$ 時為 <code>OK</code>。</li><li><strong>Fail-Closed</strong>：若 ADV20 數據缺失或 $\le 0$，一律判定為 <code>BLOCKED</code>。</li></ol>
+<hr>
+<h2>2. 最小可運行積木代碼 (Minimal Runnable Pattern)</h2>
+<pre><code class="lang-python">&quot;&quot;&quot;GB04: 20-Day Average Daily Volume (ADV20) Capacity Guard.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Optional
+
+
+class CapacityExceededError(RuntimeError):
+    &quot;&quot;&quot;當訂單超過 5% ADV20 硬上限時拋出。&quot;&quot;&quot;
+
+
+@dataclass(frozen=True)
+class CapacityVerdict:
+    stock_id: str
+    shares: int
+    price: float
+    order_notional: float
+    adv20_notional: float
+    participation_rate: float
+    status: str  # &quot;OK&quot; | &quot;WARNING&quot; | &quot;BLOCKED&quot;
+    warning: Optional[str] = None
+    suggested_max_shares: Optional[int] = None
+
+
+class CapacityGuard:
+    WARN_RATIO: float = 0.02  # 2%
+    HARD_LIMIT_RATIO: float = 0.05  # 5%
+
+    @classmethod
+    def evaluate(
+        cls,
+        stock_id: str,
+        shares: int,
+        price: float,
+        adv20_notional: float,
+    ) -&gt; CapacityVerdict:
+        &quot;&quot;&quot;評估單筆委託之流動性與容量安全度。&quot;&quot;&quot;
+        order_notional = shares * price
+
+        # 異常防禦 (Fail-Closed)
+        if adv20_notional &lt;= 0:
+            return CapacityVerdict(
+                stock_id=stock_id,
+                shares=shares,
+                price=price,
+                order_notional=order_notional,
+                adv20_notional=adv20_notional,
+                participation_rate=1.0,
+                status=&quot;BLOCKED&quot;,
+                warning=&quot;ADV20 資料無效或為零，拒絕下單。&quot;,
+                suggested_max_shares=0,
+            )
+
+        rate = order_notional / adv20_notional
+        suggested_shares = int((adv20_notional * cls.HARD_LIMIT_RATIO) // price)
+
+        if rate &gt; cls.HARD_LIMIT_RATIO:
+            return CapacityVerdict(
+                stock_id=stock_id,
+                shares=shares,
+                price=price,
+                order_notional=order_notional,
+                adv20_notional=adv20_notional,
+                participation_rate=rate,
+                status=&quot;BLOCKED&quot;,
+                warning=f&quot;參與率 {rate:.1%} 超過 5% 硬限制，恐造成嚴重衝擊成本。&quot;,
+                suggested_max_shares=suggested_shares,
+            )
+        elif rate &gt; cls.WARN_RATIO:
+            return CapacityVerdict(
+                stock_id=stock_id,
+                shares=shares,
+                price=price,
+                order_notional=order_notional,
+                adv20_notional=adv20_notional,
+                participation_rate=rate,
+                status=&quot;WARNING&quot;,
+                warning=f&quot;參與率 {rate:.1%} 介於 2%~5%，建議分批掛單。&quot;,
+                suggested_max_shares=suggested_shares,
+            )
+
+        return CapacityVerdict(
+            stock_id=stock_id,
+            shares=shares,
+            price=price,
+            order_notional=order_notional,
+            adv20_notional=adv20_notional,
+            participation_rate=rate,
+            status=&quot;OK&quot;,
+        )</code></pre>
+<hr>
+<h2>3. 單元測試範例 (Unit Test)</h2>
+<pre><code class="lang-python">def test_gb04_capacity_guard_thresholds():
+    adv20 = 10_000_000.0  # 日均 1000 萬
+    price = 100.0
+
+    # 1. 1% (1000 股 = 10 萬) -&gt; OK
+    v1 = CapacityGuard.evaluate(&quot;2330&quot;, 1000, price, adv20)
+    assert v1.status == &quot;OK&quot;
+
+    # 2. 3% (3000 股 = 30 萬) -&gt; WARNING
+    v2 = CapacityGuard.evaluate(&quot;2330&quot;, 3000, price, adv20)
+    assert v2.status == &quot;WARNING&quot;
+
+    # 3. 6% (6000 股 = 60 萬) -&gt; BLOCKED
+    v3 = CapacityGuard.evaluate(&quot;2330&quot;, 6000, price, adv20)
+    assert v3.status == &quot;BLOCKED&quot;
+    assert v3.suggested_max_shares == 5000  # 建議上限 5% = 50 萬 = 5000 股</code></pre>
+<hr>
+<h2>4. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>Prompt</strong>：「請解釋為什麼在量化實盤交易中，單筆下單參與率（Participation Rate）超過 5% ADV20 會被列為致命風險？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md">gemini/blocks/GB04-adv-capacity-guard.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

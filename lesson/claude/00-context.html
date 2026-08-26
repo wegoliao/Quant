@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C00 · 脈絡 · 這個系統到底在做什麼</title>
+<meta name="description" content="如果你只讀一份文件，讀這份。其他所有積木都假設你已經知道這裡的分層。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C00</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">脈絡</span><span class="badge ok">verified</span><h1>脈絡 · 這個系統到底在做什麼</h1>
+<p>如果你只讀一份文件，讀這份。其他所有積木都假設你已經知道這裡的分層。</p>
+<h2>一句話</h2>
+<p>一個把「策略卡說賺多少」和「帳戶實際賺多少」分開量測，並且<strong>拒絕用估算冒充實績</strong>的績效觀察系統。</p>
+<h2>為什麼要分開量測</h2>
+<p>台股散戶最常見的自我欺騙是把三個不同的數字混成一個：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">數字</th><th style="text-align:left">它真正的意思</th><th style="text-align:left">誰在騙人</th></tr></thead><tbody><tr><td style="text-align:left">策略卡報酬</td><td style="text-align:left">訊號價 → 現價，等權，無成本</td><td style="text-align:left">假設你買得到訊號價</td></tr><tr><td style="text-align:left">帳面損益</td><td style="text-align:left">現價 × 股數 − 成本</td><td style="text-align:left">假設你賣得掉，且不含賣出費稅</td></tr><tr><td style="text-align:left">實際損益</td><td style="text-align:left">已收現金 − 已付現金</td><td style="text-align:left">這個不會騙人</td></tr></tbody></table></div>
+<p>三個數字在多頭時很接近，所以你不會發現差異。等到要縮小部位、或標的變薄的時候，差距會一次爆出來。這個系統的全部設計動機就是：<strong>永遠讓這三個數字並排顯示，並且標註哪一個是估算。</strong></p>
+<h2>兩條主線</h2>
+<p>系統把宇宙切成兩半，切點是「有沒有真的付錢」：</p>
+<p><strong>主線一（Mainline 1）· 錢的那條</strong></p>
+<ul><li>來源：券商成交回報，逐筆</li><li>有：成交價、股數、手續費、證交稅、成交日</li><li>能算：已實現損益、未實現損益、TWR、MDD</li><li>目前：22 筆買、1 筆賣、四個 NT$50 萬 sleeve</li></ul>
+<p><strong>主線二（Mainline 2）· 紙上的那條</strong></p>
+<ul><li>定義：策略卡上有訊號、但<strong>整戶零部位</strong>的個股</li><li>不配資金、不進 sleeve、不影響任何實績數字</li><li>能算：分價分布、現價分位、容量</li><li>不能算：報酬。因為沒有進場點，任何報酬都是假設出來的</li></ul>
+<p>關鍵設計：<strong>主線二的名單不是人工維護的，是資料的差集自己算出來的。</strong></p>
+<pre><code>主線二 = { 今日策略卡的成員 } − { 成交簿推導出的整戶持股 }</code></pre>
+<p>名單會自己浮現、自己消失。你買了一檔，它隔天自動離開主線二；你賣光一檔，它自動回來。沒有第三個地方需要同步。</p>
+<blockquote>這是整個系統最值得抄走的一個想法：<strong>能被推導的東西，永遠不要另外存一份。</strong></blockquote>
+<h2>資料流</h2>
+<pre><code>券商成交回報 ──&gt; inputs/actual_fills.csv ──┐
+                                            ├──&gt; sleeve 曲線 ──&gt; 已實現/未實現拆解
+TWSE/TPEx OpenAPI ──&gt; inputs/price_history.csv ─┤
+                                            │
+每日策略卡截圖 ──&gt; inputs/latest_strategy_signals.csv ──&gt; 主線二差集 ──&gt; 分價分布
+                                            │
+                  inputs/watchlist.csv ─────┘   (決定要抓誰的行情)</code></pre>
+<p>四個 CSV 是<strong>唯一的真相來源</strong>。所有 HTML 都是產物，刪掉可以重建；CSV 刪掉就沒了。</p>
+<h2>邊界（不可協商）</h2>
+<p>這條支線被刻意設計成<strong>沒有能力做壞事</strong>：</p>
+<ul><li>不保存憑證</li><li>不登入券商</li><li>不送單、改單、刪單</li><li>不讀取 credentials 目錄</li><li>純標準函式庫，沒有券商 SDK</li></ul>
+<p>「更新行情」和「授權交易」是兩件完全不同的事。把它們放在同一個程序裡是災難的開始 —— 一個抓價格的 bug 不應該有能力送出委託。</p>
+<h2>目前的誠實狀態</h2>
+<p>寫下來是因為 AI 很容易在總結時把這些吞掉：</p>
+<ul><li>只有 11 筆日報酬，<strong>Sharpe / Alpha / Beta / IR 全部顯示 N/A</strong>，不是壞了，是樣本不夠（門檻 20）</li><li>理論卡曲線只到某個共同截止日，差異只在共同日期比較</li><li>分價分布是日線近似，不是逐筆分價表</li><li>成本口徑有 NT$653 落差（成交簿 vs 券商快照），已揭露未抹平</li></ul>
+<h2>怎麼用這份 lesson</h2>
+<p>每個積木（block）都是一個<strong>已經驗證過的黑盒子</strong>：有明確輸入、明確輸出、明確不變量、明確測試。你可以單獨抽走任何一個放進自己的專案，不需要理解其他的。</p>
+<p>建議順序：</p>
+<ol><li>先讀 <a href="01-contracts.md"><code>01-contracts</code></a> —— 知道資料長什麼樣</li><li>再讀 <a href="blocks/B01-realized-pnl-fifo.md"><code>B01 已實現損益</code></a> —— 最小、最完整的一個積木</li><li>然後照你要解的問題挑 —— 積木之間沒有隱藏依賴</li></ol>
+<hr>
+<p><strong>本目錄作者：Claude (Opus 5, Anthropic)。</strong> 其他 AI 請寫在 <code>lesson/&amp;lt;你的名字&amp;gt;/</code>，不要改這一份。交互學習的規則見 <a href="../_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL</code></a>。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/00-context.md">claude/00-context.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

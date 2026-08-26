@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B05 · 履約落差 · 策略卡報的價，帳戶付的價</title>
+<meta name="description" content="策略卡說「進場 97.1」。帳戶實際成交 **97.80**。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B05</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>B05 · 訊號 → 成交 履約落差</h1>
+<h2>它解決什麼</h2>
+<p>策略卡說「進場 97.1」。帳戶實際成交 <strong>97.80</strong>。</p>
+<p>差 0.72%。聽起來沒事。但如果這個落差是<strong>系統性的</strong>，那麼一個年化 20% 的策略，一年進出 20 次，就會被吃掉 14 個百分點。</p>
+<p><strong>這個落差在理論曲線裡看不到，在帳戶淨值裡也看不到</strong> —— 帳戶淨值只知道你付了 97.80，不知道原本應該是 97.1。它只存在於「兩份資料的交集」，所以必須刻意去記錄。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">build_slippage_ledger(path, ohlc) -&gt; list[SlippageRow]</code></pre>
+<p>輸入 <code>signal_fills.csv</code>：</p>
+<pre><code class="lang-csv">signal_date,effective_date,strategy_id,stock_code,stock_name,action,signal_ref_price,signal_basis,fill_date,fill_time,fill_price,shares,source
+2026-08-24,2026-08-25,MARGIN,2637,慧洋-KY,BUY,97.1,NEXT_OPEN,2026-08-25,10:14:13,97.80,1000,owner_pasted_fill</code></pre>
+<h2>核心：方向要對</h2>
+<pre><code class="lang-python"># 買進成交在參考價「之上」是不利；賣出成交在「之下」是不利
+direction = 1.0 if side == &quot;BUY&quot; else -1.0
+
+def basis_points(reference):
+    if not reference:
+        return None
+    return direction * (fill_price / reference - 1.0) * 10_000.0</code></pre>
+<p><strong>正的 bp 一律代表「對自己不利」</strong>，不論買賣。這樣所有樣本可以直接平均，不需要分開處理。</p>
+<p>這個小設計很重要：如果買賣用不同符號，你的統計會在買賣比例改變時漂移，而你不會發現。</p>
+<h2>三個參考價，全部都要記</h2>
+<p>同一筆成交要對照三個基準，因為它們回答不同的問題：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">參考價</th><th style="text-align:left">回答的問題</th></tr></thead><tbody><tr><td style="text-align:left"><code>signal_ref_price</code></td><td style="text-align:left">策略卡的報酬要打幾折</td></tr><tr><td style="text-align:left">當日開盤</td><td style="text-align:left">如果我無腦掛開盤會怎樣</td></tr><tr><td style="text-align:left">當日收盤</td><td style="text-align:left">我比「收盤價買」好還是差</td></tr></tbody></table></div>
+<p>只記一個的話，你之後想問另外兩個問題時，資料已經沒了。<strong>紀錄的成本很低，事後補的成本是無限大。</strong></p>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：<code>signal_basis</code> 一定要寫。</strong> 「97.1」是收盤價？次日開盤預期？還是策略卡的進場欄？三者的落差意義完全不同。系統用 <code>NEXT_OPEN</code> 這種明確的 enum，不允許空白。</p>
+<p><strong>陷阱 2：只記成交的，不記沒成交的。</strong> 如果訊號發出但你沒買（掛單沒成交、或當天忘了），那也是履約落差的一部分 —— 而且是最貴的那一部分。<strong>未執行的訊號要留紀錄</strong>，否則你的落差統計只涵蓋「有成交的那些」，選擇性偏誤會讓數字好看。</p>
+<p>（這一點目前的實作<strong>還沒做到</strong>，誠實記在這裡。）</p>
+<p><strong>陷阱 3：樣本 1 筆就下結論。</strong> 目前只有 2637 慧洋-KY 一筆。0.72% 這個數字現在<strong>什麼都不代表</strong>。</p>
+<h2>為什麼這是整個系統最重要的一張表</h2>
+<p>策略研究的終局問題只有一個：</p>
+<blockquote>這個策略能不能被執行？</blockquote>
+<p>回測告訴你「如果能買到訊號價會怎樣」。履約落差帳告訴你「你買不買得到」。<strong>兩者相減才是真實可得報酬。</strong></p>
+<p>大部分人的策略死在這裡，而且死了不知道 —— 因為他們從來沒有把訊號價和成交價放在同一張表上。</p>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/analytics.py::build_slippage_ledger</code></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B05-signal-fill-slippage.md">claude/blocks/B05-signal-fill-slippage.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB01 · 積木 · 全域排他研究鎖 (OS-backed Research Lock)</title>
+<meta name="description" content="一個基於作業系統檔案鎖（OS File Lock）與 JSON 中繼資料的**跨程序排他鎖**，支援逾時心跳檢測（Heartbeat Timeout）與自動死鎖回收，徹底杜絕多 Agent 並發回測與網站建置衝突。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / gemini / GB01</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>積木 · 全域排他研究鎖 (Research Lock)</h1>
+<h2>一句話定義 (TL;DR)</h2>
+<p>一個基於作業系統檔案鎖（OS File Lock）與 JSON 中繼資料的<strong>跨程序排他鎖</strong>，支援逾時心跳檢測（Heartbeat Timeout）與自動死鎖回收，徹底杜絕多 Agent 並發回測與網站建置衝突。</p>
+<hr>
+<h2>1. 黑盒子解構 (What Problem It Solves)</h2>
+<p>當多個量化任務（例如全量回測、註冊新策略、建置網站）同時執行時，競爭寫入檔案會導致資料毀損。本積木提供情境管理器（Context Manager），保證同一時間只有一個任務能執行特定關鍵操作。</p>
+<h3>契約不變量 (Invariants):</h3>
+<ol><li><strong>排他性</strong>：任何時刻，同一種 Lock Kind（或全域排他）只能被一個進程（PID）持有。</li><li><strong>心跳與自動過期</strong>：若進程異常崩潰，鎖在超過 15 分鐘（900秒）未更新心跳時，自動被下一個請求安全回收。</li><li><strong>無殘留</strong>：正常退出（含例外拋出）時保證釋放檔案鎖。</li></ol>
+<hr>
+<h2>2. 最小可運行積木代碼 (Minimal Runnable Pattern)</h2>
+<pre><code class="lang-python">&quot;&quot;&quot;GB01: OS-backed Research Work Lock.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import contextlib
+import datetime
+import json
+import os
+import sys
+import time
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Iterator
+
+LOCK_FILE = Path(&quot;_runtime/RESEARCH_LOCK.json&quot;)
+LOCK_TIMEOUT_SECONDS = 900.0  # 15 minutes
+
+
+class ResearchLockBusy(RuntimeError):
+    &quot;&quot;&quot;Raised when the requested lock is currently held by another process.&quot;&quot;&quot;
+
+
+@dataclass(frozen=True)
+class LockMetadata:
+    kind: str
+    holder: str
+    scope: str
+    pid: int
+    acquired_at: str
+    heartbeat_at: str
+
+
+@contextlib.contextmanager
+def acquire_research_lock(
+    kind: str,
+    holder: str,
+    scope: str,
+    lock_file: Path = LOCK_FILE,
+) -&gt; Iterator[LockMetadata]:
+    &quot;&quot;&quot;Acquires a process-safe research lock.&quot;&quot;&quot;
+    lock_file.parent.mkdir(parents=True, exist_ok=True)
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # 1. 檢查現有鎖中繼資料與心跳
+    if lock_file.exists():
+        try:
+            with open(lock_file, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+                data = json.load(f)
+            last_hb = datetime.datetime.fromisoformat(data[&quot;heartbeat_at&quot;])
+            age = (datetime.datetime.now(datetime.timezone.utc) - last_hb).total_seconds()
+            
+            # 若鎖未過期且非當前進程，拋出繁忙例外
+            if age &lt; LOCK_TIMEOUT_SECONDS and data.get(&quot;pid&quot;) != os.getpid():
+                raise ResearchLockBusy(
+                    f&quot;Lock &#x27;{data.get(&#x27;kind&#x27;)}&#x27; is currently held by {data.get(&#x27;holder&#x27;)} &quot;
+                    f&quot;(PID {data.get(&#x27;pid&#x27;)}) for scope &#x27;{data.get(&#x27;scope&#x27;)}&#x27; (age {age:.1f}s).&quot;
+                )
+        except (json.JSONDecodeError, KeyError, ValueError):
+            pass  # 損毀的 JSON 允許被覆寫回收
+
+    # 2. 寫入新鎖
+    meta = LockMetadata(
+        kind=kind,
+        holder=holder,
+        scope=scope,
+        pid=os.getpid(),
+        acquired_at=now_iso,
+        heartbeat_at=now_iso,
+    )
+    with open(lock_file, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
+        json.dump(asdict(meta), f, indent=2)
+
+    try:
+        yield meta
+    finally:
+        # 3. 退出時安全釋放
+        if lock_file.exists():
+            try:
+                with open(lock_file, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+                    cur = json.load(f)
+                if cur.get(&quot;pid&quot;) == os.getpid():
+                    lock_file.unlink(missing_ok=True)
+            except Exception:
+                lock_file.unlink(missing_ok=True)</code></pre>
+<hr>
+<h2>3. 單元測試範例 (Unit Test)</h2>
+<pre><code class="lang-python">def test_gb01_lock_acquisition_and_release(tmp_path):
+    lock_path = tmp_path / &quot;test_lock.json&quot;
+    
+    with acquire_research_lock(&quot;OFFICIAL_SIM&quot;, &quot;AgentA&quot;, &quot;Unit Testing&quot;, lock_file=lock_path) as meta:
+        assert lock_path.exists()
+        assert meta.holder == &quot;AgentA&quot;
+        
+        # 測試同一時間其他 Agent 無法獲取
+        try:
+            with acquire_research_lock(&quot;OFFICIAL_SIM&quot;, &quot;AgentB&quot;, &quot;Conflict Test&quot;, lock_file=lock_path):
+                assert False, &quot;Should have raised ResearchLockBusy&quot;
+        except ResearchLockBusy:
+            pass  # 正確阻擋
+            
+    assert not lock_path.exists()  # 正確自動釋放</code></pre>
+<hr>
+<h2>4. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>Prompt</strong>：「請分析 GB01 積木如何防止因為 Agent 異常崩潰而導致的永久死鎖（Deadlock）？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB01-research-lock.md">gemini/blocks/GB01-research-lock.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C01 · 資料契約 · 四個 CSV 就是全部</title>
+<meta name="description" content="積木之間不靠函式呼叫溝通，靠**檔案格式**。這是刻意的：CSV 可以被人眼檢查、被 git diff、被任何語言讀，而且不會因為你換了框架就壞掉。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C01</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">脈絡</span><span class="badge ok">verified</span><h1>資料契約 · 四個 CSV 就是全部</h1>
+<p>積木之間不靠函式呼叫溝通，靠<strong>檔案格式</strong>。這是刻意的：CSV 可以被人眼檢查、被 git diff、被任何語言讀，而且不會因為你換了框架就壞掉。</p>
+<h2>契約設計的三條規則</h2>
+<p><strong>1. 一個檔案一個事實層級。</strong> 成交是成交、行情是行情、訊號是訊號。不要有一個「總表」把三種東西混在一起 —— 那個總表會變成沒有人敢改的東西。</p>
+<p><strong>2. 每一列都要能回答「你從哪來」。</strong> 每個 CSV 都有 <code>source</code> 欄。不是裝飾，是當數字對不起來時唯一能查的線索。</p>
+<p><strong>3. 缺資料要留成缺資料。</strong> 空字串就是空字串。不要填 0，不要 forward fill，不要「合理推估」。下游看到空值會 fail closed；看到假的 0 會安靜地算出錯的答案。</p>
+<hr>
+<h2><code>actual_fills.csv</code> · 成交簿（唯一不會騙人的檔案）</h2>
+<pre><code class="lang-csv">trade_id,strategy_id,stock_code,stock_name,side,fill_date,fill_time,fill_price,shares,consideration_twd,fee_twd,tax_twd,cash_out_twd,cash_in_twd,currency,source
+X-02HV,YOY,3702,大聯大,BUY,2026-08-11,,126.5,546,69069,98,0,69167,0,TWD,20260820庫存表.xlsx
+X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,20260820庫存表.xlsx</code></pre>
+<div class="tw"><table><thead><tr><th style="text-align:left">欄位</th><th style="text-align:left">契約</th></tr></thead><tbody><tr><td style="text-align:left"><code>trade_id</code></td><td style="text-align:left">券商委託單號。<strong>不保證唯一</strong> —— 不同日可能重複，需要時自己加日期後綴</td></tr><tr><td style="text-align:left"><code>strategy_id</code></td><td style="text-align:left"><code>TRUST</code> / <code>YOY</code> / <code>MARGIN</code> / <code>BREAKOUT</code>。歸屬是人工決定，同一檔可以拆給兩個策略</td></tr><tr><td style="text-align:left"><code>side</code></td><td style="text-align:left"><code>BUY</code> / <code>SELL</code></td></tr><tr><td style="text-align:left"><code>cash_out_twd</code></td><td style="text-align:left">買進實付＝價金＋手續費</td></tr><tr><td style="text-align:left"><code>cash_in_twd</code></td><td style="text-align:left">賣出實收＝價金−手續費−證交稅</td></tr></tbody></table></div>
+<p><strong>關鍵：<code>cash_out</code> / <code>cash_in</code> 才是真相，不是 <code>fill_price × shares</code>。</strong> 所有損益計算都必須從這兩欄出發。用價差算出來的損益永遠比實際好看。</p>
+<p><strong>同一檔可以掛在不同策略。</strong> 例如 1709 和益：3,644 股在 <code>BREAKOUT</code>、305 股在 <code>MARGIN</code>。所以持股要用 <code>(strategy_id, stock_code)</code> 當 key，不能只用 <code>stock_code</code>。</p>
+<hr>
+<h2><code>price_history.csv</code> · 官方行情</h2>
+<pre><code class="lang-csv">asof_date,stock_code,open,high,low,close,volume,market,source
+2026-08-25,2637,95.9,99.5,94.7,95.5,12345678,TWSE,TWSE_STOCK_DAY</code></pre>
+<ul><li>來源：TWSE <code>STOCK_DAY</code>、TPEx <code>daily_close_quotes</code>，都是官方公開 API</li><li><strong>休市、資料未發布、日期不符 → 不寫入。</strong> 寧可缺一天，不可拿舊價冒充今天收盤</li><li>OHLC 四個都要。只存 close 的話，分價分布（B02）和成交落點（B03）都做不了 —— 這是很多人事後才發現的坑</li></ul>
+<hr>
+<h2><code>latest_strategy_signals.csv</code> · 每日策略卡</h2>
+<pre><code class="lang-csv">asof_date,effective_date,strategy_id,stock_code,stock_name,industry,entry_display,entry_price,close,magnitude_pct,direction,signed_return_pct,signal,source,quality_note
+2026-08-25,,MARGIN,6213,聯茂,電子零組件,424.0,424.0,530,24.8,+,24.8,抱,owner_strategy_card_2026-08-25,</code></pre>
+<ul><li><code>magnitude_pct</code> 恆為正、<code>direction</code> 是 <code>+</code>/<code>-</code>、<code>signed_return_pct</code> 才是帶號的。這是為了如實保存卡面（卡面只印絕對值加符號）</li><li><code>quality_note</code> 記錄<strong>來源自相矛盾</strong>的地方，例如：</li></ul>
+<pre><code>PRINTED_PCT_VS_ENTRY_CLOSE_GAP:printed=37.8+,implied=+36.4</code></pre>
+<blockquote>卡面印 37.8%，但用它自己印的進場價和收盤價回推是 36.4%。 <strong>不改任何一格，只標註。</strong> 資料的矛盾是資訊，抹平它就是銷毀證據。</blockquote>
+<hr>
+<h2><code>watchlist.csv</code> · 誰的行情要繼續抓</h2>
+<pre><code class="lang-csv">stock_code,stock_name,strategy_id,track,market,note
+6213,聯茂,MARGIN,MAINLINE2,TWSE,融資卡成員；整戶零部位
+3702,大聯大,YOY,CLOSED,TWSE,已平倉；保留行情供成交落點對照</code></pre>
+<p>這個檔案解決一個真實踩到的洞：<strong>持股清單驅動抓取時，一檔賣掉就等於資料斷線。</strong></p>
+<p>3702 平倉後從持股消失，行情停止更新，結果它的兩筆成交在成交落點分析裡完全對不到日線 —— 賣出樣本數是 0。加進 watchlist 後才補回來。</p>
+<p>詳見 <a href="blocks/B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
+<hr>
+<h2>為什麼是 CSV 不是資料庫</h2>
+<ul><li>可以 <code>git diff</code>。資料改了什麼，PR 裡看得見</li><li>可以用 Excel 開。owner 要臨時補一列不需要問工程師</li><li>不需要 migration。加一欄就是加一欄</li><li>壞掉的時候看得出來哪一列壞了</li></ul>
+<p>代價是沒有交易、沒有索引、沒有型別。在<strong>單人、每天幾十列</strong>的規模下，這些代價是零，好處是全部。規模上去再換 —— 但那時候你已經知道 schema 該長什麼樣了，因為它已經被真實使用磨過一年。</p>
+<hr>
+<p><strong>本目錄作者：Claude (Opus 5, Anthropic)。</strong></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/01-contracts.md">claude/01-contracts.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

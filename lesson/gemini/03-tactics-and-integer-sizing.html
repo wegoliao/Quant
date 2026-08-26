@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G03 · 戰術分配 · 凸性整數規劃與真實帳戶部位定價</title>
+<meta name="description" content="策略回測給的是「理想浮點數權重」（例如 5%），但真實帳戶只有「有限現金預算」（例如 NT$50 萬），必須買入「整數張數（1,000股）或零股」。簡單的四捨五入會完全摧毀策略結構；本章詳解如何用**凸性 L1 追蹤誤差整數規劃（Integ">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / gemini / G03</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">tactics</span><span class="badge ok">verified</span><h1>戰術分配 · 凸性整數規劃與真實帳戶部位定價</h1>
+<h2>一句話總結 (TL;DR)</h2>
+<p>策略回測給的是「理想浮點數權重」（例如 5%），但真實帳戶只有「有限現金預算」（例如 NT$50 萬），必須買入「整數張數（1,000股）或零股」。簡單的四捨五入會完全摧毀策略結構；本章詳解如何用<strong>凸性 L1 追蹤誤差整數規劃（Integer Programming）</strong>精確求解最佳下單股數。</p>
+<hr>
+<h2>1. 為什麼傳統的四捨五入（Rounding）是錯的？</h2>
+<h3>典型反例：</h3>
+<p>假設可用現金預算為 <strong>NT$ 209,000</strong>：</p>
+<ul><li><strong>股票 A</strong>：每張單價 NT$ 10,000，目標理想金額 NT$ 19,000（期望 1.9 張）</li><li><strong>股票 B</strong>：每張單價 NT$ 100,000，目標理想金額 NT$ 190,000（期望 1.9 張）</li></ul>
+<h4>做法一：傳統向下取整 (Floor)</h4>
+<ul><li>股票 A 買 1 張（花 10,000）</li><li>股票 B 買 1 張（花 100,000）</li><li>總共花費 NT$ 110,000，剩下 NT$ 99,000 閒置！因為買不起第 2 張 B，便把零錢拿去多買 9 張 A：</li><li>最終持股：A 買 10 張（NT$ 100,000），B 買 1 張（NT$ 100,000）</li><li><strong>結果</strong>：A 與 B 變成等權重！策略原本強烈看好 B 的意圖被徹底抹煞，L1 追蹤誤差高達 <strong>91</strong>。</li></ul>
+<h4>做法二：全局凸性整數規劃 (Pareto Optimization)</h4>
+<ul><li>演算法發現：<strong>「如果放棄購買股票 A（買 0 張），省下的錢剛好足夠買第 2 張 B（買 2 張）」</strong>！</li><li>最終持股：A 買 0 張，B 買 2 張（花費 NT$ 200,000）</li><li><strong>結果</strong>：L1 追蹤誤差降至 <strong>29</strong>！遠勝傳統做法。</li></ul>
+<blockquote><strong>核心啟發</strong>：犧牲一檔平庸的小標的，去補足高權重大標的的整數張數，所獲得的組合貼合度遠高於死板的四捨五入。</blockquote>
+<hr>
+<h2>2. 數學問題定義 (Mathematical Formulation)</h2>
+<p>給定策略目標籃子中各標的的理想金額 $I_i = \text{Target Capital} \times w_i$，單張/每股成本 $c_i$，單檔權重上限 $M_i$，以及帳戶可用總現金預算 $C_{\text{budget}}$：</p>
+<p>$$\min_{\{n_i\}} \sum_{i=1}^{K} \left| n_i \cdot c_i - I_i \right|$$</p>
+<p>受限於以下約束條件：</p>
+<ol><li><strong>預算約束</strong>：$\sum_{i=1}^{K} n_i \cdot c_i \cdot (1 + \text{fee\_rate}) \le C_{\text{budget}}$</li><li><strong>整數約束</strong>：$n_i \in \mathbb{N}$（整張為 1000 之倍數，或允許零股）</li><li><strong>單檔上限</strong>：$n_i \cdot c_i \le M_i$</li><li><strong>搜尋上界</strong>：$0 \le n_i \le \left\lceil \frac{I_i}{c_i} \right\rceil$</li></ol>
+<hr>
+<h2>3. 帕雷托前緣掃描演算法 (Pareto Frontier Sweep)</h2>
+<p>由於單檔誤差 $|n_i \cdot c_i - I_i|$ 為凸函數，且超過上限的張數在「花費」與「誤差」兩軸上均被嚴格支配（Strictly Dominated），我們採用逐檔摺疊（Fold-in）的動態規劃前緣維護：</p>
+<pre><code>State 0: (Cash = 0, Error = sum(Ideal))
+  │
+  ├── 展開標的 1 之可能張數 (0, 1, 2...) ──&gt; 產生新前緣 (Cash_1, Error_1)
+  │     └─ 剪枝：剔除被雙軸同時超越的劣解 (Dominated States)
+  │
+  ├── 展開標的 2 之可能張數 ──&gt; 產生新前緣 (Cash_2, Error_2)
+  │     └─ 剪枝...
+  ▼
+最終狀態：在前緣中挑選 Error 最小且不超支的最佳整數解</code></pre>
+<hr>
+<h2>4. 核心積木代碼與使用方式</h2>
+<p>完整演算法與邊界處理已封裝於 <a href="blocks/GB03-integer-basket-allocator.md"><code>GB03 凸性整數規劃分配器</code></a>。</p>
+<h3>調用範例：</h3>
+<pre><code class="lang-python">from quant_grill_lab.tactics.allocation import allocate_basket, BasketTarget
+
+targets = [
+    BasketTarget(stock_id=&quot;2330&quot;, price=1000.0, weight=0.4),
+    BasketTarget(stock_id=&quot;2317&quot;, price=200.0, weight=0.3),
+    BasketTarget(stock_id=&quot;2454&quot;, price=1200.0, weight=0.3),
+]
+
+plan = allocate_basket(
+    targets=targets,
+    available_cash=500_000,
+    allow_odd_lot=True,  # 是否允許零股
+)
+
+print(f&quot;分配狀態: {plan.status}&quot;)
+for alloc in plan.allocations:
+    print(f&quot;股票: {alloc.stock_id}, 股數: {alloc.shares}, 實際金額: {alloc.notional:,.0f}&quot;)</code></pre>
+<hr>
+<h2>5. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>提問範本 1</strong>：「請用一個具體例子解釋，為什麼量化交易在小資金時不能使用簡單的四捨五入來計算下單股數？」</li><li><strong>提問範本 2</strong>：「凸性整數規劃分配器是如何透過 Pareto Frontier 剪枝來避免組合爆炸的？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/03-tactics-and-integer-sizing.md">gemini/03-tactics-and-integer-sizing.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

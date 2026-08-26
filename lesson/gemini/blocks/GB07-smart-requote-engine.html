@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB07 · 積木 · 限價智慧追價與重報價狀態機 (Smart Requote Engine)</title>
+<meta name="description" content="一個在限價單送出後未成交時，依據**等待時間、市場向上偏離幅度與最大追價次數**，自動進行「維持掛單、改價追價或安全撤單」的有限狀態機（FSM）。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / gemini / GB07</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>積木 · 限價智慧追價與重報價狀態機 (Smart Requote)</h1>
+<h2>一句話定義 (TL;DR)</h2>
+<p>一個在限價單送出後未成交時，依據<strong>等待時間、市場向上偏離幅度與最大追價次數</strong>，自動進行「維持掛單、改價追價或安全撤單」的有限狀態機（FSM）。</p>
+<hr>
+<h2>1. 黑盒子解構 (What Problem It Solves)</h2>
+<p>被動限價單（Passive Limit Order）常常會面臨「股價直接往有利方向發動，留下未成交委託而錯失行情（Execution Drag）」的問題；但無腦市價追價又會造成嚴重滑價。本積木提供可控的智慧追價狀態機。</p>
+<h3>狀態機流程 (FSM Diagram):</h3>
+<pre><code>       [SUBMITTED / PENDING]
+                │
+                ├── 等待時間 &lt; 30 秒 ──&gt; 維持掛單 (HOLD)
+                │
+                ├── 超時且 Best Ask 上移 ≤ 2 Ticks ──&gt; 改價追價 (REQUOTE_UP)
+                │
+                ├── 累計追價次數已達上限 (Max 2 次) ──&gt; 停止追價 (TERMINATE_KEEP)
+                │
+                └── 價格劇烈偏離 &gt; 1.5% 或接近收盤 ──&gt; 安全撤單 (CANCEL_ABORT)</code></pre>
+<hr>
+<h2>2. 最小可運行積木代碼 (Minimal Runnable Pattern)</h2>
+<pre><code class="lang-python">&quot;&quot;&quot;GB07: Smart Requote Finite State Machine.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+
+
+class RequoteAction(str, Enum):
+    HOLD = &quot;HOLD&quot;
+    REQUOTE = &quot;REQUOTE&quot;
+    CANCEL = &quot;CANCEL&quot;
+    COMPLETE = &quot;COMPLETE&quot;
+
+
+@dataclass
+class OrderState:
+    order_id: str
+    stock_id: str
+    initial_limit_price: float
+    current_limit_price: float
+    target_shares: int
+    filled_shares: int
+    elapsed_seconds: float
+    requote_count: int
+
+
+class SmartRequoteEngine:
+    MAX_REQUOTE_ATTEMPTS: int = 2
+    TIMEOUT_SECONDS: float = 45.0
+    MAX_SLIPPAGE_PCT: float = 0.015  # 最大允許追價 1.5%
+
+    @classmethod
+    def evaluate(
+        cls,
+        state: OrderState,
+        current_best_ask: float,
+    ) -&gt; tuple[RequoteAction, float]:
+        &quot;&quot;&quot;評估當前委託應採取的行動與新價格。&quot;&quot;&quot;
+        if state.filled_shares &gt;= state.target_shares:
+            return RequoteAction.COMPLETE, state.current_limit_price
+
+        # 1. 檢查是否超過總滑價保護
+        price_drift = (current_best_ask - state.initial_limit_price) / state.initial_limit_price
+        if price_drift &gt; cls.MAX_SLIPPAGE_PCT:
+            return RequoteAction.CANCEL, 0.0
+
+        # 2. 檢查是否超時需要重報價
+        if state.elapsed_seconds &gt;= cls.TIMEOUT_SECONDS:
+            if state.requote_count &lt; cls.MAX_REQUOTE_ATTEMPTS:
+                # 追價至當前 Best Ask (但不超過上限)
+                new_price = min(current_best_ask, state.initial_limit_price * (1 + cls.MAX_SLIPPAGE_PCT))
+                return RequoteAction.REQUOTE, new_price
+            else:
+                # 已達最大追價次數，撤單或維持
+                return RequoteAction.CANCEL, 0.0
+
+        return RequoteAction.HOLD, state.current_limit_price</code></pre>
+<hr>
+<h2>3. 單元測試範例 (Unit Test)</h2>
+<pre><code class="lang-python">def test_gb07_requote_state_transitions():
+    state = OrderState(
+        order_id=&quot;ord_01&quot;,
+        stock_id=&quot;2330&quot;,
+        initial_limit_price=100.0,
+        current_limit_price=100.0,
+        target_shares=1000,
+        filled_shares=0,
+        elapsed_seconds=50.0, # 已超時 45 秒
+        requote_count=0,
+    )
+    
+    # 1. Ask 漲到 100.5 (在 1.5% 內) -&gt; 觸發 REQUOTE
+    action, new_price = SmartRequoteEngine.evaluate(state, current_best_ask=100.5)
+    assert action == RequoteAction.REQUOTE
+    assert new_price == 100.5
+
+    # 2. Ask 暴漲至 105.0 (&gt; 1.5%) -&gt; 觸發 CANCEL 保護
+    action_cancel, _ = SmartRequoteEngine.evaluate(state, current_best_ask=105.0)
+    assert action_cancel == RequoteAction.CANCEL</code></pre>
+<hr>
+<h2>4. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>Prompt</strong>：「請分析 GB07 狀態機如何透過『最大追價次數』與『滑價百分比上限』兩道防線，避免程式在追高時買在當日最高點？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB07-smart-requote-engine.md">gemini/blocks/GB07-smart-requote-engine.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

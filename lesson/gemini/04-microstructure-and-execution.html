@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G04 · 微結構與執行工程 · 委託簿深度、ADV 容量守門員與滑價校準</title>
+<meta name="description" content="回測中的完美「次日開盤成交價」，在實盤中會遭遇**委託簿買賣價差（Spread）、流動性衝擊成本（Market Impact）與券商最低手續費（Fee Floor）**的無情打擊。本章拆解執行層的四大核心守門積木：微結構特徵匹配、ADV20">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / gemini / G04</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">execution</span><span class="badge ok">verified</span><h1>微結構與執行工程 · 委託簿深度、ADV 容量守門員與滑價校準</h1>
+<h2>一句話總結 (TL;DR)</h2>
+<p>回測中的完美「次日開盤成交價」，在實盤中會遭遇<strong>委託簿買賣價差（Spread）、流動性衝擊成本（Market Impact）與券商最低手續費（Fee Floor）</strong>的無情打擊。本章拆解執行層的四大核心守門積木：微結構特徵匹配、ADV20 容量防線、低消損益平衡點與限價智慧追價狀態機。</p>
+<hr>
+<h2>1. 執行層的四大實盤摩擦防線</h2>
+<pre><code>[策略產出下單意圖]
+       │
+       ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 1. ADV20 容量守門員 (Capacity Guard)                       │
+│    單檔下單金額佔 20 日均量 &gt; 5% ──&gt; 強制 BLOCKED 阻擋      │
+│    單檔下單金額佔 20 日均量 &gt; 2% ──&gt; 發出 WARNING 警告       │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ 通過
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 2. 手續費低消地板 (Fee Floor Calculator)                    │
+│    券商最低手續費 NT$20，若部位過小導致手續費比率 &gt; 0.3% ──&gt; 剔除│
+└──────────────────────────────┬──────────────────────────────┘
+                               │ 通過
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 3. 五檔微結構匹配 (Microstructure Matcher)                  │
+│    盤口深度極厚 (Deep) ──&gt; 掛 Buy1 排隊爭取零滑價           │
+│    盤口深度極薄 (Thin) ──&gt; 採用 TWAP 拆單，禁止市價掃盤     │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ 送出限價單
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 4. 限價智慧追價狀態機 (Smart Requote Engine)                 │
+│    未成交時啟動超時監控，最多追價 2 Tick 或在盤尾安全撤單    │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+<hr>
+<h2>2. ADV20 容量守門員（Capacity Guard）</h2>
+<p>許多高報酬策略實際上買進的是日成交量只有幾十張的微型股（例如 S127，胃納量僅 NT$7 萬）。當操作資金達到 50 萬時，進場會直接把股價拉漲停，出場會直接打跌停，回測報酬完全是流動性幻覺。</p>
+<h3>守門員標準（嚴格 Fail-Closed）：</h3>
+<ul><li><strong>安全區 ($\le 2\%$ ADV20)</strong>：成交衝擊極小，允許一般限價進場。</li><li><strong>警戒區 ($2\% \sim 5\%$ ADV20)</strong>：衝擊成本顯著，必須降檔或分批進場。</li><li><strong>阻擋區 ($&gt; 5\%$ ADV20)</strong>：<strong>直接拋出 <code>CapacityExceededError</code> 阻擋下單</strong>，並自動計算建議之最大安全股數。</li></ul>
+<hr>
+<h2>3. 券商手續費低消（Fee Floor）陷阱</h2>
+<p>台灣證券交易手續費表定為 $0.1425\%$（即使打 2.8 折約 $0.0399\%$），但多數券商設有 <strong>單筆最低手續費 NT$ 20 元</strong>：</p>
+<ul><li>若為了等權重買進某檔價值 NT$ 3,000 的零股：</li><li>實際手續費：NT$ 20</li><li>手續費費率：$20 / 3000 \approx 0.67\%$！</li><li>來回手續費加上證交稅 ($0.3\%$)，交易成本瞬間飆升至 <strong>$1.64\%$</strong>！</li><li>如果策略預期每筆交易 Alpha 只有 $1.2\%$，這筆交易一進場就已經注定虧損。</li></ul>
+<p><strong>解決方案</strong>：計算每筆交易的「手續費損益平衡最小金額」，任何低於 NT$ 15,000 的微型部位直接剔除或合併。</p>
+<hr>
+<h2>4. E5 滑價模型與真實成交對帳</h2>
+<p>在量化系統中，未經真實成交驗證的滑價模型只能標記為 <code>UNVALIDATED</code>。</p>
+<ul><li>本系統規定：必須累積至少 <strong>30 筆 <code>BROKER_REAL</code> 真實券商回報成交資料</strong>，計算真實成交價相對於訊號價的偏差分佈，才能正式升格為 <code>CALIBRATED</code>。</li><li>在未校準前，所有報表一律嚴格揭露「預估成交價為未驗證」。</li></ul>
+<hr>
+<h2>5. 相關積木模組索引</h2>
+<ul><li><a href="blocks/GB04-adv-capacity-guard.md"><code>GB04 ADV20 容量守門員</code></a></li><li><a href="blocks/GB05-fee-floor-calculator.md"><code>GB05 手續費低消計算器</code></a></li><li><a href="blocks/GB06-microstructure-matcher.md"><code>GB06 五檔微結構評級器</code></a></li><li><a href="blocks/GB07-smart-requote-engine.md"><code>GB07 限價智慧追價狀態機</code></a></li></ul>
+<hr>
+<h2>6. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>提問範本 1</strong>：「為什麼單檔股票下單量超過 ADV20 的 5% 時，系統會強制阻擋？這背後的市場衝擊成本（Market Impact）原理是什麼？」</li><li><strong>提問範本 2</strong>：「在零股交易中，券商低消 NT$20 元是如何侵蝕小額量化投資者的 Alpha 的？GB05 積木如何防禦此問題？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/04-microstructure-and-execution.md">gemini/04-microstructure-and-execution.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

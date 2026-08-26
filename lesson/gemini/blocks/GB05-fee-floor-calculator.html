@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB05 · 積木 · 券商手續費低消與損益平衡門檻計算器 (Fee Floor Calculator)</title>
+<meta name="description" content="一個精確計算台股**券商單筆最低手續費（例如 NT$ 20 元）對交易損益平衡點影響**的評估積木，自動剔除因單筆金額過小而被手續費吃光利潤的無效標的。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / gemini / GB05</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>積木 · 券商手續費低消與損益平衡門檻計算器 (Fee Floor)</h1>
+<h2>一句話定義 (TL;DR)</h2>
+<p>一個精確計算台股<strong>券商單筆最低手續費（例如 NT$ 20 元）對交易損益平衡點影響</strong>的評估積木，自動剔除因單筆金額過小而被手續費吃光利潤的無效標的。</p>
+<hr>
+<h2>1. 黑盒子解構 (What Problem It Solves)</h2>
+<p>台灣券商通常設有單筆委託手續費最低 NT$ 20 元的限制。若為追求等權重而在零股下單 NT$ 2,000 元，單趟實質手續費率高達 $1.0\%$，來回成本即高達 $2.3\%$，遠超大部分策略的單筆預期 Alpha。</p>
+<h3>契約不變量 (Invariants):</h3>
+<ol><li><strong>實質手續費率計算</strong>：$\text{Effective Fee} = \max(\text{Notional} \times \text{Discounted Rate}, \text{Min Fee})$。</li><li><strong>損益平衡門檻 (Break-even Move)</strong>：買進後個股必須上漲多少百分比才能打平進出費稅。</li><li><strong>過濾機制</strong>：若單筆部位金額低於損益平衡門檻，判定為 <code>BELOW_MIN_ECONOMIC_NOTIONAL</code>。</li></ol>
+<hr>
+<h2>2. 最小可運行積木代碼 (Minimal Runnable Pattern)</h2>
+<pre><code class="lang-python">&quot;&quot;&quot;GB05: Broker Fee Floor and Break-even Calculator.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class FeeBreakdown:
+    notional: float
+    raw_fee: float
+    charged_fee: float
+    effective_fee_rate: float
+    roundtrip_total_cost: float
+    breakeven_return_pct: float
+    is_economically_viable: bool
+
+
+class FeeFloorCalculator:
+    BASE_FEE_RATE: float = 0.001425  # 0.1425%
+    TAX_RATE: float = 0.003000       # 0.3% 證交稅
+    DEFAULT_MIN_FEE: float = 20.0    # 最低 20 元
+
+    def __init__(
+        self,
+        discount: float = 0.28,        # 2.8 折
+        min_fee: float = DEFAULT_MIN_FEE,
+        max_acceptable_cost_pct: float = 0.008,  # 單筆總成本不超過 0.8%
+    ):
+        self.discount = discount
+        self.min_fee = min_fee
+        self.fee_rate = self.BASE_FEE_RATE * discount
+        self.max_acceptable_cost_pct = max_acceptable_cost_pct
+
+    def evaluate(self, notional: float) -&gt; FeeBreakdown:
+        &quot;&quot;&quot;計算給定交易金額之完整摩擦成本與可行性。&quot;&quot;&quot;
+        if notional &lt;= 0:
+            return FeeBreakdown(0, 0, self.min_fee, 1.0, self.min_fee, 1.0, False)
+
+        raw_buy_fee = notional * self.fee_rate
+        charged_buy_fee = max(raw_buy_fee, self.min_fee)
+        
+        # 假設賣出金額相近
+        charged_sell_fee = charged_buy_fee
+        tax = notional * self.TAX_RATE
+        
+        total_roundtrip_cost = charged_buy_fee + charged_sell_fee + tax
+        cost_ratio = total_roundtrip_cost / notional
+        
+        # 損益平衡所需漲幅
+        breakeven_pct = (total_roundtrip_cost) / (notional - charged_sell_fee - tax)
+
+        is_viable = cost_ratio &lt;= self.max_acceptable_cost_pct
+
+        return FeeBreakdown(
+            notional=notional,
+            raw_fee=raw_buy_fee,
+            charged_fee=charged_buy_fee,
+            effective_fee_rate=charged_buy_fee / notional,
+            roundtrip_total_cost=total_roundtrip_cost,
+            breakeven_return_pct=breakeven_pct,
+            is_economically_viable=is_viable,
+        )</code></pre>
+<hr>
+<h2>3. 單元測試範例 (Unit Test)</h2>
+<pre><code class="lang-python">def test_gb05_fee_floor_viability():
+    calc = FeeFloorCalculator(discount=0.28, min_fee=20.0, max_acceptable_cost_pct=0.01) # 上限 1%
+
+    # 1. 極小金額 NT$ 2,000 (手續費 20 元佔 1%，來回成本破 2.3%) -&gt; 不可行
+    r1 = calc.evaluate(2000.0)
+    assert not r1.is_economically_viable
+    assert r1.charged_fee == 20.0
+
+    # 2. 正常金額 NT$ 50,000 (手續費 20 元佔 0.04%，來回成本約 0.38%) -&gt; 可行
+    r2 = calc.evaluate(50000.0)
+    assert r2.is_economically_viable
+    assert r2.breakeven_return_pct &lt; 0.005</code></pre>
+<hr>
+<h2>4. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>Prompt</strong>：「請利用 GB05 積木計算，在 2.8 折手續費與最低 20 元限制下，單筆下單金額至少需要多少元，才能使來回總摩擦成本控制在 0.5% 以內？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB05-fee-floor-calculator.md">gemini/blocks/GB05-fee-floor-calculator.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

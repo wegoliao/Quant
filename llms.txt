@@ -1,0 +1,73 @@
+# Quant · lesson
+
+> 台股四策略量化系統的拆解教學。每個 AI 一個目錄，各自寫下驗證過的積木、
+> 踩過的陷阱、以及有效的提問法。純技術教學，不含投資建議、不含買賣訊號。
+
+來源系統: https://github.com/wegoliao/performance-accumulation-dashboard
+公開儀表板: https://wegoliao.github.io/performance-accumulation-dashboard/
+結構化索引: https://wegoliao.github.io/Quant/lesson/MANIFEST.json
+
+## 建議吃法
+
+只想吃一份：挑一個目錄的 ALL.md。想吃全部：把每個 ALL.md 都加進來。
+
+## lesson/_shared — Multi-AI Consensus (Gemini & Claude & Codex)
+
+- [整份合輯（推薦）](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md)
+- [S01 交叉更正紀錄 · 誰對誰提出異議](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CORRECTIONS.md): 共用 · verified
+- [S00 交互學習協定 · 多個 AI 怎麼在同一個 repo 裡教學](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CROSS_AI_PROTOCOL.md): 共用 · draft
+- [SHARED-GLOSSARY-01 量化工程與系統專有名詞對照表 (Quant Glossary & Metric Conventions)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/GLOSSARY.md): 共用 · verified
+- [SHARED-MAP-01 全系統架構地圖與資料流向導 (Quant Grill Lab System Map)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/SYSTEM_MAP.md): 共用 · verified
+
+## lesson/claude — Claude (Opus 5, Anthropic)
+
+- [整份合輯（推薦）](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md)
+- [C00 脈絡 · 這個系統到底在做什麼](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/00-context.md): 脈絡 · verified
+- [C01 資料契約 · 四個 CSV 就是全部](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/01-contracts.md): 脈絡 · verified
+- [C20 陷阱清單 · 這個專案真的踩到的坑](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/20-traps.md): 陷阱 · verified
+- [C30 問題寫法 · 怎麼問才會拿到真話](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/30-prompts.md): 提問法 · verified
+- [B01 已實現損益 · FIFO 對沖，只認落袋現金](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B01-realized-pnl-fifo.md): 積木 · verified
+- [B02 分價分布 · 用日線做出 volume-at-price](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B02-volume-profile.md): 積木 · verified
+- [B03 成交落點 · 唯一能對「進場點」說的實證](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B03-fill-landing.md): 積木 · verified
+- [B04 可變現淨值 · 帳面值不是你拿得到的錢](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B04-liquidation-value.md): 積木 · verified
+- [B05 履約落差 · 策略卡報的價，帳戶付的價](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B05-signal-fill-slippage.md): 積木 · verified
+- [B06 watchlist 驅動抓取 · 別讓賣掉的股票資料斷線](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B06-watchlist-driven-fetch.md): 積木 · verified
+- [B07 Fail closed · 寧可炸掉，不要安靜地算錯](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B07-fail-closed-inputs.md): 積木 · verified
+- [B08 樣本量門檻 · 敢顯示 N/A 才是專業](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B08-sample-size-gate.md): 積木 · verified
+- [B09 推導式狀態 · 能算出來的絕不另存一份](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B09-derived-state.md): 積木 · verified
+
+## lesson/codex — ox-alpha (Hermes Agent / Nous Research)
+
+- [整份合輯（推薦）](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md)
+- [X00 脈絡 · Codex 在這個專案裡做過什麼、為什麼重要](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/00-context.md): 脈絡 · verified
+- [X1 積木 · 對抗性稽核法——為什麼 129 個測試全綠還是不安全](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/01-adversarial-audit-method.md): validation · verified
+- [X2 積木 · TWSE 盤中零股集合競價——決定價 P* 的法定順序](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/02-oddlot-auction-twse-rules.md): execution · verified
+- [X3 積木 · 驗證鏈偽造——「簽章驗得過」不等於「是 owner 簽的」](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/03-auth-chain-forgery.md): governance · verified
+- [X4 積木 · 訂單狀態三聯畫——一個 enum 裝不下「成交＋取消失敗＋還活著」](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/04-order-state-triptych.md): execution · verified
+- [X5 積木 · 多 AI 對抗性審查工作流——派 Codex 審程式的正確姿勢](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/05-agent-review-workflow.md): governance · verified
+
+## lesson/gemini — Gemini (Google DeepMind / Antigravity)
+
+- [整份合輯（推薦）](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md)
+- [G00 Gemini 全景脈絡 · 拆解黑盒子與工程級量化哲學](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/00-gemini-master-context.md): 脈絡 · verified
+- [G01 治理邊界、排他研究鎖與 Fail-Closed 防禦架構](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/01-governance-and-fail-closed.md): governance · verified
+- [G02 資料防偷看防禦 · FinLab 資料管線與 PIT 財報公告日對齊](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/02-data-pit-and-leakage-defense.md): data · verified
+- [G03 戰術分配 · 凸性整數規劃與真實帳戶部位定價](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/03-tactics-and-integer-sizing.md): tactics · verified
+- [G04 微結構與執行工程 · 委託簿深度、ADV 容量守門員與滑價校準](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/04-microstructure-and-execution.md): execution · verified
+- [G05 核心策略演化 · 波動度加權與 50% CAGR 遺傳演算法 (GA) 藍圖](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/05-alpha-strategies-and-ga.md): strategy · verified
+- [G06 防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/06-validation-dsr-and-forward-sim.md): validation · verified
+- [GB01 積木 · 全域排他研究鎖 (OS-backed Research Lock)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB01-research-lock.md): 積木 · verified
+- [GB02 積木 · PIT 財報與營收防偷看對齊器 (PIT & Lag Aligner)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB02-pit-lag-aligner.md): 積木 · verified
+- [GB03 積木 · 凸性整數規劃投組權重分配器 (Integer Basket Allocator)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB03-integer-basket-allocator.md): 積木 · verified
+- [GB04 積木 · ADV20 流動性與容量守門員 (ADV20 Capacity Guard)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md): 積木 · verified
+- [GB05 積木 · 券商手續費低消與損益平衡門檻計算器 (Fee Floor Calculator)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB05-fee-floor-calculator.md): 積木 · verified
+- [GB06 積木 · 五檔微結構與衝擊成本評級器 (Microstructure Matcher)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB06-microstructure-matcher.md): 積木 · verified
+- [GB07 積木 · 限價智慧追價與重報價狀態機 (Smart Requote Engine)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB07-smart-requote-engine.md): 積木 · verified
+- [GB08 積木 · 動態波動度目標部位調節器 (Volatility Target Sizer)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB08-volatility-target-sizer.md): 積木 · verified
+- [GB09 積木 · 現金流營收動能因子選股核心 (FCF & Revenue Momentum Core)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB09-fcf-momentum-core.md): 積木 · verified
+- [GB10 積木 · DSR 與 PBO 過擬合檢驗器 (Deflated Sharpe & PBO Validator)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB10-dsr-pbo-validator.md): 積木 · verified
+
+## 站台文件
+
+- [Quant Lesson 跨 AI 模組化量化系統全課程索引](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/INDEX.md)
+- [README](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/README.md)

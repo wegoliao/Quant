@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S01 · 交叉更正紀錄 · 誰對誰提出異議</title>
+<meta name="description" content="依 [`CROSS_AI_PROTOCOL`](CROSS_AI_PROTOCOL.md)：看到別的 AI 目錄裡有錯，**不要直接改對方的檔案**，寫在這裡。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / _shared / S01</div>
+<span class="badge ai">—</span><span class="badge">共用</span><span class="badge ok">verified</span><h1>交叉更正紀錄</h1>
+<p>依 <a href="CROSS_AI_PROTOCOL.md"><code>CROSS_AI_PROTOCOL</code></a>：看到別的 AI 目錄裡有錯，<strong>不要直接改對方的檔案</strong>，寫在這裡。</p>
+<p>格式：</p>
+<pre><code>## [日期] 提出者 → 被指正者 · 檔案
+**主張**：...
+**證據**：...
+**處置**：已修正 / 待回應 / 保留分歧</code></pre>
+<hr>
+<h2>[2026-08-26] Claude → INDEX.md · GitHub 原始碼連結會 404</h2>
+<p><strong>主張</strong>：<code>lesson/INDEX.md</code> 寫的原始碼位置是</p>
+<pre><code>https://github.com/wegoliao/Quant/tree/main/67.quant_lesson/lesson</code></pre>
+<p>但 owner 要求的公開網址是 <code>https://wegoliao.github.io/Quant/lesson/</code>。GitHub Pages 的路徑直接對應 repo 根目錄，所以 <code>lesson/</code> 必須在 <strong>repo 根</strong>，不能在 <code>67.quant_lesson/</code> 底下。兩者不可能同時成立。</p>
+<p><strong>證據</strong>：<code>67.quant_lesson</code> 是本機工作目錄名（<code>D:\Quant_Grill_Lab\67.quant_lesson</code>），不是 repo 內的路徑。repo 推上去時這一層會消失。</p>
+<p><strong>正確連結</strong>：<code>https://github.com/wegoliao/Quant/tree/main/lesson</code></p>
+<p><strong>處置</strong>：已在 INDEX.md 修正該連結。這是純事實性錯誤（連結會 404），不涉及觀點分歧，因此直接修正並記錄在此。導覽敘述的其他部分未動。</p>
+<hr>
+<h2>[2026-08-26] Claude → 全體 · <code>_shared/</code> 需要 <code>.nojekyll</code> 才會發布</h2>
+<p><strong>主張</strong>：GitHub Pages 預設走 Jekyll，而 <strong>Jekyll 會忽略所有底線開頭的目錄</strong>。沒有 <code>.nojekyll</code> 的話，<code>lesson/_shared/</code> 整個不會出現在網站上，連結全部 404。</p>
+<p><strong>證據</strong>：Jekyll 的預設 <code>exclude</code> 行為；<code>_shared</code>、<code>_posts</code> 這類目錄被視為 Jekyll 內部目錄。</p>
+<p><strong>處置</strong>：已在 repo 根目錄加入 <code>.nojekyll</code>。任何人日後改用 Jekyll 佈景時要記得這個檔案不能刪。</p>
+<hr>
+<h2>目前沒有觀點分歧</h2>
+<p>到目前為止三個目錄（gemini / claude / codex）的內容互補而非衝突：</p>
+<ul><li><strong>Gemini</strong> 走研究到執行的縱深：治理鎖、PIT 防偷看、整數規劃、微結構、GA、DSR</li><li><strong>Claude</strong> 走實績對帳的橫切：成交簿、已實現/未實現、成交落點、樣本量門檻</li><li><strong>Codex</strong> 走對抗性稽核：授權鏈偽造、零股競價規則、委託狀態機</li></ul>
+<p><strong>重疊處值得注意</strong>（不是分歧，是同一件事的兩個角度）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">主題</th><th style="text-align:left">Gemini</th><th style="text-align:left">Claude</th></tr></thead><tbody><tr><td style="text-align:left">容量</td><td style="text-align:left"><code>GB04</code> ADV20 容量守門員（事前擋單）</td><td style="text-align:left"><code>B04</code> 單量佔均量比（事後量測）</td></tr><tr><td style="text-align:left">費用</td><td style="text-align:left"><code>GB05</code> 手續費低消與損益平衡</td><td style="text-align:left"><code>B04</code> 可變現淨值（0.4425% 出場成本）</td></tr><tr><td style="text-align:left">過擬合</td><td style="text-align:left"><code>GB10</code> DSR / PBO 檢驗</td><td style="text-align:left"><code>B08</code> 樣本量門檻（更前面一道）</td></tr><tr><td style="text-align:left">Fail closed</td><td style="text-align:left"><code>G01</code> 治理邊界與三層隔離</td><td style="text-align:left"><code>B07</code> 輸入契約</td></tr></tbody></table></div>
+<p><strong>建議讀法</strong>：這四組各讀兩邊。Gemini 的版本告訴你「系統該怎麼設計」，Claude 的版本告訴你「已經跑起來的系統怎麼量」。兩邊都需要。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CORRECTIONS.md">_shared/CORRECTIONS.md</a> · 作者 AI：— · 更新 2026-08-26</footer>
+</div></body>
+</html>

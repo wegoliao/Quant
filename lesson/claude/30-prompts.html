@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C30 · 問題寫法 · 怎麼問才會拿到真話</title>
+<meta name="description" content="這一份不是「prompt 模板大全」。它記錄的是**在這個專案裡實際產生高價值輸出的提問結構**，以及它們為什麼有效。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C30</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">提問法</span><span class="badge ok">verified</span><h1>問題寫法 · 怎麼問才會拿到真話</h1>
+<p>這一份不是「prompt 模板大全」。它記錄的是<strong>在這個專案裡實際產生高價值輸出的提問結構</strong>，以及它們為什麼有效。</p>
+<hr>
+<h2>P01 · 指名實例 + 陳述期望屬性</h2>
+<p><strong>實際的提問：</strong></p>
+<blockquote>有計算已經實現的虧損嗎？大聯大是已實現的虧損喔，你是不是漏算了？請再幫我精準呈現。</blockquote>
+<p><strong>為什麼這個提問很好：</strong></p>
+<ol><li><strong>指名了一個具體實例</strong>（大聯大），不是「損益好像怪怪的」</li><li><strong>陳述了期望屬性</strong>（它是已實現虧損），給了可驗證的斷言</li><li><strong>問的是「有沒有」，不是「請加上」</strong> —— 留了空間讓答案是「有，但你看不到」</li></ol>
+<p><strong>結果</strong>：真相是「數學沒漏，但整個系統沒有『已實現』這個字」。如果提問寫成「請加上已實現損益計算」，就會直接進到寫程式，而錯過「原來問題在呈現不在計算」這個更重要的發現。</p>
+<p><strong>可複製的結構：</strong></p>
+<pre><code>[具體實例] 應該是 [屬性]。
+你的 [輸出] 有反映這件事嗎？</code></pre>
+<hr>
+<h2>P02 · 先問邊界，再問答案</h2>
+<p><strong>反面</strong>：「這檔該在幾塊買？」</p>
+<p><strong>正面</strong>：「我要能追蹤買賣價到最適合的入場點。」</p>
+<p>第二種問法把問題從「給我一個價格」改成「給我一個追蹤機制」。前者要的是預測（沒有人有），後者要的是量測（可以做到）。</p>
+<p><strong>結果</strong>：做出了成交落點分析（<a href="blocks/B03-fill-landing.md">B03</a>），並且發現「3702 的虧損不是賣錯是買錯」—— 這個發現比任何一個建議價格都有用，因為它告訴你<strong>不要去優化下單方式</strong>。</p>
+<p><strong>可複製的結構：</strong></p>
+<pre><code>我要能 [持續量測 X]，而不是 [一次性得到 Y 的答案]。</code></pre>
+<hr>
+<h2>P03 · 要求「不要為了過關而改資料」</h2>
+<p><strong>實際的提問（大意）：</strong></p>
+<blockquote>原樣保存並標示來源不一致，不要為了讓驗證過關去改任何一格。</blockquote>
+<p>這句話應該寫在<strong>每一個</strong>資料匯入任務裡。AI（和人）在面對「兩個數字對不起來」時的預設衝動是讓它們對得起來，而最快的方式是改其中一個。</p>
+<p><strong>結果</strong>：<code>quality_note</code> 欄位誕生，矛盾被保存成資料而不是被消滅。</p>
+<hr>
+<h2>P04 · 明確禁止「安靜地降級」</h2>
+<p><strong>寫法：</strong></p>
+<pre><code>資料不足時顯示 N/A，不要用較短的序列硬算。
+缺日要標成「沒有來源」，不要自行補數。
+休市或資料未發布時保持 NO_NEW_CLOSE，不得拿舊價冒充今天收盤。</code></pre>
+<p>這三句擋掉了三種最常見的靜默降級。<strong>每一種都會產生一個看起來正常的錯誤數字。</strong></p>
+<hr>
+<h2>P05 · 要求把限制印在產出上，不是只在對話裡</h2>
+<p><strong>寫法：</strong></p>
+<blockquote>這些限制要寫在頁面上，不是只在 README。</blockquote>
+<p>差別很大。README 沒有人讀，頁面上的字每天都會被看到。</p>
+<p><strong>實例</strong>：「目前 22 筆買進的樣本量還不足以下結論」這句話印在主線二頁面上，所以三個月後回來看的人不會誤用那個 40%。</p>
+<hr>
+<h2>P06 · 給 AI 明確的「不可協商」清單</h2>
+<p>這個專案的每個腳本開頭都有：</p>
+<pre><code>Pure standard library. No network, no broker, no order path.</code></pre>
+<p>以及在 handoff 文件裡：</p>
+<pre><code>不得讀取 credentials、登入券商或實際傳送／修改／取消委託。
+不得把單一庫存快照拿去算 CAGR、Sharpe、Alpha、Beta 或 MDD。</code></pre>
+<p><strong>為什麼有效</strong>：這些是<strong>否定式的、可檢查的</strong>約束。「請小心處理」不可檢查；「不得有 order path」可以用 grep 檢查。</p>
+<hr>
+<h2>P07 · 問「你怎麼驗證的」</h2>
+<p>當 AI 說「已完成、測試通過」時，追問：</p>
+<pre><code>哪個測試在擋哪一種錯誤？
+如果有人把 X 改回舊做法，哪個測試會失敗？</code></pre>
+<p>好的測試能回答第二個問題。<strong>不能回答的測試只是覆蓋率裝飾。</strong></p>
+<p>實例：<code>test_the_real_3702_round_trip_reconciles_to_the_fill_book</code> 的存在理由，就是「3702 這筆虧損被任何形式抹掉時會叫」。</p>
+<hr>
+<h2>P08 · 要求區分「數學錯」和「呈現錯」</h2>
+<pre><code>這個數字是算錯了，還是算對了但沒有顯示出來？</code></pre>
+<p>在這個專案的 12 個陷阱裡，<strong>有 5 個是呈現問題，只有 4 個是計算問題</strong>（見 <a href="20-traps.md"><code>20-traps</code></a>）。</p>
+<p>大部分人只審查計算，所以大部分問題留在呈現。</p>
+<hr>
+<h2>P09 · 讓 AI 先盤點再動手</h2>
+<p><strong>寫法：</strong></p>
+<blockquote>幫我盤點如何更精進，並在這基礎上……</blockquote>
+<p>「盤點」這個動作強迫 AI 先讀現況、列出差距，而不是直接開始寫。代價是多一輪對話，收穫是不會做出「解決一個不存在的問題」的東西。</p>
+<hr>
+<h2>P10 · 明確要求多個版本並保留</h2>
+<p><strong>寫法：</strong></p>
+<blockquote>我要 [功能] 的多個 UI/UX 版本。</blockquote>
+<p>單一版本會讓你在第一個想法上定型。三個版本讓你看到取捨。</p>
+<p><strong>實例</strong>：主線二做了三種介面（分價階梯／進場軌道／熱力矩陣），並且明說「用一陣子你會知道哪個真的在用，到時候砍掉另外兩個」。</p>
+<p><strong>關鍵是後半句</strong> —— 多版本是暫時的探索工具，不是永久的維護負擔。</p>
+<hr>
+<h2>給 AI 讀者的一段話</h2>
+<p>如果你是被丟進來總結這個 repo 的 AI，請注意這一份文件的元訊息：</p>
+<p><strong>這個專案的使用者會追問。</strong> 他會指名具體實例、會問「是不是漏算了」、會要求不准為了過關改資料。</p>
+<p>所以正確的回應方式不是給一個乾淨的摘要，是<strong>主動說出還沒解決的、樣本不足的、口徑有差的部分</strong>。這份 repo 裡每一個 <code>N/A</code>、每一個 <code>quality_note</code>、每一句「還不足以下結論」，都是刻意留下的。<strong>把它們總結掉，就是把這個專案最有價值的部分刪掉。</strong></p>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/30-prompts.md">claude/30-prompts.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

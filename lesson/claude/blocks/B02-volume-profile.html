@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B02 · 分價分布 · 用日線做出 volume-at-price</title>
+<meta name="description" content="「這個價格算高還是低？」">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B02</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>output/mainline2_receipt.json (7 names profiled)</code></p><h1>B02 · 分價分布（volume-at-price）</h1>
+<h2>它解決什麼</h2>
+<p>「這個價格算高還是低？」</p>
+<p>一般人用均線、用 52 週高低。這兩個都只用了收盤價，丟掉了<strong>成交量在價格上的分布</strong>。真正的問題不是「離最高點多遠」，是「有多少人在這個價位附近真的成交過」。</p>
+<p>分價分布給你三個數字：</p>
+<ul><li><strong>POC（Point of Control）</strong>：成交量最大的那個價位</li><li><strong>價值區（Value Area）</strong>：涵蓋 70% 成交量的價格帶</li><li><strong>現價分位</strong>：有多少比例的成交量發生在現價以下</li></ul>
+<h2>關鍵限制：交易所不給你逐筆分價</h2>
+<p>真正的分價表需要逐筆成交（tick）。TWSE / TPEx 的公開 API 只給<strong>日線 OHLCV</strong>。所以只能近似。</p>
+<p><strong>唯一誠實的假設：把當天的成交量在 <code>[最低, 最高]</code> 之間均勻分攤。</strong></p>
+<p>這個假設一定是錯的（實際成交會集中在某幾個價位），但它是<strong>無偏的</strong> —— 它不偏向任何價位。任何比它「更聰明」的分攤（例如假設集中在收盤價附近）都是在猜，而猜錯會讓 POC 系統性偏移。</p>
+<blockquote>這就是為什麼這個系統<strong>從來不把 POC 叫做「合理價」</strong>。 它是「過去半年成交量最大的價位」，句號。用日線近似算出來的東西，沒有資格承擔規範性的名字。</blockquote>
+<h2>契約</h2>
+<pre><code class="lang-python">volume_profile(bars, bins=44) -&gt; {
+    &quot;low&quot;, &quot;high&quot;, &quot;edges&quot;, &quot;volume&quot;,     # 直方圖本體
+    &quot;poc&quot;, &quot;poc_index&quot;,                   # 最大量價位
+    &quot;value_low&quot;, &quot;value_high&quot;,            # 70% 量能帶
+    &quot;total&quot;, &quot;bars&quot;, &quot;first&quot;, &quot;last&quot;,     # 稽核用
+}
+percentile_of(profile, price) -&gt; float    # 0..1，price 以下的量佔比</code></pre>
+<p><code>bars</code> 需要 <code>low, high, close, volume</code>。<strong>只有 close 是做不出來的</strong> —— 這是很多人存資料時省掉 OHLC，事後才發現的坑。</p>
+<h2>演算法</h2>
+<p><strong>第一步：分攤。</strong> 對每根日線，把成交量按重疊比例分給每個價格 bin。</p>
+<pre><code class="lang-python">for bar in bars:
+    span = bar[&quot;high&quot;] - bar[&quot;low&quot;]
+    if span &lt;= 0 or bar[&quot;volume&quot;] &lt;= 0:
+        # 一字板／無量：整筆塞進收盤價那格
+        index = min(int((bar[&quot;close&quot;] - low) / width), bins - 1)
+        volume[max(index, 0)] += bar[&quot;volume&quot;]
+        continue
+    for index in range(bins):
+        overlap = min(edges[index + 1], bar[&quot;high&quot;]) - max(edges[index], bar[&quot;low&quot;])
+        if overlap &gt; 0:
+            volume[index] += bar[&quot;volume&quot;] * overlap / span</code></pre>
+<p><strong>第二步：價值區。</strong> 從 POC 出發，每次往量比較大的那一側擴一格，直到累積 70%。</p>
+<pre><code class="lang-python">poc_index = max(range(bins), key=lambda i: volume[i])
+low_index = high_index = poc_index
+covered = volume[poc_index]
+while covered &lt; total * 0.70 and (low_index &gt; 0 or high_index &lt; bins - 1):
+    below = volume[low_index - 1] if low_index &gt; 0 else -1.0
+    above = volume[high_index + 1] if high_index &lt; bins - 1 else -1.0
+    if above &gt;= below:
+        high_index += 1;  covered += volume[high_index]
+    else:
+        low_index -= 1;   covered += volume[low_index]</code></pre>
+<p><strong>第三步：分位。</strong> 線性內插，不要只回傳所在 bin 的編號 —— bin 邊界會造成鋸齒。</p>
+<pre><code class="lang-python">def percentile_of(profile, price):
+    if price &lt;= profile[&quot;low&quot;]:  return 0.0
+    if price &gt;= profile[&quot;high&quot;]: return 1.0
+    below = 0.0
+    for i, edge in enumerate(profile[&quot;edges&quot;][:-1]):
+        upper = profile[&quot;edges&quot;][i + 1]
+        if price &gt;= upper:
+            below += profile[&quot;volume&quot;][i]
+        elif price &gt; edge:
+            below += profile[&quot;volume&quot;][i] * (price - edge) / (upper - edge)  # 內插
+            break
+        else:
+            break
+    return below / profile[&quot;total&quot;]</code></pre>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：bin 數量沒有正確答案，但要固定。</strong> 用了 44。太少（&lt;20）看不出結構，太多（&gt;100）每格都是雜訊。重點是<strong>所有標的用同一個數字</strong>，否則跨標的比較沒有意義。</p>
+<p><strong>陷阱 2：一字板會讓 span=0，除以零。</strong> 台股有漲跌停。必須有 <code>span &amp;lt;= 0</code> 的分支，直接把量塞進收盤價那格。</p>
+<p><strong>陷阱 3：把分位當成訊號。</strong> 「現價分位 99%」的意思是「過去半年只有 1% 的量成交在更高的位置」。它<strong>不代表</strong>貴、不代表該賣、不代表會回檔。它只是描述統計。真實產出裡 6213 聯茂分位 99%、POC 271.88、現價 530 —— 這在強勢突破股身上是常態，不是異常。</p>
+<p><strong>陷阱 4：視窗長度會改變答案。</strong> 6 個月和 1 年的 POC 可能差很遠。<strong>視窗長度必須顯示在畫面上</strong>，不能只在程式碼裡。</p>
+<h2>真實產出（6 個月，134 個交易日）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">股票</th><th style="text-align:right">收盤</th><th style="text-align:right">POC</th><th style="text-align:right">現價分位</th><th style="text-align:right">在價值區</th></tr></thead><tbody><tr><td style="text-align:left">1714 和桐</td><td style="text-align:right">16.50</td><td style="text-align:right">9.89</td><td style="text-align:right">62%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">2030 彰源</td><td style="text-align:right">23.65</td><td style="text-align:right">18.36</td><td style="text-align:right">99%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">3046 建基</td><td style="text-align:right">57.20</td><td style="text-align:right">57.73</td><td style="text-align:right">59%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">3605 宏致</td><td style="text-align:right">116.50</td><td style="text-align:right">89.40</td><td style="text-align:right">91%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">6213 聯茂</td><td style="text-align:right">530.00</td><td style="text-align:right">271.88</td><td style="text-align:right">99%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">6570 維田</td><td style="text-align:right">52.90</td><td style="text-align:right">59.34</td><td style="text-align:right">43%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">6603 富強鑫</td><td style="text-align:right">26.25</td><td style="text-align:right">25.69</td><td style="text-align:right">70%</td><td style="text-align:right">在</td></tr></tbody></table></div>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::volume_profile</code></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B02-volume-profile.md">claude/blocks/B02-volume-profile.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

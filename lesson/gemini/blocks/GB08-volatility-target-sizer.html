@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB08 · 積木 · 動態波動度目標部位調節器 (Volatility Target Sizer)</title>
+<meta name="description" content="一個依據投組近期實現波動度（Realized Volatility），將整體曝險水位動態縮放至**預設目標年化波動度（如 15%）**的風控積木，在高波動崩跌期自動降倉、低波動穩定期加滿倉位。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / gemini / GB08</div>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>積木 · 動態波動度目標部位調節器 (Vol-Target Sizer)</h1>
+<h2>一句話定義 (TL;DR)</h2>
+<p>一個依據投組近期實現波動度（Realized Volatility），將整體曝險水位動態縮放至<strong>預設目標年化波動度（如 15%）</strong>的風控積木，在高波動崩跌期自動降倉、低波動穩定期加滿倉位。</p>
+<hr>
+<h2>1. 黑盒子解構 (What Problem It Solves)</h2>
+<p>股票市場具有「波動度群聚效應（Volatility Clustering）」：在崩盤與劇烈震盪期，單日波動劇增，若維持 100% 倉位，MDD 將快速失控；透過目標波動度調節，策略能在市場恐慌時自動抽離資金保留現金。</p>
+<h3>數學公式：</h3>
+<p>設目標年化波動度為 $\sigma_{\text{target}}$（例如 $0.15$），過去 $W$ 日實現年化波動度為 $\widehat{\sigma}_t$：</p>
+<p>$$\text{Scalar}_t = \text{clip}\left( \frac{\sigma_{\text{target}}}{\widehat{\sigma}_t}, \text{Min Exposure}, \text{Max Exposure} \right)$$</p>
+<p>$$w_{i, t}^{\text{adjusted}} = w_{i, t}^{\text{base}} \times \text{Scalar}_t$$</p>
+<hr>
+<h2>2. 最小可運行積木代碼 (Minimal Runnable Pattern)</h2>
+<pre><code class="lang-python">&quot;&quot;&quot;GB08: Volatility Targeting Exposure Scaler.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+
+
+def apply_volatility_targeting(
+    portfolio_daily_returns: pd.Series,
+    target_annual_vol: float = 0.15,
+    lookback_days: int = 30,
+    min_exposure: float = 0.20,
+    max_exposure: float = 1.00,
+    annualization_factor: float = np.sqrt(252),
+) -&gt; pd.Series:
+    &quot;&quot;&quot;計算每日動態部位曝險縮放乘數 (Exposure Scalar)。
+
+    Args:
+        portfolio_daily_returns: 投組歷史日報酬率序列
+        target_annual_vol: 目標年化波動度 (預設 15%)
+        lookback_days: 歷史滾動計算視窗 (預設 30 日)
+        min_exposure: 最低持股水位
+        max_exposure: 最高持股水位 (如 1.0 代表不開槓桿)
+
+    Returns:
+        pd.Series: 每日部位縮放係數序列 [min_exposure, max_exposure]
+    &quot;&quot;&quot;
+    realized_vol = portfolio_daily_returns.rolling(lookback_days).std() * annualization_factor
+    realized_vol = realized_vol.replace(0, np.nan).fillna(target_annual_vol)
+
+    raw_scalar = target_annual_vol / realized_vol
+    scaled_exposure = raw_scalar.clip(lower=min_exposure, upper=max_exposure)
+    return scaled_exposure</code></pre>
+<hr>
+<h2>3. 單元測試範例 (Unit Test)</h2>
+<pre><code class="lang-python">def test_gb08_vol_targeting_scaling():
+    # 模擬 50 天的高波動市場 (日波動 2% -&gt; 年化約 31.7%)
+    returns_high_vol = pd.Series([0.02, -0.02] * 25)
+    
+    scalar = apply_volatility_targeting(
+        returns_high_vol,
+        target_annual_vol=0.15,
+        lookback_days=20,
+        min_exposure=0.2,
+        max_exposure=1.0,
+    )
+    
+    # 實現年化波動約 31.7%，目標 15%，乘數應自動降至約 0.47
+    latest_scalar = scalar.iloc[-1]
+    assert 0.40 &lt;= latest_scalar &lt;= 0.55</code></pre>
+<hr>
+<h2>4. NotebookLM &amp; AI 提問範本</h2>
+<ul><li><strong>Prompt</strong>：「請解釋 GB08 積木中 Volatility Targeting 的原理，它如何在 2020 年 3 月疫情股災或 2022 年大空頭中保護投組不受毀滅性打擊？」</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB08-volatility-target-sizer.md">gemini/blocks/GB08-volatility-target-sizer.md</a> · 作者 AI：Gemini (Google DeepMind / Antigravity) · 更新 2026-08-26</footer>
+</div></body>
+</html>

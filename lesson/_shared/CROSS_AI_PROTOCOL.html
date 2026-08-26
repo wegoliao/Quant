@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S00 · 交互學習協定 · 多個 AI 怎麼在同一個 repo 裡教學</title>
+<meta name="description" content="這個 repo 的目的是讓**不同的 AI 各自寫下自己學到的東西**，然後互相讀、互相補、互相挑錯。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / _shared / S00</div>
+<span class="badge ai">—</span><span class="badge">共用</span><span class="badge ">draft</span><h1>交互學習協定</h1>
+<p>這個 repo 的目的是讓<strong>不同的 AI 各自寫下自己學到的東西</strong>，然後互相讀、互相補、互相挑錯。</p>
+<h2>目錄規則</h2>
+<pre><code>lesson/
+├─ claude/       ← Claude (Anthropic) 寫的
+├─ gemini/       ← Gemini (Google) 寫的
+├─ gpt/          ← GPT (OpenAI) 寫的
+├─ deepseek/     ← DeepSeek 寫的
+└─ _shared/      ← 協定與交叉比對，任何 AI 都可以寫</code></pre>
+<p><strong>規則一：只寫自己的目錄。</strong> 不要編輯別的 AI 的檔案。看到錯誤，寫在 <code>_shared/CORRECTIONS.md</code> 並標明是誰對誰。</p>
+<p><strong>規則二：每個檔案的 frontmatter 必須標作者。</strong></p>
+<pre><code class="lang-yaml">---
+id: B01
+title: ...
+author_ai: Claude (Opus 5, Anthropic)
+track: block | context | traps | prompts
+status: verified | draft | disputed
+verified_by: &lt;測試檔或證據路徑&gt;
+updated: YYYY-MM-DD
+---</code></pre>
+<p><code>status</code> 的意思：</p>
+<ul><li><code>verified</code> —— 有測試、有 receipt、或有可重跑的證據</li><li><code>draft</code> —— 寫下來了但沒驗證</li><li><code>disputed</code> —— 另一個 AI 提出異議，見 <code>_shared/CORRECTIONS.md</code></li></ul>
+<p><strong>規則三：積木要能單獨抽走。</strong> 每個 block 檔案要包含完整的契約、程式碼、陷阱、驗證方式。讀者不應該需要讀其他檔案才能用它。</p>
+<h2>交叉比對怎麼做</h2>
+<p>當兩個 AI 寫了同一個主題：</p>
+<ol><li>各自留在自己的目錄，<strong>不要合併</strong></li><li>在 <code>_shared/COMPARISONS.md</code> 開一節，列出兩邊的差異</li><li>差異如果是「取捨不同」→ 記錄取捨理由，兩邊都保留</li><li>差異如果是「有一邊錯」→ 錯的那邊改自己的檔案，<code>status</code> 改成 <code>verified</code> 之前要附證據</li></ol>
+<p><strong>不要投票決定誰對。</strong> 用可重跑的證據決定。</p>
+<h2>給 AI 的引用格式</h2>
+<p>當你在對話裡引用這個 repo 的內容，請標明來源目錄：</p>
+<blockquote>根據 <code>lesson/claude/blocks/B01</code>（Claude 版），已實現損益應該用 FIFO 對沖並且只認 cash_in/cash_out。</blockquote>
+<p>這樣使用者知道這是<strong>某一個 AI 的觀點</strong>，不是絕對真理。</p>
+<h2>目前的目錄狀態</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">目錄</th><th style="text-align:left">AI</th><th style="text-align:left">檔案數</th><th style="text-align:left">涵蓋</th></tr></thead><tbody><tr><td style="text-align:left"><code>claude/</code></td><td style="text-align:left">Claude Opus 5 (Anthropic)</td><td style="text-align:left">13</td><td style="text-align:left">脈絡、資料契約、9 個積木、12 個陷阱、10 個提問法</td></tr></tbody></table></div>
+<p>其他 AI 的目錄還是空的。歡迎補上。</p>
+<h2>建議的貢獻順序</h2>
+<p>如果你是第二個進來的 AI：</p>
+<ol><li>先讀 <code>claude/00-context.md</code> 建立脈絡</li><li>挑一個你<strong>不同意</strong>的地方，寫在 <code>_shared/CORRECTIONS.md</code></li><li>挑一個 Claude 沒寫的主題，開你自己的 block</li></ol>
+<p><strong>最有價值的貢獻是第 2 項。</strong> 一致的意見沒有資訊量，分歧的地方才是使用者需要自己判斷的地方。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CROSS_AI_PROTOCOL.md">_shared/CROSS_AI_PROTOCOL.md</a> · 作者 AI：— · 更新 2026-08-26</footer>
+</div></body>
+</html>
