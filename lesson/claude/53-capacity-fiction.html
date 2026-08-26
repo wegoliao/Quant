@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C53 · 胃納量造假：三種寫法，都不是胃納量</title>
+<meta name="description" content="在小型市場做量化，**胃納量是真正的約束，不是績效**。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C53</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">陷阱</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>evidence/honest_top5/all_metrics.json</code></p><h1>胃納量造假：三種寫法，都不是胃納量</h1>
+<blockquote><strong>證據</strong>：對照某份報告的胃納量公式與其自己宣稱的數字</blockquote>
+<h2>為什麼這件事最重要</h2>
+<p>在小型市場做量化，<strong>胃納量是真正的約束，不是績效</strong>。</p>
+<p>實測：這個 repo 裡 CAGR 最高（53.69%）、Calmar 最高（2.16）、抗成本能力最強的那檔策略，胃納量是 <strong>NT$70,802</strong>。第二高的是 NT$79,251。</p>
+<p>也就是說，最漂亮的數字全部集中在你放不進錢的地方。任何不把胃納量和 Sharpe 並列的排名，都在誤導。</p>
+<h2>造假形態一：倒數公式</h2>
+<pre><code class="lang-python">cap = 70_645.0 / max(0.01, w_s127)</code></pre>
+<p>「胃納量 = 一個常數除以某個袖袋的權重」。</p>
+<p>這在數學上會產生你想要的行為（少配一點小型股 → 胃納量變大），但它不是胃納模型：</p>
+<ul><li>完全忽略其他袖袋的胃納</li><li>忽略「混合帳本的胃納受最緊的那一腳綁死」</li><li><code>w = 0</code> 時得到 <code>70645/0.01 = NT$7,064,500</code>，一個純粹由 clip 下界決定的數字</li></ul>
+<p>而且<strong>連自己的公式都對不上</strong>：<code>w_s127 = 0.08</code> 代入得 NT$883,062，但報告寫 NT$630,759。</p>
+<h2>造假形態二：寫死常數除以槓桿</h2>
+<pre><code class="lang-python">elif basket_type == &quot;S123_BASE&quot;:
+    d_base = daily_123
+    cap = 2_279_291.0          # 寫死
+...
+eff_cap = cap / max(1.0, bull_leverage)</code></pre>
+<p><code>2,279,291 / 1.5 = 1,519,527</code> —— 這就是報告裡那檔策略的「胃納量」。</p>
+<p>全程沒有對加了槓桿的帳本做任何胃納計算。而且 1.5x 槓桿的胃納量不是「除以 1.5」那麼簡單：加槓桿之後每檔的絕對部位變大，衝擊成本是非線性的。</p>
+<h2>造假形態三：報 0，然後在報告裡寫別的</h2>
+<pre><code class="lang-json">&quot;capacity&quot;: 0.0,
+&quot;capacity_local&quot;: 928859.0</code></pre>
+<p>一個欄位是 0（沒算成），另一個是本地估計。報告引用後者，但沒說前者是空的。</p>
+<hr>
+<h2>可用的本地模型</h2>
+<p>FinLab 的 <code>liquidity.capacity</code> 是伺服器端計算，離線取不到。所以要在本地重算，而且要對應到你自己宣告的執行規則。</p>
+<p>這個 repo 的執行層規則是「單一標的下單量 &gt; ADV20 的 5% 就 BLOCK」。本地重算就照這條：</p>
+<pre><code class="lang-python">def capacity_ntd(position, participation=0.05, q=0.5):
+    &quot;&quot;&quot;帳本規模上限：持股中最緊的一檔碰到 ADV20 的 participation 時的 NAV。&quot;&quot;&quot;
+    adv20 = (close * volume).average(20)
+
+    held = position.astype(bool)
+    n = held.sum(axis=1)
+    held, n = held[n &gt; 0], n[n &gt; 0]
+
+    adv_al = adv20.reindex(index=held.index, columns=held.columns, method=&quot;ffill&quot;)
+    # 等權假設下，每檔權重 = 1/n，該檔容得下的 NAV = participation * ADV / (1/n)
+    per_name = adv_al.where(held) * participation
+    tightest = per_name.min(axis=1) * n
+    return float(tightest.dropna().quantile(q))</code></pre>
+<p>三個必須講清楚的設計選擇：</p>
+<ol><li><strong>取最緊的那一檔</strong>（<code>min(axis=1)</code>），不是平均。帳本的胃納由最難買的那檔綁死。</li><li><strong>取中位數</strong>（<code>quantile(0.5)</code>），不是最小值也不是平均。最小值會被單一異常日綁架；平均會被高流動性期間拉高。</li><li><strong>等權假設</strong>。如果你的策略不是等權，要改成 <code>per_name / weight</code>。</li></ol>
+<h2>這個模型不能宣稱的事</h2>
+<ul><li>它<strong>沒有模擬市場衝擊</strong>。它只回答「不超過 ADV 的 5%」，不回答「買下去會推價多少」。</li><li>它<strong>沒有考慮進出對稱性</strong>。賣出的流動性通常比買入差，尤其在你想賣的時候。</li><li>它是<strong>本地重算</strong>，和 FinLab 伺服器端的數字不會一樣。要標明是哪一個。</li></ul>
+<h2>實測：胃納量如何改變排名</h2>
+<p>同一批策略，按 Sharpe 排 vs 加上胃納量門檻（NT$50 萬）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">Sharpe</th><th style="text-align:left">CAGR</th><th style="text-align:left">Calmar</th><th style="text-align:left">胃納量</th><th style="text-align:left">可部署</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left">21.78%</td><td style="text-align:left">1.84</td><td style="text-align:left">NT$1,077,368</td><td style="text-align:left">是</td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">2.110</td><td style="text-align:left">32.26%</td><td style="text-align:left">1.39</td><td style="text-align:left">NT$192,132</td><td style="text-align:left"><strong>否</strong></td></tr><tr><td style="text-align:left">S127</td><td style="text-align:left">2.107</td><td style="text-align:left"><strong>53.69%</strong></td><td style="text-align:left"><strong>2.16</strong></td><td style="text-align:left"><strong>NT$70,802</strong></td><td style="text-align:left"><strong>否</strong></td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">26.62%</td><td style="text-align:left">1.58</td><td style="text-align:left">NT$2,278,084</td><td style="text-align:left">是</td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">1.993</td><td style="text-align:left">35.17%</td><td style="text-align:left">1.17</td><td style="text-align:left"><strong>NT$79,251</strong></td><td style="text-align:left"><strong>否</strong></td></tr></tbody></table></div>
+<p>按 Sharpe 排的前五名，有三名放不進錢。</p>
+<h2>記住</h2>
+<blockquote>在報告裡，胃納量要和 Sharpe 並列在同一張表，不能放附註。放附註等於沒放 —— 讀的人會先被 CAGR 53.69% 抓走注意力。</blockquote>
+<p>相關：<a href="41-capacity-is-the-constraint.md">為什麼胃納量是真正的約束</a>、<a href="70-verified-strategy-inventory.md">已驗證積木清單</a></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/53-capacity-fiction.md">claude/53-capacity-fiction.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

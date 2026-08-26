@@ -26,6 +26,18 @@
 - [C01 資料契約 · 四個 CSV 就是全部](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/01-contracts.md): 脈絡 · verified
 - [C20 陷阱清單 · 這個專案真的踩到的坑](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/20-traps.md): 陷阱 · verified
 - [C30 問題寫法 · 怎麼問才會拿到真話](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/30-prompts.md): 提問法 · verified
+- [C40 資料的真相：你的回測期間由最短的那個資料集決定](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/40-research-data-truth.md): 脈絡 · verified
+- [C41 為什麼胃納量是真正的約束](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/41-capacity-is-the-constraint.md): 脈絡 · verified
+- [C42 成本模型：不打折、次日開盤、重跑而非扣減](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/42-cost-model.md): 脈絡 · verified
+- [C50 前視偏誤：一天的時差可以製造出 Sharpe 4.9](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/50-lookahead-bias.md): 陷阱 · verified
+- [C51 假驗證的四種形態](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md): 陷阱 · verified
+- [C52 試驗計數：少算 4.7 倍，門檻就低了 0.26 個 Sharpe](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/52-trial-counting.md): 陷阱 · verified
+- [C53 胃納量造假：三種寫法，都不是胃納量](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/53-capacity-fiction.md): 陷阱 · verified
+- [C60 驗證流水線：怎麼一次驗完整個策略庫](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/60-verification-harness.md): 驗證 · verified
+- [C61 去膨脹夏普：怎麼算才算數](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/61-deflated-sharpe.md): 驗證 · verified
+- [C62 參數高原：你選的是山峰還是平台](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/62-parameter-plateau.md): 驗證 · verified
+- [C70 已驗證積木清單：策略層](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/70-verified-strategy-inventory.md): 積木 · verified
+- [C80 對照分析 · 我的實測落在 Gemini 與 Codex 軌道的哪裡](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/80-cross-ai-notes.md): 脈絡 · verified
 - [B01 已實現損益 · FIFO 對沖，只認落袋現金](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B01-realized-pnl-fifo.md): 積木 · verified
 - [B02 分價分布 · 用日線做出 volume-at-price](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B02-volume-profile.md): 積木 · verified
 - [B03 成交落點 · 唯一能對「進場點」說的實證](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B03-fill-landing.md): 積木 · verified
@@ -35,12 +47,17 @@
 - [B07 Fail closed · 寧可炸掉，不要安靜地算錯](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B07-fail-closed-inputs.md): 積木 · verified
 - [B08 樣本量門檻 · 敢顯示 N/A 才是專業](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B08-sample-size-gate.md): 積木 · verified
 - [B09 推導式狀態 · 能算出來的絕不另存一份](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B09-derived-state.md): 積木 · verified
+- [B10 shift(1) 前視測試 · 任何疊加層的有罪推定](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B10-shift1-lookahead-test.md): 積木 · verified
+- [B11 機械試驗計數器 · 不讓呼叫端自己填 N](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B11-mechanical-trial-counter.md): 積木 · verified
+- [B12 本地胃納模型 · 最緊的那一檔決定整本帳](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B12-local-capacity-model.md): 積木 · verified
+- [B13 相關係數去重 · 你的前五名可能是同一支策略](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B13-correlation-dedup.md): 積木 · verified
+- [B14 策略契約：讓作弊在建構物件時就爆掉](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B14-strategy-spec-contract.md): 積木 · verified
 
 ## lesson/codex — ox-alpha (Hermes Agent / Nous Research)
 
 - [整份合輯（推薦）](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md)
 - [X00 脈絡 · Codex 在這個專案裡做過什麼、為什麼重要](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/00-context.md): 脈絡 · verified
-- [X1 積木 · 對抗性稽核法——為什麼 129 個測試全綠還是不安全](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/01-adversarial-audit-method.md): validation · verified
+- [X1 積木 · 對抗性稽核法——為什麼 129 個測試全綠還是不安全](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/01-adversarial-audit-method.md): 驗證 · verified
 - [X2 積木 · TWSE 盤中零股集合競價——決定價 P* 的法定順序](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/02-oddlot-auction-twse-rules.md): execution · verified
 - [X3 積木 · 驗證鏈偽造——「簽章驗得過」不等於「是 owner 簽的」](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/03-auth-chain-forgery.md): governance · verified
 - [X4 積木 · 訂單狀態三聯畫——一個 enum 裝不下「成交＋取消失敗＋還活著」](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/04-order-state-triptych.md): execution · verified
@@ -54,8 +71,8 @@
 - [G02 資料防偷看防禦 · FinLab 資料管線與 PIT 財報公告日對齊](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/02-data-pit-and-leakage-defense.md): data · verified
 - [G03 戰術分配 · 凸性整數規劃與真實帳戶部位定價](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/03-tactics-and-integer-sizing.md): tactics · verified
 - [G04 微結構與執行工程 · 委託簿深度、ADV 容量守門員與滑價校準](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/04-microstructure-and-execution.md): execution · verified
-- [G05 核心策略演化 · 波動度加權與 50% CAGR 遺傳演算法 (GA) 藍圖](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/05-alpha-strategies-and-ga.md): strategy · verified
-- [G06 防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/06-validation-dsr-and-forward-sim.md): validation · verified
+- [G05 核心策略演化 · 波動度加權與 50% CAGR 遺傳演算法 (GA) 藍圖](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/05-alpha-strategies-and-ga.md): 策略 · verified
+- [G06 防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/06-validation-dsr-and-forward-sim.md): 驗證 · verified
 - [GB01 積木 · 全域排他研究鎖 (OS-backed Research Lock)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB01-research-lock.md): 積木 · verified
 - [GB02 積木 · PIT 財報與營收防偷看對齊器 (PIT & Lag Aligner)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB02-pit-lag-aligner.md): 積木 · verified
 - [GB03 積木 · 凸性整數規劃投組權重分配器 (Integer Basket Allocator)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB03-integer-basket-allocator.md): 積木 · verified

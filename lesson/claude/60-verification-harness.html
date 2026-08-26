@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C60 · 驗證流水線：怎麼一次驗完整個策略庫</title>
+<meta name="description" content="不引用任何既有的績效數字。** 全部重跑。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C60</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">驗證</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>scripts/run_honest_topN.py</code></p><h1>驗證流水線：怎麼一次驗完整個策略庫</h1>
+<blockquote><strong>證據</strong>：127 檔已註冊策略，15.2 分鐘跑完全量 <code>backtest.sim</code></blockquote>
+<h2>設計原則</h2>
+<p><strong>不引用任何既有的績效數字。</strong> 全部重跑。</p>
+<p>理由：既有的 evidence 檔案是好幾個 AI 在好幾天裡寫的，用的成本假設、期間、指標定義都可能不同。把它們並排比較，比較的是四種不同的東西。重跑一次，全部統一。</p>
+<p>15 分鐘的代價換一張可比的表，划算。</p>
+<h2>Pass 1：全量模擬</h2>
+<pre><code class="lang-python">for spec in registry.all_strategies():
+    pos = spec.build_position()
+    rep = backtest.sim(pos, **spec.backtest.as_sim_kwargs())   # 用策略自己宣告的成本
+    r = active_returns(rep.creturn)
+    r.to_frame(&quot;return&quot;).to_parquet(CURVES / f&quot;{spec.strategy_number}.parquet&quot;)
+    rows.append({**metrics(r), &quot;capacity_ntd&quot;: capacity_ntd(pos), ...})</code></pre>
+<p>三個關鍵細節：</p>
+<h3>1. 用策略自己宣告的成本，不要統一覆蓋</h3>
+<pre><code class="lang-python">rep = backtest.sim(pos, **spec.backtest.as_sim_kwargs())</code></pre>
+<p>每個策略的 <code>BacktestConfig</code> 帶著自己的 <code>resample</code>、<code>resample_offset</code>、<code>fee_ratio</code>。統一覆蓋會破壞例如 <code>resample_offset=&amp;quot;14D&amp;quot;</code> 這種和資料公布節奏綁定的設定。</p>
+<p>要比較的是「各自最佳配置下的表現」，不是「在我硬塞的配置下的表現」。</p>
+<h3>2. 從真正開始交易的那天算起</h3>
+<pre><code class="lang-python">def active_returns(curve):
+    r = curve.pct_change().dropna()
+    nz = r[r != 0.0]
+    return r.loc[nz.index[0]:] if len(nz) else r</code></pre>
+<p><code>creturn</code> 從 1.0 開始，在第一次進場前是平的。那段平的會把 Sharpe 灌水（分母變小）、把年數灌水（CAGR 縮水）。一定要切掉。</p>
+<h3>3. 每檔的日報酬存成 parquet</h3>
+<p>Pass 2 的所有檢查（DSR、去重、相關係數）都建立在日報酬上。存下來，Pass 2 就不用重跑。</p>
+<h2>指標定義（寫死，不要有第二種算法）</h2>
+<pre><code class="lang-python">def metrics(r):
+    c = (1.0 + r).cumprod()
+    yrs = (c.index[-1] - c.index[0]).days / 365.25
+    cagr = c.iloc[-1] ** (1.0 / yrs) - 1.0
+    sharpe = r.mean() / r.std() * np.sqrt(252)
+    down = r[r &lt; 0]
+    sortino = r.mean() / down.std() * np.sqrt(252)
+    mdd = float((c / c.cummax() - 1.0).min())
+
+    br = bench_r.reindex(r.index).fillna(0.0)      # 加權股價報酬指數
+    beta = float(r.cov(br) / br.var())
+    alpha_d = r.mean() - beta * br.mean()
+
+    return {
+        &quot;cagr_pct&quot;: cagr * 100,
+        &quot;sharpe&quot;: sharpe,
+        &quot;sortino&quot;: sortino,
+        &quot;mdd_pct&quot;: mdd * 100,
+        &quot;calmar&quot;: cagr / abs(mdd),
+        &quot;alpha_ann_pct&quot;: ((1 + alpha_d) ** 252 - 1) * 100,
+        &quot;beta&quot;: beta,
+    }</code></pre>
+<p><strong>年數一定要從實際的 index 算</strong>，不要用寫死的常數。我驗過一份報告，CAGR 用 12.49 年算而實際是 12.89 年，結果每個 CAGR 都灌水 2.5 個百分點。</p>
+<p><strong>alpha 要對「報酬指數」迴歸</strong>，不是價格指數 —— 否則你會把股息當成 alpha。</p>
+<h2>Pass 2：四項防過擬合檢查</h2>
+<h3>檢查一：去重（要先做）</h3>
+<p>用日報酬相關係數，不要靠檔名或家族欄位。</p>
+<pre><code class="lang-python">def dedup(rows, limit, rho=0.95):
+    ranked = sorted(rows, key=lambda r: -(r[&quot;sharpe&quot;] or 0))
+    kept, kept_ret, dropped = [], {}, {}
+    for r in ranked:
+        ret = load_returns(r[&quot;strategy_number&quot;])
+        dup_of = next((k for k, kr in kept_ret.items()
+                       if len(ret.index.intersection(kr.index)) &gt; 252
+                       and ret.corr(kr) &gt;= rho), None)
+        if dup_of:
+            dropped.setdefault(dup_of, []).append(r[&quot;strategy_number&quot;])
+            continue
+        kept.append(r); kept_ret[r[&quot;strategy_number&quot;]] = ret
+        if len(kept) &gt;= limit:
+            break
+    return kept, dropped</code></pre>
+<p>實測抓到：三個編號指向同一支策略（ρ = 1.000），另外一組三檔 ρ 0.95–0.99。</p>
+<p>不先去重，你的「前五名」會是同一支策略的三個版本。</p>
+<h3>檢查二：去膨脹夏普</h3>
+<p>見 <a href="61-deflated-sharpe.md">deflated-sharpe.md</a>。重點是試驗數要<strong>機械計數</strong>，且注意日頻／年化的單位。</p>
+<h3>檢查三：參數高原</h3>
+<p>見 <a href="62-parameter-plateau.md">parameter-plateau.md</a>。每個鄰居都重跑 <code>sim</code>。</p>
+<h3>檢查四：成本敏感度</h3>
+<p>見 <a href="42-cost-model.md">cost-model.md</a>。每個檔位都重跑 <code>sim</code>。</p>
+<h2>分段穩定度（順手做）</h2>
+<pre><code class="lang-python">blocks = np.array_split(r, 4)
+block_sharpes = [b.mean() / b.std() * np.sqrt(252) for b in blocks if len(b) &gt; 60]
+min_block_sharpe = min(block_sharpes)</code></pre>
+<p>這<strong>不是</strong>走步驗證（見 <a href="51-fake-validation.md">fake-validation.md</a>），別這樣叫它。它回答的是「這條曲線有沒有某一段接近失效」。</p>
+<p>實測有用：某檔策略整體 Sharpe 1.499 看起來還行，但最差區塊掉到 0.958 —— 有整整一個時期它幾乎失效。另一檔整體 2.211，最差區塊仍有 1.946。</p>
+<h2>最後一步：相關係數矩陣</h2>
+<pre><code class="lang-python">corr = pd.DataFrame({n: load_returns(n) for n in shortlist}).corr()</code></pre>
+<p>這一步最容易被跳過，但它常常是最重要的發現。</p>
+<p>實測：按 Sharpe 排的前五名，彼此相關係數 0.78–0.90。<strong>各配 20% 資金買到的是同一個因子的五種寫法，不是分散。</strong> 真正低相關的組合是第 1、第 9、第 10 名（ρ 0.50–0.62）。</p>
+<p>沒有這張矩陣，你會以為自己分散了。</p>
+<h2>完整輸出</h2>
+<pre><code>evidence/honest_top5/
+├── all_metrics.json        127 檔全量指標
+├── curves/*.parquet        每檔日報酬
+├── robustness.json         四項檢查結果
+└── turnover.json           實際成交次數與持有期</code></pre>
+<p><code>turnover.json</code> 那個是補做的 —— 我第一版算週轉率算錯了（算的是原始訊號 frame 的日變動，不是實際成交），要從 <code>rep.trades</code> 拿：</p>
+<pre><code class="lang-python">rep = backtest.sim(spec.build_position(), **spec.backtest.as_sim_kwargs())
+t = rep.trades
+trades_per_year = len(t) / years
+median_hold_days = (t[&quot;exit_date&quot;] - t[&quot;entry_date&quot;]).dt.days.median()</code></pre>
+<h2>記住</h2>
+<blockquote>全量重跑比挑幾檔重跑更省事，因為你不用解釋為什麼挑那幾檔。127 檔 15 分鐘，沒有理由不做。</blockquote>
+<p>相關：<a href="51-fake-validation.md">假驗證的四種形態</a>、<a href="70-verified-strategy-inventory.md">已驗證積木清單</a></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/60-verification-harness.md">claude/60-verification-harness.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

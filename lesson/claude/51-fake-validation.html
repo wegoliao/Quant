@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C51 · 假驗證的四種形態</title>
+<meta name="description" content="驗證會被造假，而且通常不是故意的 —— 是寫的人以為自己做了，實際上做的是另一件事。以下四種我都實際還原過。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C51</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">陷阱</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>evidence/CLAUDE_VERIFICATION_GEMINI_CAGR50_2026-08-26.md</code></p><h1>假驗證的四種形態</h1>
+<blockquote><strong>證據</strong>：對一份宣稱通過「5-Fold Purged Walk-Forward + 0–100bps 滑價壓測 + DSR ≥ 0.98」的報告做逐項還原</blockquote>
+<p>驗證會被造假，而且通常不是故意的 —— 是寫的人以為自己做了，實際上做的是另一件事。以下四種我都實際還原過。</p>
+<hr>
+<h2>形態一：切樣本內曲線，叫它 Walk-Forward</h2>
+<pre><code class="lang-python">def compute_purged_walkforward_maximin(daily_ret, n_folds=5, embargo_d=20):
+    n = len(daily_ret)
+    fold_size = n // n_folds
+    fold_sharpes = []
+    for k in range(n_folds):
+        start_idx = k * fold_size
+        end_idx = (k + 1) * fold_size if k &lt; n_folds - 1 else n
+        if k &gt; 0:
+            start_idx += embargo_d          # 「embargo」
+        fold_r = daily_ret.iloc[start_idx:end_idx]
+        fold_sharpes.append(fold_r.mean() / fold_r.std() * np.sqrt(252))
+    return min(fold_sharpes)</code></pre>
+<p>這在做什麼：把<strong>同一條已經優化完的樣本內曲線</strong>切成 5 段，各算一次 Sharpe，取最小值。</p>
+<p>這<strong>不是</strong> walk-forward，因為：</p>
+<ul><li>沒有訓練集／測試集切分</li><li>沒有在訓練集上重新配適參數</li><li>沒有任何一段是樣本外</li><li>所謂 embargo 只是每段開頭跳過 20 筆</li></ul>
+<p>它真正的名字是「分段穩定度」。那是有用的指標 —— 但它回答的是「這條曲線在各時期都成立嗎」，不是「這組參數在沒看過的資料上成立嗎」。</p>
+<p><strong>更嚴重的是</strong>，這個數字被拿去當適應度函數的一部分：</p>
+<pre><code class="lang-python">if cap &lt; 500_000 or m[&quot;years&quot;] &lt; 8.0 or mdd &lt; -0.25 or sh &lt; 1.80 or pwf_maximin &lt; 1.00:
+    return -float(&quot;inf&quot;)          # 硬門檻
+fitness = 0.45*cagr_score + 0.25*calmar_score + 0.15*cap_score + 0.15*pwf_score</code></pre>
+<p>搜尋演算法直接對這個「驗證指標」做優化。這是教科書等級的「在驗證集上選模型」—— 通過率當然是 100%。</p>
+<p><strong>怎麼分辨</strong>：問一句「哪一段資料是配適時沒看過的？」如果答案是「都看過，只是切開來算」，那就不是走步驗證。</p>
+<hr>
+<h2>形態二：滑價壓測沒有重跑回測</h2>
+<p>那份報告有一張 0/10/20/30/50/75/100 bps 的表，看起來很嚴謹。程式碼是這樣：</p>
+<pre><code class="lang-python">if pos_mat is not None and not pos_mat.empty:
+    rep = backtest.sim(pos_mat, fee_ratio=TW_FEE + slip_ratio, ...)   # 正確的分支
+    m_s = evaluate_curve(rep.creturn)
+else:
+    r_sl = d_ret - slip_ratio * 0.10                                   # fallback
+    c_sl = (1.0 + r_sl).cumprod()
+    m_s = evaluate_curve(c_sl)</code></pre>
+<p>實際走的是 fallback：每 10 bps 就從<strong>每個日報酬</strong>扣掉固定 1 bp。我用這條公式重算 3 檔 × 7 檔位 = <strong>21 個儲存格，Sharpe 與 MDD 全部四位小數完全重現</strong>。所以 <code>backtest.sim</code> 一次都沒被呼叫。</p>
+<p>這個模型錯在哪：</p>
+<ul><li>與週轉率無關。月頻換股一年約 12 次，拖曳卻每年扣 252 次。</li><li>反過來對真正的高週轉策略又嚴重低估。</li><li>滑價應該打在成交金額上，不是打在日曆天上。</li></ul>
+<p><strong>怎麼一眼看出</strong>：算 Sharpe 的一階差分。真實回測的 Sharpe 對成本是非線性的。那份報告是：</p>
+<pre><code>4.9631 → 4.7177 → 4.4722 → 4.2267
+差:      0.2454   0.2455   0.2455       ← 完美線性 = 指紋</code></pre>
+<p>CAGR 也一樣：<code>(1+CAGR)</code> 每 10bps 乘上固定的 0.97515。這是閉式公式，不是七次回測。</p>
+<p><strong>正確做法</strong>：每個成本檔位都重新呼叫 <code>backtest.sim</code>，把成本加進 <code>fee_ratio</code> / <code>tax_ratio</code>。實測的真實形狀長這樣：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:left">宣告成本</th><th style="text-align:left">+10bps/邊</th><th style="text-align:left">+30bps/邊</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left">2.019</td><td style="text-align:left">1.625</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">1.947</td><td style="text-align:left">1.640</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left">1.756</td><td style="text-align:left">1.631</td><td style="text-align:left">1.377</td></tr></tbody></table></div>
+<p>衰減率各不相同（-22% 到 -28%），因為週轉率不同。這才是成本壓測該有的樣子。</p>
+<hr>
+<h2>形態三：測試不驗證任何數字</h2>
+<pre><code class="lang-python">def test_s147_default_build_callable():
+    spec = registry.get_by_number(&quot;S147&quot;)
+    assert spec.default_params[&quot;bull_leverage&quot;] == 1.50
+    assert spec.default_params[&quot;bear_exposure&quot;] == 0.20</code></pre>
+<p>這個測試斷言的是「一個字典裡的字面值等於我寫在同一份程式碼裡的另一個字面值」。它：</p>
+<ul><li>沒有呼叫 <code>build()</code></li><li>沒有跑回測</li><li>沒有檢查任何績效數字</li></ul>
+<p>但報告寫的是「自動化測試套件 4/4 全部 PASS」。<strong>PASS 本身不是證據，要看它斷言了什麼。</strong></p>
+<p>順帶一提，那三個策略模組根本不能執行 —— 裡面寫的是 <code>data.get(&amp;quot;price:???&amp;quot;)</code>，中文欄位名在寫檔時被編碼摧毀（整個檔案非 ASCII 位元組數為 0）。測試不敢呼叫 <code>build()</code>，正是因為一呼叫就會爆。</p>
+<p><strong>正確做法</strong>：績效測試要實際跑回測並斷言區間。</p>
+<pre><code class="lang-python">def test_s122_performance_envelope():
+    spec = registry.get_by_number(&quot;S122&quot;)
+    rep = backtest.sim(spec.build_position(), **spec.backtest.as_sim_kwargs())
+    r = rep.creturn.pct_change().dropna()
+    sharpe = r.mean() / r.std() * np.sqrt(252)
+    assert 2.0 &lt; sharpe &lt; 2.4, f&quot;S122 Sharpe drifted to {sharpe:.3f}&quot;</code></pre>
+<p>慢，但它真的在守著東西。</p>
+<hr>
+<h2>形態四：宣稱的數字和自己的產出對不上</h2>
+<p>同一份報告裡的三處互相矛盾：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">期間</th><th style="text-align:left">年數</th><th style="text-align:left">筆數</th></tr></thead><tbody><tr><td style="text-align:left">報告正文</td><td style="text-align:left">2013-05-15 ~ 2026-08-21</td><td style="text-align:left">13.27</td><td style="text-align:left">3,244</td></tr><tr><td style="text-align:left">champions.json</td><td style="text-align:left">—</td><td style="text-align:left">12.49</td><td style="text-align:left">—</td></tr><tr><td style="text-align:left"><strong>實際 parquet</strong></td><td style="text-align:left"><strong>2013-10-01 ~ 2026-08-21</strong></td><td style="text-align:left"><strong>12.89</strong></td><td style="text-align:left"><strong>3,148</strong></td></tr></tbody></table></div>
+<p>CAGR 是用 12.49 年算的，實際 12.89 年。結果每個 CAGR 都灌水約 2.5 個百分點（65.49% 實際是 62.95%）。</p>
+<p>另外，搜尋的 <code>progress.md</code>（最後一代，01:04 寫出）記錄某島最佳解是 Sharpe 2.29 / MDD -18.58%，但 <code>champions.json</code>（00:52 寫出，<strong>比搜尋結束早 12 分鐘</strong>）宣稱同一個島是 Sharpe 4.96 / MDD -5.51%。而且宣稱的「冠軍基因」根本不在該島的搜尋空間裡（基因空間只有 <code>[0.10, 0.20, 0.30, 0.40]</code>，宣稱值是 0.08 和 0.52）。</p>
+<p><strong>檢查清單</strong>：</p>
+<ul><li>報告的期間 = 產出檔案的期間嗎？</li><li>冠軍的參數在搜尋空間內嗎？</li><li>冠軍檔案的時間戳晚於搜尋結束的時間戳嗎？</li><li>報告宣稱的 DSR 和 JSON 裡的 <code>&amp;quot;dsr&amp;quot;</code> 欄位一致嗎？（那份是 <code>&amp;quot;dsr&amp;quot;: 0.0</code>，報告寫「DSR ≥ 0.98」）</li></ul>
+<hr>
+<h2>總結：驗證報告的驗證清單</h2>
+<ol><li>哪一段資料在配適時沒被看過？（沒有 → 不是樣本外）</li><li>驗證指標有沒有進入適應度函數？（有 → 在驗證集上選模型）</li><li>成本壓測有沒有重跑 <code>sim</code>？（算 Sharpe 一階差分，完美線性 = 造假）</li><li>測試斷言了什麼？（只斷言字面值 = 沒斷言）</li><li>報告的期間、參數、時間戳，和產出檔案對得上嗎？</li></ol>
+<p>相關：<a href="50-lookahead-bias.md">前視偏誤</a>、<a href="52-trial-counting.md">試驗計數</a></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">claude/51-fake-validation.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

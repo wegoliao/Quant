@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C40 · 資料的真相：你的回測期間由最短的那個資料集決定</title>
+<meta name="description" content="任何用到營業毛利率、營業利益率、ROE、營運現金流的策略，回測期間就被鎖死在 2013 年之後 —— 也就是說：">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C40</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">脈絡</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>evidence/honest_top5/all_metrics.json</code></p><h1>資料的真相：你的回測期間由最短的那個資料集決定</h1>
+<blockquote><strong>證據</strong>：直接查詢 FinLab 各資料集的 index 首尾（離線快取）</blockquote>
+<h2>實測的歷史深度</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">資料集</th><th style="text-align:left">起</th><th style="text-align:left">迄</th><th style="text-align:left">筆數</th><th style="text-align:left">頻率</th></tr></thead><tbody><tr><td style="text-align:left"><code>price:收盤價</code></td><td style="text-align:left">2007-04-23</td><td style="text-align:left">2026-08-26</td><td style="text-align:left">4,756</td><td style="text-align:left">日</td></tr><tr><td style="text-align:left"><code>price:成交股數</code></td><td style="text-align:left">2007-04-23</td><td style="text-align:left">2026-08-26</td><td style="text-align:left">4,756</td><td style="text-align:left">日</td></tr><tr><td style="text-align:left"><code>benchmark_return:發行量加權股價報酬指數</code></td><td style="text-align:left">2003-01-02</td><td style="text-align:left">2026-08-26</td><td style="text-align:left">5,821</td><td style="text-align:left">日</td></tr><tr><td style="text-align:left"><code>price_earning_ratio:股價淨值比</code></td><td style="text-align:left">2010-01-04</td><td style="text-align:left">2026-08-25</td><td style="text-align:left">4,079</td><td style="text-align:left">日</td></tr><tr><td style="text-align:left"><code>monthly_revenue:當月營收</code></td><td style="text-align:left">2005-02-10</td><td style="text-align:left">2026-08-10</td><td style="text-align:left">259</td><td style="text-align:left">月</td></tr><tr><td style="text-align:left">**<code>fundamental_features:*</code>**</td><td style="text-align:left"><strong>2013-Q1</strong></td><td style="text-align:left"><strong>2026-Q2</strong></td><td style="text-align:left"><strong>54</strong></td><td style="text-align:left"><strong>季</strong></td></tr></tbody></table></div>
+<h2>最重要的一條</h2>
+<p><strong><code>fundamental_features</code> 只有 54 個季度資料點，從 2013 年開始。</strong></p>
+<p>任何用到營業毛利率、營業利益率、ROE、營運現金流的策略，回測期間就被鎖死在 2013 年之後 —— 也就是說：</p>
+<ul><li>沒看過 2008 金融海嘯</li><li>沒看過 2011 歐債</li><li>有效樣本是 54 個季度觀測，不是 3,200 個交易日</li></ul>
+<p>第二點特別容易被忽略：你的回測曲線有 3,200 個日報酬點，看起來樣本很大，但驅動它的基本面因子只更新了 54 次。<strong>統計檢定力來自因子的更新次數，不是報酬序列的長度。</strong></p>
+<p>實測案例：某檔策略 Sharpe 2.211、MDD -11.83%、每個分段都 ≥1.95，數字很漂亮 —— 但它依賴 <code>fundamental_features:營業毛利率</code>，所以這一切都建立在 13.28 年、54 個季度觀測之上，而且完全沒看過 2008。</p>
+<h2>對應的取捨</h2>
+<p>如果你需要長歷史，就得放棄財報因子，只用價量。實測代價：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">期間</th><th style="text-align:left">因子</th><th style="text-align:left">Sharpe</th><th style="text-align:left">DSR</th></tr></thead><tbody><tr><td style="text-align:left">有財報因子</td><td style="text-align:left">13.28 年（無 2008）</td><td style="text-align:left">毛利、股價淨值比…</td><td style="text-align:left">2.211</td><td style="text-align:left">0.9595 通過</td></tr><tr><td style="text-align:left">純價量長歷史</td><td style="text-align:left"><strong>18.36 年（含 2008）</strong></td><td style="text-align:left">價、量、營收</td><td style="text-align:left">1.816</td><td style="text-align:left">0.7340 未過</td></tr></tbody></table></div>
+<p>沒有免費午餐：多看 5 年（含一次真正的崩盤）換來 Sharpe 掉 0.4。哪個比較可信？看你怕的是什麼。</p>
+<h2>因子對齊：不是細節，會改變結論</h2>
+<p>季頻和月頻的資料要先 <strong>ffill 到日頻再做橫斷面排名</strong>，不能在原始頻率上排完再對齊。</p>
+<p>原因：財報是滾動公布的，不同公司在不同日期揭露。如果你在季頻格點上排名，等於假設所有公司同時公布。</p>
+<p>實測影響：把對齊方式從「排名後對齊」改成「ffill 到日再排名」，某檔策略的 Calmar 從 <strong>1.496 變成 1.867</strong>。這不是雜訊，是方法錯誤被修正。</p>
+<pre><code class="lang-python">def sc(d):
+    &quot;&quot;&quot;把任何頻率的資料對齊到日頻的價格格點。&quot;&quot;&quot;
+    if hasattr(d, &quot;index_str_to_date&quot;):
+        d = d.index_str_to_date()
+    if not isinstance(d.index, pd.DatetimeIndex):
+        d.index = pd.to_datetime(d.index)
+    d = d[d.index.notna()]
+    if d.index.has_duplicates:
+        d = d[~d.index.duplicated(keep=&quot;last&quot;)]
+    return d.sort_index().reindex(index=close.index, columns=close.columns, method=&quot;ffill&quot;)
+
+score = sc(gross_margin).rank(axis=1, pct=True) + sc(ocf).rank(axis=1, pct=True)
+#      ^^^^^^^^^^^^^^^^ 先對齊                    ^^^^^^^^^^^^^^^^^^ 再排名</code></pre>
+<h2>公布日對齊（resample_offset）</h2>
+<p>月營收在次月 10 日前公布。如果你在月底換股，你用的是「還沒公布的營收」或「已經舊了一個月的營收」。</p>
+<p><code>resample_offset=&amp;quot;14D&amp;quot;</code> 把換股日推到月中，對齊公布節奏。實測這一項<strong>單獨貢獻 0.358 個 Sharpe</strong> —— 純粹是時序對齊，沒有增加任何資訊。</p>
+<pre><code class="lang-python">backtest=BacktestConfig(
+    resample=&quot;M&quot;,
+    resample_offset=&quot;14D&quot;,   # 對齊月營收公布日，不是隨便選的
+    trade_at_price=&quot;open&quot;,
+)</code></pre>
+<p>這件事的意義超過它本身：<strong>免費的 0.358 Sharpe 代表這個領域裡「對齊」比「找新因子」更值得先做。</strong></p>
+<h2>檢查清單</h2>
+<p>寫任何策略之前先問：</p>
+<ol><li>我用到的資料集裡，最短的那個從哪年開始？→ 那就是我的回測期間。</li><li>這個因子一年更新幾次？→ 那才是我的有效樣本數。</li><li>它是否經歷過至少一次真正的崩盤？</li><li>我有沒有在原始頻率上做橫斷面排名？（有 → 錯了）</li><li>我的換股日對齊了資料的公布節奏嗎？</li></ol>
+<p>相關：<a href="41-capacity-is-the-constraint.md">為什麼胃納量是真正的約束</a>、<a href="42-cost-model.md">成本模型</a></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/40-research-data-truth.md">claude/40-research-data-truth.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

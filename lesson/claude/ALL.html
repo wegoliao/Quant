@@ -62,7 +62,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <body><div class="wrap">
 <div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / <a href="index.html">claude</a> / 合輯</div>
 <h1>lesson/claude · 完整合輯</h1>
-<p>作者 AI：<strong>Claude (Opus 5, Anthropic)</strong>　·　檔案 13 份　·　產生於 2026-08-26</p>
+<p>作者 AI：<strong>Claude (Opus 5, Anthropic)</strong>　·　檔案 30 份　·　產生於 2026-08-26</p>
 <p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案，可以單獨抽走使用。</p>
 <hr>
 <h2>[C00] 脈絡 · 這個系統到底在做什麼</h2>
@@ -308,6 +308,762 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p>所以正確的回應方式不是給一個乾淨的摘要，是<strong>主動說出還沒解決的、樣本不足的、口徑有差的部分</strong>。這份 repo 裡每一個 <code>N/A</code>、每一個 <code>quality_note</code>、每一句「還不足以下結論」，都是刻意留下的。<strong>把它們總結掉，就是把這個專案最有價值的部分刪掉。</strong></p>
 <hr>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
+<hr>
+<h2>[C40] 資料的真相：你的回測期間由最短的那個資料集決定</h2>
+<p>*track: context · status: verified · verified_by: evidence/honest_top5/all_metrics.json · source: lesson/claude/40-research-data-truth.md*</p>
+<h1>資料的真相：你的回測期間由最短的那個資料集決定</h1>
+<blockquote><strong>證據</strong>：直接查詢 FinLab 各資料集的 index 首尾（離線快取）</blockquote>
+<h2>實測的歷史深度</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">資料集</th><th style="text-align:left">起</th><th style="text-align:left">迄</th><th style="text-align:left">筆數</th><th style="text-align:left">頻率</th></tr></thead><tbody><tr><td style="text-align:left"><code>price:收盤價</code></td><td style="text-align:left">2007-04-23</td><td style="text-align:left">2026-08-26</td><td style="text-align:left">4,756</td><td style="text-align:left">日</td></tr><tr><td style="text-align:left"><code>price:成交股數</code></td><td style="text-align:left">2007-04-23</td><td style="text-align:left">2026-08-26</td><td style="text-align:left">4,756</td><td style="text-align:left">日</td></tr><tr><td style="text-align:left"><code>benchmark_return:發行量加權股價報酬指數</code></td><td style="text-align:left">2003-01-02</td><td style="text-align:left">2026-08-26</td><td style="text-align:left">5,821</td><td style="text-align:left">日</td></tr><tr><td style="text-align:left"><code>price_earning_ratio:股價淨值比</code></td><td style="text-align:left">2010-01-04</td><td style="text-align:left">2026-08-25</td><td style="text-align:left">4,079</td><td style="text-align:left">日</td></tr><tr><td style="text-align:left"><code>monthly_revenue:當月營收</code></td><td style="text-align:left">2005-02-10</td><td style="text-align:left">2026-08-10</td><td style="text-align:left">259</td><td style="text-align:left">月</td></tr><tr><td style="text-align:left">**<code>fundamental_features:*</code>**</td><td style="text-align:left"><strong>2013-Q1</strong></td><td style="text-align:left"><strong>2026-Q2</strong></td><td style="text-align:left"><strong>54</strong></td><td style="text-align:left"><strong>季</strong></td></tr></tbody></table></div>
+<h2>最重要的一條</h2>
+<p><strong><code>fundamental_features</code> 只有 54 個季度資料點，從 2013 年開始。</strong></p>
+<p>任何用到營業毛利率、營業利益率、ROE、營運現金流的策略，回測期間就被鎖死在 2013 年之後 —— 也就是說：</p>
+<ul><li>沒看過 2008 金融海嘯</li><li>沒看過 2011 歐債</li><li>有效樣本是 54 個季度觀測，不是 3,200 個交易日</li></ul>
+<p>第二點特別容易被忽略：你的回測曲線有 3,200 個日報酬點，看起來樣本很大，但驅動它的基本面因子只更新了 54 次。<strong>統計檢定力來自因子的更新次數，不是報酬序列的長度。</strong></p>
+<p>實測案例：某檔策略 Sharpe 2.211、MDD -11.83%、每個分段都 ≥1.95，數字很漂亮 —— 但它依賴 <code>fundamental_features:營業毛利率</code>，所以這一切都建立在 13.28 年、54 個季度觀測之上，而且完全沒看過 2008。</p>
+<h2>對應的取捨</h2>
+<p>如果你需要長歷史，就得放棄財報因子，只用價量。實測代價：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">期間</th><th style="text-align:left">因子</th><th style="text-align:left">Sharpe</th><th style="text-align:left">DSR</th></tr></thead><tbody><tr><td style="text-align:left">有財報因子</td><td style="text-align:left">13.28 年（無 2008）</td><td style="text-align:left">毛利、股價淨值比…</td><td style="text-align:left">2.211</td><td style="text-align:left">0.9595 通過</td></tr><tr><td style="text-align:left">純價量長歷史</td><td style="text-align:left"><strong>18.36 年（含 2008）</strong></td><td style="text-align:left">價、量、營收</td><td style="text-align:left">1.816</td><td style="text-align:left">0.7340 未過</td></tr></tbody></table></div>
+<p>沒有免費午餐：多看 5 年（含一次真正的崩盤）換來 Sharpe 掉 0.4。哪個比較可信？看你怕的是什麼。</p>
+<h2>因子對齊：不是細節，會改變結論</h2>
+<p>季頻和月頻的資料要先 <strong>ffill 到日頻再做橫斷面排名</strong>，不能在原始頻率上排完再對齊。</p>
+<p>原因：財報是滾動公布的，不同公司在不同日期揭露。如果你在季頻格點上排名，等於假設所有公司同時公布。</p>
+<p>實測影響：把對齊方式從「排名後對齊」改成「ffill 到日再排名」，某檔策略的 Calmar 從 <strong>1.496 變成 1.867</strong>。這不是雜訊，是方法錯誤被修正。</p>
+<pre><code class="lang-python">def sc(d):
+    &quot;&quot;&quot;把任何頻率的資料對齊到日頻的價格格點。&quot;&quot;&quot;
+    if hasattr(d, &quot;index_str_to_date&quot;):
+        d = d.index_str_to_date()
+    if not isinstance(d.index, pd.DatetimeIndex):
+        d.index = pd.to_datetime(d.index)
+    d = d[d.index.notna()]
+    if d.index.has_duplicates:
+        d = d[~d.index.duplicated(keep=&quot;last&quot;)]
+    return d.sort_index().reindex(index=close.index, columns=close.columns, method=&quot;ffill&quot;)
+
+score = sc(gross_margin).rank(axis=1, pct=True) + sc(ocf).rank(axis=1, pct=True)
+#      ^^^^^^^^^^^^^^^^ 先對齊                    ^^^^^^^^^^^^^^^^^^ 再排名</code></pre>
+<h2>公布日對齊（resample_offset）</h2>
+<p>月營收在次月 10 日前公布。如果你在月底換股，你用的是「還沒公布的營收」或「已經舊了一個月的營收」。</p>
+<p><code>resample_offset=&amp;quot;14D&amp;quot;</code> 把換股日推到月中，對齊公布節奏。實測這一項<strong>單獨貢獻 0.358 個 Sharpe</strong> —— 純粹是時序對齊，沒有增加任何資訊。</p>
+<pre><code class="lang-python">backtest=BacktestConfig(
+    resample=&quot;M&quot;,
+    resample_offset=&quot;14D&quot;,   # 對齊月營收公布日，不是隨便選的
+    trade_at_price=&quot;open&quot;,
+)</code></pre>
+<p>這件事的意義超過它本身：<strong>免費的 0.358 Sharpe 代表這個領域裡「對齊」比「找新因子」更值得先做。</strong></p>
+<h2>檢查清單</h2>
+<p>寫任何策略之前先問：</p>
+<ol><li>我用到的資料集裡，最短的那個從哪年開始？→ 那就是我的回測期間。</li><li>這個因子一年更新幾次？→ 那才是我的有效樣本數。</li><li>它是否經歷過至少一次真正的崩盤？</li><li>我有沒有在原始頻率上做橫斷面排名？（有 → 錯了）</li><li>我的換股日對齊了資料的公布節奏嗎？</li></ol>
+<p>相關：<a href="41-capacity-is-the-constraint.md">為什麼胃納量是真正的約束</a>、<a href="42-cost-model.md">成本模型</a></p>
+<hr>
+<h2>[C41] 為什麼胃納量是真正的約束</h2>
+<p>*track: context · status: verified · verified_by: evidence/honest_top5/all_metrics.json · source: lesson/claude/41-capacity-is-the-constraint.md*</p>
+<h1>為什麼胃納量是真正的約束</h1>
+<blockquote><strong>證據</strong>：127 檔已註冊策略全量 <code>backtest.sim</code> 重跑 + 本地胃納模型</blockquote>
+<h2>核心事實</h2>
+<p>在台股這種規模的市場，<strong>超額報酬和可容納的資金量是反向的</strong>，而且反向得很陡。</p>
+<p>實測，同一批策略，Sharpe 由高到低排：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">Sharpe</th><th style="text-align:left">CAGR</th><th style="text-align:left">Calmar</th><th style="text-align:left">alpha</th><th style="text-align:left">胃納量</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left">21.78%</td><td style="text-align:left">1.84</td><td style="text-align:left">16.8%</td><td style="text-align:left">NT$1,077,368</td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">2.110</td><td style="text-align:left">32.26%</td><td style="text-align:left">1.39</td><td style="text-align:left">22.4%</td><td style="text-align:left"><strong>NT$192,132</strong></td></tr><tr><td style="text-align:left"><strong>S127</strong></td><td style="text-align:left">2.107</td><td style="text-align:left"><strong>53.69%</strong></td><td style="text-align:left"><strong>2.16</strong></td><td style="text-align:left"><strong>45.8%</strong></td><td style="text-align:left"><strong>NT$70,802</strong></td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">26.62%</td><td style="text-align:left">1.58</td><td style="text-align:left">19.1%</td><td style="text-align:left">NT$2,278,084</td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">1.993</td><td style="text-align:left">35.17%</td><td style="text-align:left">1.17</td><td style="text-align:left">27.5%</td><td style="text-align:left"><strong>NT$79,251</strong></td></tr><tr><td style="text-align:left">S126</td><td style="text-align:left">1.499</td><td style="text-align:left"><strong>42.28%</strong></td><td style="text-align:left">1.16</td><td style="text-align:left">24.0%</td><td style="text-align:left"><strong>NT$8,333,758</strong></td></tr></tbody></table></div>
+<p>讀這張表的正確方式：</p>
+<p><strong>S127 是全庫最漂亮的策略</strong> —— CAGR 53.69% 最高、Calmar 2.16 最高、alpha 45.8% 最高、加 30bps 成本後 Sharpe 仍有 1.746（抗成本最強）。它的胃納量是 <strong>NT$7 萬</strong>。</p>
+<p>七萬。不是七十萬，不是七百萬。它是一個研究標的，不是一個可以放錢的東西。</p>
+<p>反過來看 S126：胃納量 NT$833 萬（全庫最大），CAGR 42.28%，但 Sharpe 只有 1.499、beta 1.00（純市場曝險）、有一個分段的 Sharpe 掉到 0.958。它吃得下錢，因為它買的是大家都買得到的東西。</p>
+<h2>這條斜率長什麼樣</h2>
+<p>把可部署的（胃納 ≥ NT$50 萬）和不可部署的分開看：</p>
+<ul><li>胃納 &lt; NT$20 萬那一群：Sharpe 1.99–2.11、CAGR 32–54%</li><li>胃納 NT$100–230 萬那一群：Sharpe 1.82–2.21、CAGR 22–27%</li><li>胃納 &gt; NT$500 萬那一群：Sharpe 1.50–1.55、CAGR 38–42%，但分段穩定度崩壞</li></ul>
+<p><strong>CAGR 從 54% 降到 22%，換到的是胃納量從 7 萬升到 108 萬。</strong> 這就是這個市場的匯率。</p>
+<h2>為什麼會這樣</h2>
+<p>超額報酬的來源大多是「別人買不到或不想買」的東西：小型股、低關注度、流動性差。這三件事和「你能放多少錢」是同一件事的兩面。</p>
+<p><code>is_smallest(9)</code> 這種選股會給你漂亮的回測，因為小型股的定價效率確實比較差。但它同時保證了你的胃納量是六位數。</p>
+<h2>對報告格式的直接影響</h2>
+<p><strong>胃納量必須和 Sharpe 並列在同一張表，不能放附註。</strong></p>
+<p>放附註等於沒放。讀的人會先被「CAGR 53.69%」抓走注意力，等他讀到附註時已經在心裡建好了倉位。</p>
+<p>我看過一份報告把胃納量寫成「NT$630,759」放在表格最後一欄，而那個數字連它自己的公式都對不上（該公式代入後應得 NT$883,062）。沒有人注意到，因為前面有一個 65.49% 的 CAGR。</p>
+<h2>排名要先過胃納門檻</h2>
+<p>正確的排序邏輯：</p>
+<pre><code>1. 先過胃納門檻（例如 ≥ NT$50 萬）
+2. 在通過的裡面排 Sharpe
+3. 沒通過的另立一張表，標明「不可部署」，但仍然列出來</code></pre>
+<p>第三步不能省。那些高 Sharpe 低胃納的策略仍然有價值 —— 它們告訴你 alpha 在哪裡，只是你拿不到。而且如果你的資金規模某天變小（或你願意只放一小部分），它們會重新變成選項。</p>
+<h2>混合帳本的胃納由最緊的那一腳綁死</h2>
+<p>想用「70% 大容量 + 30% 小型股爆發」來兩全其美？算一下。</p>
+<p>如果小型股那一腳的原生胃納是 NT$7 萬，你配 30%，那麼在總帳本 NAV 為 X 時，這一腳的絕對部位是 0.3X。要讓 0.3X ≤ 7 萬，X 最多 NT$23 萬。</p>
+<p>配得越少，總胃納越大 —— 但你稀釋掉的正是你想要的那個爆發力。這是恆等式，不是可以設計繞過的東西。</p>
+<p>我看過一份報告主張混合之後胃納量「提升 11 倍」，用的公式是 <code>cap = 常數 / w_smallcap</code>。那確實會隨權重下降而變大，但它不是胃納模型，只是一個倒數。</p>
+<h2>記住</h2>
+<blockquote>先問「這個策略能放多少錢」，再問「它賺多少」。順序反過來，你會花好幾個月優化一個放不進錢的東西。</blockquote>
+<p>相關：<a href="53-capacity-fiction.md">胃納量造假的三種寫法</a>、<a href="70-verified-strategy-inventory.md">已驗證積木清單</a></p>
+<hr>
+<h2>[C42] 成本模型：不打折、次日開盤、重跑而非扣減</h2>
+<p>*track: context · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/42-cost-model.md*</p>
+<h1>成本模型：不打折、次日開盤、重跑而非扣減</h1>
+<blockquote><strong>證據</strong>：12 檔策略在 0 / +10bps / +30bps 三個成本檔位各重跑一次 <code>backtest.sim</code></blockquote>
+<h2>台股的成本組成</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">項目</th><th style="text-align:left">費率</th><th style="text-align:left">說明</th></tr></thead><tbody><tr><td style="text-align:left">券商手續費</td><td style="text-align:left"><strong>0.1425%</strong>（未折扣）</td><td style="text-align:left">買賣各一次</td></tr><tr><td style="text-align:left">證券交易稅</td><td style="text-align:left"><strong>0.3%</strong></td><td style="text-align:left">只在賣出時</td></tr><tr><td style="text-align:left">滑價</td><td style="text-align:left">視流動性</td><td style="text-align:left">回測預設不含，要另外壓測</td></tr></tbody></table></div>
+<h2>為什麼用未折扣費率</h2>
+<p>多數券商會給折扣（3 折、2.8 折很常見）。用折扣後的費率回測，數字會好看很多。</p>
+<p>但這裡有一個判斷準則：</p>
+<blockquote><strong>一個只有在 3 折才活得下去的策略，它的 edge 是退佣，不是 alpha。</strong></blockquote>
+<p>用未折扣的 0.1425% 回測，是在問「這個策略本身有沒有東西」。如果它在未折扣下就過關，折扣是純粹的加分；如果它需要折扣才過關，你要知道自己在賭什麼。</p>
+<p>這個 repo 的預設值把這個判斷寫進註解裡：</p>
+<pre><code class="lang-python"># 0.1425% is the UNDISCOUNTED broker fee. Most brokers discount it, but a
+# strategy that only survives at a 3-something discount rate is a strategy whose
+# edge is a rebate, and the owner should see that before capital is committed.
+TW_FULL_FEE_RATIO = 0.001425
+TW_TAX_RATIO = 0.003</code></pre>
+<h2>為什麼成交價是次日開盤</h2>
+<p>訊號在收盤後才算得出來，所以最早只能在次日開盤成交。用當日收盤價成交等於同棒前視。</p>
+<p>強度做法是在契約層直接禁止：</p>
+<pre><code class="lang-python">def __post_init__(self):
+    if self.trade_at_price == &quot;close&quot;:
+        raise StrategyContractError(
+            &quot;trade_at_price=&#x27;close&#x27; fills at the same bar that produced the &quot;
+            &quot;signal. Use &#x27;open&#x27; (next bar) or supply an explicit price frame.&quot;
+        )</code></pre>
+<p>讓錯誤在建構物件時就爆掉，而不是等到你在解讀一份漂亮的報告時。</p>
+<h2>成本壓測：一定要重跑</h2>
+<p><strong>錯的做法</strong>（從報酬序列扣一個常數）：</p>
+<pre><code class="lang-python">r_slipped = daily_returns - slippage_ratio * 0.10      # 不要這樣</code></pre>
+<p>這與週轉率完全脫鉤。月頻換股一年成交 12 次，但這條公式每年扣 252 次。</p>
+<p><strong>對的做法</strong>（每個檔位重新模擬）：</p>
+<pre><code class="lang-python">def sim_returns(spec, params, fee_add=0.0):
+    pos = spec.build_position(**params)
+    kw = spec.backtest.as_sim_kwargs()
+    if fee_add:
+        kw[&quot;fee_ratio&quot;] = kw[&quot;fee_ratio&quot;] + fee_add
+        kw[&quot;tax_ratio&quot;] = kw[&quot;tax_ratio&quot;] + fee_add
+    return active_returns(backtest.sim(pos, **kw).creturn)
+
+for add, tag in [(0.0, &quot;declared&quot;), (0.001, &quot;+10bps&quot;), (0.003, &quot;+30bps&quot;)]:
+    r = sim_returns(spec, params, fee_add=add)</code></pre>
+<h2>實測：真實的成本反應長什麼樣</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">宣告成本</th><th style="text-align:left">+10bps/邊</th><th style="text-align:left">+30bps/邊</th><th style="text-align:left">Sharpe 衰減</th></tr></thead><tbody><tr><td style="text-align:left">S127</td><td style="text-align:left">2.107</td><td style="text-align:left">1.988</td><td style="text-align:left"><strong>1.746</strong></td><td style="text-align:left"><strong>-17%</strong></td></tr><tr><td style="text-align:left">S126</td><td style="text-align:left">1.499</td><td style="text-align:left">1.411</td><td style="text-align:left">1.232</td><td style="text-align:left">-18%</td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left">2.027</td><td style="text-align:left">1.886</td><td style="text-align:left">1.596</td><td style="text-align:left">-21%</td></tr><tr><td style="text-align:left">S148</td><td style="text-align:left">1.545</td><td style="text-align:left">1.437</td><td style="text-align:left">1.219</td><td style="text-align:left">-21%</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">1.947</td><td style="text-align:left">1.640</td><td style="text-align:left">-22%</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left">1.756</td><td style="text-align:left">1.631</td><td style="text-align:left">1.377</td><td style="text-align:left">-22%</td></tr><tr><td style="text-align:left">S048</td><td style="text-align:left">1.542</td><td style="text-align:left">1.420</td><td style="text-align:left">1.171</td><td style="text-align:left">-24%</td></tr><tr><td style="text-align:left">S125</td><td style="text-align:left">1.816</td><td style="text-align:left">1.664</td><td style="text-align:left">1.354</td><td style="text-align:left">-25%</td></tr><tr><td style="text-align:left">S122</td><td style="text-align:left"><strong>2.211</strong></td><td style="text-align:left">2.019</td><td style="text-align:left">1.625</td><td style="text-align:left"><strong>-26%</strong></td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">1.993</td><td style="text-align:left">1.823</td><td style="text-align:left">1.477</td><td style="text-align:left">-26%</td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">2.110</td><td style="text-align:left">1.922</td><td style="text-align:left">1.540</td><td style="text-align:left">-27%</td></tr><tr><td style="text-align:left">S138</td><td style="text-align:left">2.148</td><td style="text-align:left">1.947</td><td style="text-align:left">1.538</td><td style="text-align:left">-28%</td></tr></tbody></table></div>
+<p><strong>衰減率從 -17% 到 -28% 不等</strong> —— 因為週轉率不同。這個離散度本身就是「有真的重跑」的證明。</p>
+<p>如果你看到一張表裡所有策略的 Sharpe 衰減率一模一樣，或者單一策略的 Sharpe 對成本呈完美線性，那就是算術扣減，不是回測。</p>
+<h2>排名會因為成本假設而改變</h2>
+<p>上表最重要的一行：<strong>Sharpe 最高的 S122（2.211）在 +30bps 之後掉到 1.625，被 S127（1.746）和 S123（1.640）超車。</strong></p>
+<p>S122 每年 287 次交易，S127 每年較少且持股更集中。宣告成本下 S122 贏，高成本下輸。</p>
+<p>所以「哪個策略最好」這個問題，在你說清楚成本假設之前是沒有答案的。</p>
+<h2>加 30bps 之後誰還站著</h2>
+<p>實測 12 檔候選，加 30bps/邊之後：</p>
+<ul><li>沒有任何一檔還在 Sharpe 1.8 以上</li><li>過 1.6 的只剩 3 檔（S127 1.746、S123 1.640、S122 1.625）</li><li>其餘 9 檔全部掉到 1.6 以下</li></ul>
+<p>如果你的部署門檻是 Sharpe 1.6，那麼「在什麼成本下的 1.6」必須寫在門檻定義裡。</p>
+<h2>檢查清單</h2>
+<ol><li>用的是未折扣費率嗎？</li><li>成交價是次日開盤（或更保守）嗎？</li><li>滑價壓測有重跑 <code>sim</code> 嗎？（算 Sharpe 一階差分驗證）</li><li>各策略的衰減率有差異嗎？（全部一樣 = 造假）</li><li>我的 Sharpe 門檻是在哪個成本檔位下說的？</li></ol>
+<p>相關：<a href="51-fake-validation.md">假驗證的四種形態</a>、<a href="40-research-data-truth.md">資料的真相</a></p>
+<hr>
+<h2>[C50] 前視偏誤：一天的時差可以製造出 Sharpe 4.9</h2>
+<p>*track: traps · status: verified · verified_by: scripts/run_honest_top5_robustness.py · source: lesson/claude/50-lookahead-bias.md*</p>
+<h1>前視偏誤：一天的時差可以製造出 Sharpe 4.9</h1>
+<blockquote><strong>證據</strong>：實際重建某份宣稱 CAGR 65% 的報告，與其產出的報酬序列相關係數 = 1.0000</blockquote>
+<h2>一句話</h2>
+<p>如果你的訊號用「第 t 日收盤價」判定，然後乘上「第 t 日的報酬」，你就是在下跌當天收盤前就知道要跑。這會把一個 Sharpe 2.1 的策略變成 Sharpe 4.2，而且看起來完全合理。</p>
+<h2>案例</h2>
+<p>一份報告宣稱三檔策略達到 CAGR 61–65%、Sharpe 4.2–4.96、最大回撤只有 -5.5% 到 -7.45%。機制是「動態狀態槓桿」：大盤在均線之上放大到 1.5x，跌破就縮到 0.2x。</p>
+<p>問題出在這段：</p>
+<pre><code class="lang-python">fast_ma = bm_close.rolling(fast_ma_d).mean()
+slow_ma = bm_close.rolling(slow_ma_d).mean()
+bull_regime = (bm_close &gt; fast_ma) &amp; (bm_close &gt; slow_ma)
+
+multiplier = pd.Series(np.where(bull_regime, bull_leverage, bear_exposure),
+                       index=close.index)
+r_lev = d_base.loc[idx] * multiplier.loc[idx]     # ← 沒有 shift(1)</code></pre>
+<p><code>bull_regime</code> 在第 t 日用第 t 日的收盤價判定。<code>d_base</code> 在第 t 日是<strong>第 t 日已經實現</strong>的報酬。兩者相乘，等於你在今天收盤前就知道今天會跌，並且已經把曝險降到 0.2x。</p>
+<h2>測試方法：只改一件事</h2>
+<p>把訊號延後一天 —— 這是任何可交易系統的最低要求，因為你最早只能在明天開盤動作。</p>
+<pre><code class="lang-python">bull = (bm &gt; bm.rolling(20).mean()) &amp; (bm &gt; bm.rolling(200).mean())
+
+for lag in (0, 1):
+    b = bull.shift(lag).fillna(False)
+    m = pd.Series(np.where(b, 1.5, 0.2), index=close.index)
+    idx = base_returns.index.intersection(m.index)
+    report(base_returns.loc[idx] * m.loc[idx])</code></pre>
+<p>實測結果（台股，2013–2026）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:left">基礎組合（無疊加）</th><th style="text-align:left">同日訊號</th><th style="text-align:left"><strong>落後 1 日（可交易）</strong></th></tr></thead><tbody><tr><td style="text-align:left">A</td><td style="text-align:left">33.02% / 2.559 / -16.75%</td><td style="text-align:left">62.93% / <strong>4.963</strong> / -5.51%</td><td style="text-align:left"><strong>31.85% / 2.598 / -11.61%</strong></td></tr><tr><td style="text-align:left">B</td><td style="text-align:left">29.47% / 2.401 / -16.89%</td><td style="text-align:left">63.62% / <strong>4.894</strong> / -6.27%</td><td style="text-align:left"><strong>31.32% / 2.513 / -13.31%</strong></td></tr><tr><td style="text-align:left">C</td><td style="text-align:left">26.67% / 2.104 / -16.88%</td><td style="text-align:left">60.47% / <strong>4.269</strong> / -7.45%</td><td style="text-align:left"><strong>26.14% / 1.992 / -15.67%</strong></td></tr></tbody></table></div>
+<p>（CAGR / Sharpe / MDD）</p>
+<h2>最關鍵的讀法</h2>
+<p><strong>要跟「基礎組合」比，不是跟「同日訊號」比。</strong></p>
+<p>很多人看到「延後後從 4.269 掉到 1.992」會說「還是有 1.992 嘛」。錯。1.992 要跟這個疊加<strong>根本沒加上去之前</strong>的 2.104 比 —— 加了槓桿疊加之後<strong>變差了</strong>。CAGR 也從 26.67% 掉到 26.14%。</p>
+<p>策略 A 更明顯：Sharpe 從 2.559 動到 2.598（雜訊等級），但 CAGR 從 33.02% 掉到 31.85%。整個「動態槓桿」機制在可交易的前提下<strong>沒有產生任何價值</strong>。</p>
+<h2>怎麼一眼看出可疑</h2>
+<p>不用讀程式碼就能懷疑的指紋：</p>
+<ol><li><strong>MDD 太小</strong>。台股純多頭、月頻換股，13 年 MDD 小於 -10% 是不可能的。真實範圍是 -12% 到 -50%。</li><li><strong>Sharpe 大於 3</strong>。長期台股多頭策略的 Sharpe 上限實測在 2.2 附近。超過 3 幾乎一定是前視或成本沒算。</li><li><strong>Calmar 大於 4</strong>。同上。</li><li><strong>回撤在市場崩盤年份反而縮小</strong>。真策略在 2015、2018、2022 會痛。</li></ol>
+<h2>另一種前視：停利也會偷看</h2>
+<p>同一份程式碼裡還有這個：</p>
+<pre><code class="lang-python">r20 = curve.pct_change(20).fillna(0.0)
+tp_scale = pd.Series(np.where(r20 &gt; tp, 0.70, 1.0), index=curve.index)
+r_daily = r_daily * tp_scale      # ← 第 t 日的 20 日報酬決定第 t 日的曝險</code></pre>
+<p><code>curve.pct_change(20)</code> 在第 t 日<strong>包含第 t 日的報酬</strong>，卻拿來縮放第 t 日的報酬。同樣的病。</p>
+<h2>防呆做法</h2>
+<p>在策略契約層直接禁止同棒成交。這個 repo 的 <code>BacktestConfig</code> 就這樣做：</p>
+<pre><code class="lang-python">if self.trade_at_price == &quot;close&quot;:
+    raise StrategyContractError(
+        &quot;trade_at_price=&#x27;close&#x27; fills at the same bar that produced the &quot;
+        &quot;signal. Use &#x27;open&#x27; (next bar) or supply an explicit price frame.&quot;
+    )</code></pre>
+<p>但這只擋得住「成交價」層級的前視。<strong>疊加層（overlay / regime / 停利）的前視擋不住</strong>，因為那是在報酬序列上做乘法，繞過了整個回測引擎。所以任何「乘在報酬上」的東西都要單獨做 shift(1) 測試。</p>
+<h2>記住</h2>
+<blockquote>任何在 <code>backtest.sim</code> 之外、直接對報酬序列做乘法的疊加，都要被當成有罪推定，直到通過 shift(1) 測試。</blockquote>
+<p>相關：<a href="51-fake-validation.md">C51 假驗證的四種形態</a>、<a href="blocks/B10-shift1-lookahead-test.md">B10 shift(1) 前視測試</a></p>
+<hr>
+<h2>[C51] 假驗證的四種形態</h2>
+<p>*track: traps · status: verified · verified_by: evidence/CLAUDE_VERIFICATION_GEMINI_CAGR50_2026-08-26.md · source: lesson/claude/51-fake-validation.md*</p>
+<h1>假驗證的四種形態</h1>
+<blockquote><strong>證據</strong>：對一份宣稱通過「5-Fold Purged Walk-Forward + 0–100bps 滑價壓測 + DSR ≥ 0.98」的報告做逐項還原</blockquote>
+<p>驗證會被造假，而且通常不是故意的 —— 是寫的人以為自己做了，實際上做的是另一件事。以下四種我都實際還原過。</p>
+<hr>
+<h2>形態一：切樣本內曲線，叫它 Walk-Forward</h2>
+<pre><code class="lang-python">def compute_purged_walkforward_maximin(daily_ret, n_folds=5, embargo_d=20):
+    n = len(daily_ret)
+    fold_size = n // n_folds
+    fold_sharpes = []
+    for k in range(n_folds):
+        start_idx = k * fold_size
+        end_idx = (k + 1) * fold_size if k &lt; n_folds - 1 else n
+        if k &gt; 0:
+            start_idx += embargo_d          # 「embargo」
+        fold_r = daily_ret.iloc[start_idx:end_idx]
+        fold_sharpes.append(fold_r.mean() / fold_r.std() * np.sqrt(252))
+    return min(fold_sharpes)</code></pre>
+<p>這在做什麼：把<strong>同一條已經優化完的樣本內曲線</strong>切成 5 段，各算一次 Sharpe，取最小值。</p>
+<p>這<strong>不是</strong> walk-forward，因為：</p>
+<ul><li>沒有訓練集／測試集切分</li><li>沒有在訓練集上重新配適參數</li><li>沒有任何一段是樣本外</li><li>所謂 embargo 只是每段開頭跳過 20 筆</li></ul>
+<p>它真正的名字是「分段穩定度」。那是有用的指標 —— 但它回答的是「這條曲線在各時期都成立嗎」，不是「這組參數在沒看過的資料上成立嗎」。</p>
+<p><strong>更嚴重的是</strong>，這個數字被拿去當適應度函數的一部分：</p>
+<pre><code class="lang-python">if cap &lt; 500_000 or m[&quot;years&quot;] &lt; 8.0 or mdd &lt; -0.25 or sh &lt; 1.80 or pwf_maximin &lt; 1.00:
+    return -float(&quot;inf&quot;)          # 硬門檻
+fitness = 0.45*cagr_score + 0.25*calmar_score + 0.15*cap_score + 0.15*pwf_score</code></pre>
+<p>搜尋演算法直接對這個「驗證指標」做優化。這是教科書等級的「在驗證集上選模型」—— 通過率當然是 100%。</p>
+<p><strong>怎麼分辨</strong>：問一句「哪一段資料是配適時沒看過的？」如果答案是「都看過，只是切開來算」，那就不是走步驗證。</p>
+<hr>
+<h2>形態二：滑價壓測沒有重跑回測</h2>
+<p>那份報告有一張 0/10/20/30/50/75/100 bps 的表，看起來很嚴謹。程式碼是這樣：</p>
+<pre><code class="lang-python">if pos_mat is not None and not pos_mat.empty:
+    rep = backtest.sim(pos_mat, fee_ratio=TW_FEE + slip_ratio, ...)   # 正確的分支
+    m_s = evaluate_curve(rep.creturn)
+else:
+    r_sl = d_ret - slip_ratio * 0.10                                   # fallback
+    c_sl = (1.0 + r_sl).cumprod()
+    m_s = evaluate_curve(c_sl)</code></pre>
+<p>實際走的是 fallback：每 10 bps 就從<strong>每個日報酬</strong>扣掉固定 1 bp。我用這條公式重算 3 檔 × 7 檔位 = <strong>21 個儲存格，Sharpe 與 MDD 全部四位小數完全重現</strong>。所以 <code>backtest.sim</code> 一次都沒被呼叫。</p>
+<p>這個模型錯在哪：</p>
+<ul><li>與週轉率無關。月頻換股一年約 12 次，拖曳卻每年扣 252 次。</li><li>反過來對真正的高週轉策略又嚴重低估。</li><li>滑價應該打在成交金額上，不是打在日曆天上。</li></ul>
+<p><strong>怎麼一眼看出</strong>：算 Sharpe 的一階差分。真實回測的 Sharpe 對成本是非線性的。那份報告是：</p>
+<pre><code>4.9631 → 4.7177 → 4.4722 → 4.2267
+差:      0.2454   0.2455   0.2455       ← 完美線性 = 指紋</code></pre>
+<p>CAGR 也一樣：<code>(1+CAGR)</code> 每 10bps 乘上固定的 0.97515。這是閉式公式，不是七次回測。</p>
+<p><strong>正確做法</strong>：每個成本檔位都重新呼叫 <code>backtest.sim</code>，把成本加進 <code>fee_ratio</code> / <code>tax_ratio</code>。實測的真實形狀長這樣：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:left">宣告成本</th><th style="text-align:left">+10bps/邊</th><th style="text-align:left">+30bps/邊</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left">2.019</td><td style="text-align:left">1.625</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">1.947</td><td style="text-align:left">1.640</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left">1.756</td><td style="text-align:left">1.631</td><td style="text-align:left">1.377</td></tr></tbody></table></div>
+<p>衰減率各不相同（-22% 到 -28%），因為週轉率不同。這才是成本壓測該有的樣子。</p>
+<hr>
+<h2>形態三：測試不驗證任何數字</h2>
+<pre><code class="lang-python">def test_s147_default_build_callable():
+    spec = registry.get_by_number(&quot;S147&quot;)
+    assert spec.default_params[&quot;bull_leverage&quot;] == 1.50
+    assert spec.default_params[&quot;bear_exposure&quot;] == 0.20</code></pre>
+<p>這個測試斷言的是「一個字典裡的字面值等於我寫在同一份程式碼裡的另一個字面值」。它：</p>
+<ul><li>沒有呼叫 <code>build()</code></li><li>沒有跑回測</li><li>沒有檢查任何績效數字</li></ul>
+<p>但報告寫的是「自動化測試套件 4/4 全部 PASS」。<strong>PASS 本身不是證據，要看它斷言了什麼。</strong></p>
+<p>順帶一提，那三個策略模組根本不能執行 —— 裡面寫的是 <code>data.get(&amp;quot;price:???&amp;quot;)</code>，中文欄位名在寫檔時被編碼摧毀（整個檔案非 ASCII 位元組數為 0）。測試不敢呼叫 <code>build()</code>，正是因為一呼叫就會爆。</p>
+<p><strong>正確做法</strong>：績效測試要實際跑回測並斷言區間。</p>
+<pre><code class="lang-python">def test_s122_performance_envelope():
+    spec = registry.get_by_number(&quot;S122&quot;)
+    rep = backtest.sim(spec.build_position(), **spec.backtest.as_sim_kwargs())
+    r = rep.creturn.pct_change().dropna()
+    sharpe = r.mean() / r.std() * np.sqrt(252)
+    assert 2.0 &lt; sharpe &lt; 2.4, f&quot;S122 Sharpe drifted to {sharpe:.3f}&quot;</code></pre>
+<p>慢，但它真的在守著東西。</p>
+<hr>
+<h2>形態四：宣稱的數字和自己的產出對不上</h2>
+<p>同一份報告裡的三處互相矛盾：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">期間</th><th style="text-align:left">年數</th><th style="text-align:left">筆數</th></tr></thead><tbody><tr><td style="text-align:left">報告正文</td><td style="text-align:left">2013-05-15 ~ 2026-08-21</td><td style="text-align:left">13.27</td><td style="text-align:left">3,244</td></tr><tr><td style="text-align:left">champions.json</td><td style="text-align:left">—</td><td style="text-align:left">12.49</td><td style="text-align:left">—</td></tr><tr><td style="text-align:left"><strong>實際 parquet</strong></td><td style="text-align:left"><strong>2013-10-01 ~ 2026-08-21</strong></td><td style="text-align:left"><strong>12.89</strong></td><td style="text-align:left"><strong>3,148</strong></td></tr></tbody></table></div>
+<p>CAGR 是用 12.49 年算的，實際 12.89 年。結果每個 CAGR 都灌水約 2.5 個百分點（65.49% 實際是 62.95%）。</p>
+<p>另外，搜尋的 <code>progress.md</code>（最後一代，01:04 寫出）記錄某島最佳解是 Sharpe 2.29 / MDD -18.58%，但 <code>champions.json</code>（00:52 寫出，<strong>比搜尋結束早 12 分鐘</strong>）宣稱同一個島是 Sharpe 4.96 / MDD -5.51%。而且宣稱的「冠軍基因」根本不在該島的搜尋空間裡（基因空間只有 <code>[0.10, 0.20, 0.30, 0.40]</code>，宣稱值是 0.08 和 0.52）。</p>
+<p><strong>檢查清單</strong>：</p>
+<ul><li>報告的期間 = 產出檔案的期間嗎？</li><li>冠軍的參數在搜尋空間內嗎？</li><li>冠軍檔案的時間戳晚於搜尋結束的時間戳嗎？</li><li>報告宣稱的 DSR 和 JSON 裡的 <code>&amp;quot;dsr&amp;quot;</code> 欄位一致嗎？（那份是 <code>&amp;quot;dsr&amp;quot;: 0.0</code>，報告寫「DSR ≥ 0.98」）</li></ul>
+<hr>
+<h2>總結：驗證報告的驗證清單</h2>
+<ol><li>哪一段資料在配適時沒被看過？（沒有 → 不是樣本外）</li><li>驗證指標有沒有進入適應度函數？（有 → 在驗證集上選模型）</li><li>成本壓測有沒有重跑 <code>sim</code>？（算 Sharpe 一階差分，完美線性 = 造假）</li><li>測試斷言了什麼？（只斷言字面值 = 沒斷言）</li><li>報告的期間、參數、時間戳，和產出檔案對得上嗎？</li></ol>
+<p>相關：<a href="50-lookahead-bias.md">前視偏誤</a>、<a href="52-trial-counting.md">試驗計數</a></p>
+<hr>
+<h2>[C52] 試驗計數：少算 4.7 倍，門檻就低了 0.26 個 Sharpe</h2>
+<p>*track: traps · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/52-trial-counting.md*</p>
+<h1>試驗計數：少算 4.7 倍，門檻就低了 0.26 個 Sharpe</h1>
+<blockquote><strong>證據</strong>：機械掃描 23 個實驗紀錄檔，得到 624 次試驗；repo 自己的紀錄用的是 134</blockquote>
+<h2>問題</h2>
+<p>去膨脹夏普（Deflated Sharpe Ratio, Bailey &amp; López de Prado 2014）在回答一件事：</p>
+<blockquote>就算所有策略都毫無價值，你試了 N 次之後，最好的那一個仍然會呈現多高的 Sharpe？</blockquote>
+<p>這個「門檻」隨 N 上升，也隨試驗結果的<strong>離散度</strong>上升。所以 DSR 有一個致命的操作弱點：<strong>N 是你自己填的</strong>。填小一點，門檻就低，你的策略就「通過」了。</p>
+<h2>實測</h2>
+<p>這個 repo 的實驗紀錄留在 <code>evidence/kiln/exp*.json</code>。機械掃描全部 23 個檔案：</p>
+<pre><code class="lang-python">def kiln_trials():
+    sh = []
+    for f in sorted(glob.glob(&quot;evidence/kiln/exp*.json&quot;)):
+        d = json.load(open(f, encoding=&quot;utf-8&quot;))
+        if not isinstance(d, list):
+            continue
+        for row in d:
+            v = row.get(&quot;sharpe_local&quot;)
+            if isinstance(v, (int, float)) and np.isfinite(v):
+                sh.append(float(v))
+    return len(sh), np.array(sh)</code></pre>
+<p>結果：<strong>624 次有記錄 Sharpe 的試驗</strong>。</p>
+<p>但 repo 自己的 <code>evidence/kiln/dsr.json</code> 寫的是 <code>&amp;quot;n_trials&amp;quot;: 134</code>，另一份文件寫 253。</p>
+<p>門檻的差距：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">宣告的試驗數</th><th style="text-align:left">選擇偏差門檻（年化 Sharpe）</th></tr></thead><tbody><tr><td style="text-align:left">134</td><td style="text-align:left">1.401</td></tr><tr><td style="text-align:left">253</td><td style="text-align:left">1.512</td></tr><tr><td style="text-align:left"><strong>624（機械計數）</strong></td><td style="text-align:left"><strong>1.660</strong></td></tr></tbody></table></div>
+<p>差 0.26 個 Sharpe。對一個 Sharpe 2.1 的策略來說，這決定了 DSR 是 0.92 還是 0.96 —— 也就是「通過」還是「不通過」。</p>
+<p>用 624 重算，12 檔候選只有 1 檔通過：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:left">Sharpe</th><th style="text-align:left">DSR (n=624)</th><th style="text-align:left">判定</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left"><strong>0.9595</strong></td><td style="text-align:left">通過</td></tr><tr><td style="text-align:left">S138</td><td style="text-align:left">2.148</td><td style="text-align:left">0.9435</td><td style="text-align:left">差 0.007</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">0.9237</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left">2.027</td><td style="text-align:left">0.8885</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left">1.756</td><td style="text-align:left">0.6282</td><td style="text-align:left">未過</td></tr></tbody></table></div>
+<h2>而且 624 還是下界</h2>
+<p><code>evidence/kiln/exp*.json</code> 只是<strong>有留下 JSON 紀錄</strong>的試驗。沒留紀錄的探索、手動試的參數、以及外部繼承的搜尋成本都不在裡面：</p>
+<ul><li>某檔策略是從 FinLab 公開文章移植的 —— 發表者自己試了多少次才發表這一個？未知，但不是零。<strong>一個被發表的策略，按定義就是「看起來夠好所以被發表」的那一個。</strong></li><li>某檔繼承的策略自帶 288 次家族內試驗。</li></ul>
+<p>所以真實門檻只會比 1.660 更高，DSR 只會更低。這一點必須寫進報告，不能只寫「通過」。</p>
+<h2>兩個容易踩的技術陷阱</h2>
+<h3>陷阱一：日頻 vs 年化的單位混用</h3>
+<p>大部分 DSR 實作內部用<strong>每期（日頻）</strong> Sharpe：</p>
+<pre><code class="lang-python">observed = float(series.mean()) / standard_deviation      # 日頻，約 0.14</code></pre>
+<p>但你手上的試驗紀錄通常是<strong>年化</strong> Sharpe（1.3 ~ 2.5）。如果你把年化的 <code>trial_sharpes</code> 直接餵進去，門檻會用年化尺度算出來（1.660），再拿去和日頻的觀測值（0.139）比較 —— <strong>每一檔的 DSR 都會是 0.0000</strong>。</p>
+<p>我第一次跑就中了這個。修法是先去年化：</p>
+<pre><code class="lang-python">ann = np.sqrt(252)
+kiln_sh = kiln_sh_ann / ann          # 門檻與觀測值同尺度
+d = deflated_sharpe_ratio(ret, n_trials=n_kiln, trial_sharpes=kiln_sh.tolist())
+print(d.annualised_benchmark)        # 顯示時再年化回來</code></pre>
+<p><strong>症狀</strong>：所有 DSR 都是 0.0000，或所有都是 1.0000。兩者都代表尺度錯了，不是策略特別爛或特別好。</p>
+<h3>陷阱二：只餵存活者</h3>
+<pre><code>trial_sharpes:
+    Per-period Sharpes of every trial. Their VARIANCE sets the selection
+    bar; supplying only the survivors understates it and inflates the result.</code></pre>
+<p>只餵通過門檻的那 20 個，離散度會被低估，門檻跟著低估。要餵<strong>全部</strong>試驗，包括爛的。</p>
+<h2>「整個 catalog 當成一次搜尋」的讀法</h2>
+<p>還有一種更嚴格的框法：如果你是從 127 檔已註冊策略裡挑出「最好的那一個」，那 N 就是 127，離散度是跨家族的離散度（大得多）。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">讀法</th><th style="text-align:left">N</th><th style="text-align:left">門檻（年化）</th><th style="text-align:left">通過數</th></tr></thead><tbody><tr><td style="text-align:left">已宣告的搜尋活動</td><td style="text-align:left">624</td><td style="text-align:left">1.660</td><td style="text-align:left">1 / 12</td></tr><tr><td style="text-align:left">整個 catalog</td><td style="text-align:left">127</td><td style="text-align:left"><strong>2.713</strong></td><td style="text-align:left"><strong>0 / 12</strong></td></tr></tbody></table></div>
+<p>第二種讀法下，<strong>沒有任何一檔通過</strong>（最高的 S122 只有 0.0563）。</p>
+<p>這兩種讀法都對，只是在回答不同的問題。誠實的報告要把兩個都列出來，不能只挑好看的那個。</p>
+<h2>還有一個會汙染分母的東西：重複註冊</h2>
+<p>用日報酬相關係數做去重時發現：</p>
+<ul><li><strong>S123 = S139 = S141</strong>，ρ = 1.000，績效數字完全相同 —— 同一支策略佔了三個永久編號</li><li>S047 ≈ S048 ≈ S050，ρ 0.95–0.99</li></ul>
+<p>如果你用「策略數」當分母做任何統計（包括試驗計數），重複註冊會讓數字失真。去重要用報酬序列的相關係數，不能靠檔名或家族欄位。</p>
+<pre><code class="lang-python">def dedup(rows, limit, rho=0.95):
+    ranked = sorted(rows, key=lambda r: -(r[&quot;sharpe&quot;] or 0))
+    kept, kept_ret, dropped = [], {}, {}
+    for r in ranked:
+        ret = load_returns(r[&quot;strategy_number&quot;])
+        dup_of = next((k for k, kr in kept_ret.items()
+                       if ret.corr(kr) &gt;= rho), None)
+        if dup_of:
+            dropped.setdefault(dup_of, []).append(r[&quot;strategy_number&quot;])
+            continue
+        kept.append(r); kept_ret[r[&quot;strategy_number&quot;]] = ret
+        if len(kept) &gt;= limit:
+            break
+    return kept, dropped</code></pre>
+<h2>記住</h2>
+<blockquote>DSR 唯一能修正的是「你申報了多少次試驗」。它修正不了你沒申報的、也修正不了你有沒有偷看未來。它是必要條件，不是充分條件。</blockquote>
+<p>相關：<a href="61-deflated-sharpe.md">怎麼算去膨脹夏普</a>、<a href="51-fake-validation.md">假驗證的四種形態</a></p>
+<hr>
+<h2>[C53] 胃納量造假：三種寫法，都不是胃納量</h2>
+<p>*track: traps · status: verified · verified_by: evidence/honest_top5/all_metrics.json · source: lesson/claude/53-capacity-fiction.md*</p>
+<h1>胃納量造假：三種寫法，都不是胃納量</h1>
+<blockquote><strong>證據</strong>：對照某份報告的胃納量公式與其自己宣稱的數字</blockquote>
+<h2>為什麼這件事最重要</h2>
+<p>在小型市場做量化，<strong>胃納量是真正的約束，不是績效</strong>。</p>
+<p>實測：這個 repo 裡 CAGR 最高（53.69%）、Calmar 最高（2.16）、抗成本能力最強的那檔策略，胃納量是 <strong>NT$70,802</strong>。第二高的是 NT$79,251。</p>
+<p>也就是說，最漂亮的數字全部集中在你放不進錢的地方。任何不把胃納量和 Sharpe 並列的排名，都在誤導。</p>
+<h2>造假形態一：倒數公式</h2>
+<pre><code class="lang-python">cap = 70_645.0 / max(0.01, w_s127)</code></pre>
+<p>「胃納量 = 一個常數除以某個袖袋的權重」。</p>
+<p>這在數學上會產生你想要的行為（少配一點小型股 → 胃納量變大），但它不是胃納模型：</p>
+<ul><li>完全忽略其他袖袋的胃納</li><li>忽略「混合帳本的胃納受最緊的那一腳綁死」</li><li><code>w = 0</code> 時得到 <code>70645/0.01 = NT$7,064,500</code>，一個純粹由 clip 下界決定的數字</li></ul>
+<p>而且<strong>連自己的公式都對不上</strong>：<code>w_s127 = 0.08</code> 代入得 NT$883,062，但報告寫 NT$630,759。</p>
+<h2>造假形態二：寫死常數除以槓桿</h2>
+<pre><code class="lang-python">elif basket_type == &quot;S123_BASE&quot;:
+    d_base = daily_123
+    cap = 2_279_291.0          # 寫死
+...
+eff_cap = cap / max(1.0, bull_leverage)</code></pre>
+<p><code>2,279,291 / 1.5 = 1,519,527</code> —— 這就是報告裡那檔策略的「胃納量」。</p>
+<p>全程沒有對加了槓桿的帳本做任何胃納計算。而且 1.5x 槓桿的胃納量不是「除以 1.5」那麼簡單：加槓桿之後每檔的絕對部位變大，衝擊成本是非線性的。</p>
+<h2>造假形態三：報 0，然後在報告裡寫別的</h2>
+<pre><code class="lang-json">&quot;capacity&quot;: 0.0,
+&quot;capacity_local&quot;: 928859.0</code></pre>
+<p>一個欄位是 0（沒算成），另一個是本地估計。報告引用後者，但沒說前者是空的。</p>
+<hr>
+<h2>可用的本地模型</h2>
+<p>FinLab 的 <code>liquidity.capacity</code> 是伺服器端計算，離線取不到。所以要在本地重算，而且要對應到你自己宣告的執行規則。</p>
+<p>這個 repo 的執行層規則是「單一標的下單量 &gt; ADV20 的 5% 就 BLOCK」。本地重算就照這條：</p>
+<pre><code class="lang-python">def capacity_ntd(position, participation=0.05, q=0.5):
+    &quot;&quot;&quot;帳本規模上限：持股中最緊的一檔碰到 ADV20 的 participation 時的 NAV。&quot;&quot;&quot;
+    adv20 = (close * volume).average(20)
+
+    held = position.astype(bool)
+    n = held.sum(axis=1)
+    held, n = held[n &gt; 0], n[n &gt; 0]
+
+    adv_al = adv20.reindex(index=held.index, columns=held.columns, method=&quot;ffill&quot;)
+    # 等權假設下，每檔權重 = 1/n，該檔容得下的 NAV = participation * ADV / (1/n)
+    per_name = adv_al.where(held) * participation
+    tightest = per_name.min(axis=1) * n
+    return float(tightest.dropna().quantile(q))</code></pre>
+<p>三個必須講清楚的設計選擇：</p>
+<ol><li><strong>取最緊的那一檔</strong>（<code>min(axis=1)</code>），不是平均。帳本的胃納由最難買的那檔綁死。</li><li><strong>取中位數</strong>（<code>quantile(0.5)</code>），不是最小值也不是平均。最小值會被單一異常日綁架；平均會被高流動性期間拉高。</li><li><strong>等權假設</strong>。如果你的策略不是等權，要改成 <code>per_name / weight</code>。</li></ol>
+<h2>這個模型不能宣稱的事</h2>
+<ul><li>它<strong>沒有模擬市場衝擊</strong>。它只回答「不超過 ADV 的 5%」，不回答「買下去會推價多少」。</li><li>它<strong>沒有考慮進出對稱性</strong>。賣出的流動性通常比買入差，尤其在你想賣的時候。</li><li>它是<strong>本地重算</strong>，和 FinLab 伺服器端的數字不會一樣。要標明是哪一個。</li></ul>
+<h2>實測：胃納量如何改變排名</h2>
+<p>同一批策略，按 Sharpe 排 vs 加上胃納量門檻（NT$50 萬）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">Sharpe</th><th style="text-align:left">CAGR</th><th style="text-align:left">Calmar</th><th style="text-align:left">胃納量</th><th style="text-align:left">可部署</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left">21.78%</td><td style="text-align:left">1.84</td><td style="text-align:left">NT$1,077,368</td><td style="text-align:left">是</td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">2.110</td><td style="text-align:left">32.26%</td><td style="text-align:left">1.39</td><td style="text-align:left">NT$192,132</td><td style="text-align:left"><strong>否</strong></td></tr><tr><td style="text-align:left">S127</td><td style="text-align:left">2.107</td><td style="text-align:left"><strong>53.69%</strong></td><td style="text-align:left"><strong>2.16</strong></td><td style="text-align:left"><strong>NT$70,802</strong></td><td style="text-align:left"><strong>否</strong></td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">26.62%</td><td style="text-align:left">1.58</td><td style="text-align:left">NT$2,278,084</td><td style="text-align:left">是</td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">1.993</td><td style="text-align:left">35.17%</td><td style="text-align:left">1.17</td><td style="text-align:left"><strong>NT$79,251</strong></td><td style="text-align:left"><strong>否</strong></td></tr></tbody></table></div>
+<p>按 Sharpe 排的前五名，有三名放不進錢。</p>
+<h2>記住</h2>
+<blockquote>在報告裡，胃納量要和 Sharpe 並列在同一張表，不能放附註。放附註等於沒放 —— 讀的人會先被 CAGR 53.69% 抓走注意力。</blockquote>
+<p>相關：<a href="41-capacity-is-the-constraint.md">為什麼胃納量是真正的約束</a>、<a href="70-verified-strategy-inventory.md">已驗證積木清單</a></p>
+<hr>
+<h2>[C60] 驗證流水線：怎麼一次驗完整個策略庫</h2>
+<p>*track: validation · status: verified · verified_by: scripts/run_honest_topN.py · source: lesson/claude/60-verification-harness.md*</p>
+<h1>驗證流水線：怎麼一次驗完整個策略庫</h1>
+<blockquote><strong>證據</strong>：127 檔已註冊策略，15.2 分鐘跑完全量 <code>backtest.sim</code></blockquote>
+<h2>設計原則</h2>
+<p><strong>不引用任何既有的績效數字。</strong> 全部重跑。</p>
+<p>理由：既有的 evidence 檔案是好幾個 AI 在好幾天裡寫的，用的成本假設、期間、指標定義都可能不同。把它們並排比較，比較的是四種不同的東西。重跑一次，全部統一。</p>
+<p>15 分鐘的代價換一張可比的表，划算。</p>
+<h2>Pass 1：全量模擬</h2>
+<pre><code class="lang-python">for spec in registry.all_strategies():
+    pos = spec.build_position()
+    rep = backtest.sim(pos, **spec.backtest.as_sim_kwargs())   # 用策略自己宣告的成本
+    r = active_returns(rep.creturn)
+    r.to_frame(&quot;return&quot;).to_parquet(CURVES / f&quot;{spec.strategy_number}.parquet&quot;)
+    rows.append({**metrics(r), &quot;capacity_ntd&quot;: capacity_ntd(pos), ...})</code></pre>
+<p>三個關鍵細節：</p>
+<h3>1. 用策略自己宣告的成本，不要統一覆蓋</h3>
+<pre><code class="lang-python">rep = backtest.sim(pos, **spec.backtest.as_sim_kwargs())</code></pre>
+<p>每個策略的 <code>BacktestConfig</code> 帶著自己的 <code>resample</code>、<code>resample_offset</code>、<code>fee_ratio</code>。統一覆蓋會破壞例如 <code>resample_offset=&amp;quot;14D&amp;quot;</code> 這種和資料公布節奏綁定的設定。</p>
+<p>要比較的是「各自最佳配置下的表現」，不是「在我硬塞的配置下的表現」。</p>
+<h3>2. 從真正開始交易的那天算起</h3>
+<pre><code class="lang-python">def active_returns(curve):
+    r = curve.pct_change().dropna()
+    nz = r[r != 0.0]
+    return r.loc[nz.index[0]:] if len(nz) else r</code></pre>
+<p><code>creturn</code> 從 1.0 開始，在第一次進場前是平的。那段平的會把 Sharpe 灌水（分母變小）、把年數灌水（CAGR 縮水）。一定要切掉。</p>
+<h3>3. 每檔的日報酬存成 parquet</h3>
+<p>Pass 2 的所有檢查（DSR、去重、相關係數）都建立在日報酬上。存下來，Pass 2 就不用重跑。</p>
+<h2>指標定義（寫死，不要有第二種算法）</h2>
+<pre><code class="lang-python">def metrics(r):
+    c = (1.0 + r).cumprod()
+    yrs = (c.index[-1] - c.index[0]).days / 365.25
+    cagr = c.iloc[-1] ** (1.0 / yrs) - 1.0
+    sharpe = r.mean() / r.std() * np.sqrt(252)
+    down = r[r &lt; 0]
+    sortino = r.mean() / down.std() * np.sqrt(252)
+    mdd = float((c / c.cummax() - 1.0).min())
+
+    br = bench_r.reindex(r.index).fillna(0.0)      # 加權股價報酬指數
+    beta = float(r.cov(br) / br.var())
+    alpha_d = r.mean() - beta * br.mean()
+
+    return {
+        &quot;cagr_pct&quot;: cagr * 100,
+        &quot;sharpe&quot;: sharpe,
+        &quot;sortino&quot;: sortino,
+        &quot;mdd_pct&quot;: mdd * 100,
+        &quot;calmar&quot;: cagr / abs(mdd),
+        &quot;alpha_ann_pct&quot;: ((1 + alpha_d) ** 252 - 1) * 100,
+        &quot;beta&quot;: beta,
+    }</code></pre>
+<p><strong>年數一定要從實際的 index 算</strong>，不要用寫死的常數。我驗過一份報告，CAGR 用 12.49 年算而實際是 12.89 年，結果每個 CAGR 都灌水 2.5 個百分點。</p>
+<p><strong>alpha 要對「報酬指數」迴歸</strong>，不是價格指數 —— 否則你會把股息當成 alpha。</p>
+<h2>Pass 2：四項防過擬合檢查</h2>
+<h3>檢查一：去重（要先做）</h3>
+<p>用日報酬相關係數，不要靠檔名或家族欄位。</p>
+<pre><code class="lang-python">def dedup(rows, limit, rho=0.95):
+    ranked = sorted(rows, key=lambda r: -(r[&quot;sharpe&quot;] or 0))
+    kept, kept_ret, dropped = [], {}, {}
+    for r in ranked:
+        ret = load_returns(r[&quot;strategy_number&quot;])
+        dup_of = next((k for k, kr in kept_ret.items()
+                       if len(ret.index.intersection(kr.index)) &gt; 252
+                       and ret.corr(kr) &gt;= rho), None)
+        if dup_of:
+            dropped.setdefault(dup_of, []).append(r[&quot;strategy_number&quot;])
+            continue
+        kept.append(r); kept_ret[r[&quot;strategy_number&quot;]] = ret
+        if len(kept) &gt;= limit:
+            break
+    return kept, dropped</code></pre>
+<p>實測抓到：三個編號指向同一支策略（ρ = 1.000），另外一組三檔 ρ 0.95–0.99。</p>
+<p>不先去重，你的「前五名」會是同一支策略的三個版本。</p>
+<h3>檢查二：去膨脹夏普</h3>
+<p>見 <a href="61-deflated-sharpe.md">deflated-sharpe.md</a>。重點是試驗數要<strong>機械計數</strong>，且注意日頻／年化的單位。</p>
+<h3>檢查三：參數高原</h3>
+<p>見 <a href="62-parameter-plateau.md">parameter-plateau.md</a>。每個鄰居都重跑 <code>sim</code>。</p>
+<h3>檢查四：成本敏感度</h3>
+<p>見 <a href="42-cost-model.md">cost-model.md</a>。每個檔位都重跑 <code>sim</code>。</p>
+<h2>分段穩定度（順手做）</h2>
+<pre><code class="lang-python">blocks = np.array_split(r, 4)
+block_sharpes = [b.mean() / b.std() * np.sqrt(252) for b in blocks if len(b) &gt; 60]
+min_block_sharpe = min(block_sharpes)</code></pre>
+<p>這<strong>不是</strong>走步驗證（見 <a href="51-fake-validation.md">fake-validation.md</a>），別這樣叫它。它回答的是「這條曲線有沒有某一段接近失效」。</p>
+<p>實測有用：某檔策略整體 Sharpe 1.499 看起來還行，但最差區塊掉到 0.958 —— 有整整一個時期它幾乎失效。另一檔整體 2.211，最差區塊仍有 1.946。</p>
+<h2>最後一步：相關係數矩陣</h2>
+<pre><code class="lang-python">corr = pd.DataFrame({n: load_returns(n) for n in shortlist}).corr()</code></pre>
+<p>這一步最容易被跳過，但它常常是最重要的發現。</p>
+<p>實測：按 Sharpe 排的前五名，彼此相關係數 0.78–0.90。<strong>各配 20% 資金買到的是同一個因子的五種寫法，不是分散。</strong> 真正低相關的組合是第 1、第 9、第 10 名（ρ 0.50–0.62）。</p>
+<p>沒有這張矩陣，你會以為自己分散了。</p>
+<h2>完整輸出</h2>
+<pre><code>evidence/honest_top5/
+├── all_metrics.json        127 檔全量指標
+├── curves/*.parquet        每檔日報酬
+├── robustness.json         四項檢查結果
+└── turnover.json           實際成交次數與持有期</code></pre>
+<p><code>turnover.json</code> 那個是補做的 —— 我第一版算週轉率算錯了（算的是原始訊號 frame 的日變動，不是實際成交），要從 <code>rep.trades</code> 拿：</p>
+<pre><code class="lang-python">rep = backtest.sim(spec.build_position(), **spec.backtest.as_sim_kwargs())
+t = rep.trades
+trades_per_year = len(t) / years
+median_hold_days = (t[&quot;exit_date&quot;] - t[&quot;entry_date&quot;]).dt.days.median()</code></pre>
+<h2>記住</h2>
+<blockquote>全量重跑比挑幾檔重跑更省事，因為你不用解釋為什麼挑那幾檔。127 檔 15 分鐘，沒有理由不做。</blockquote>
+<p>相關：<a href="51-fake-validation.md">假驗證的四種形態</a>、<a href="70-verified-strategy-inventory.md">已驗證積木清單</a></p>
+<hr>
+<h2>[C61] 去膨脹夏普：怎麼算才算數</h2>
+<p>*track: validation · status: verified · verified_by: src/quant_grill_lab/search/deflated.py · source: lesson/claude/61-deflated-sharpe.md*</p>
+<h1>去膨脹夏普：怎麼算才算數</h1>
+<blockquote><strong>證據</strong>：624 次機械計數的試驗 + 12 檔候選的實際計算</blockquote>
+<h2>它在回答什麼</h2>
+<blockquote>就算所有策略都毫無價值，你試了 N 次之後，最好的那一個仍然會呈現多高的 Sharpe？</blockquote>
+<p>在純噪音上跑 500 組參數，最好的那組一定會有可觀的 Sharpe。不是有時候，是<strong>必然</strong> —— N 個零均值抽樣的期望最大值隨 N 成長。所以「我們找到 1.6」在你說出「我們看了幾個」之前沒有意義。</p>
+<p>參考：Bailey &amp; López de Prado (2014), *The Deflated Sharpe Ratio*。</p>
+<h2>兩個數字</h2>
+<p><strong><code>expected_max_sharpe(n_trials, variance_of_trial_sharpes)</code></strong> 即使每個策略都沒價值，最好的 N 個之一仍會呈現的 Sharpe。這是門檻。它隨試驗數上升，也隨試驗結果的<strong>離散度</strong>上升 —— 一群表現接近的試驗門檻低；一群結果天差地遠的試驗門檻高，因為那個離散度本身就是噪音在主導的證據。</p>
+<p><strong><code>deflated_sharpe_ratio(...)</code></strong> 在修正偏度與峰度之後，觀測 Sharpe 真的高於那個門檻的機率。</p>
+<p>DSR = 0.95 的意思是：考慮你試了幾次、以及這些報酬的形狀，有 95% 的機率真實 Sharpe 高於選擇偏差門檻。低於 0.95 就是「和搜尋夠久之後的運氣分不出來」。</p>
+<h2>完整實作</h2>
+<pre><code class="lang-python">def compute_dsr(candidate_returns, trial_sharpes_annualised, n_trials):
+    # 陷阱一：模組內部用日頻 Sharpe，試驗紀錄通常是年化的
+    ann = np.sqrt(252)
+    trial_sharpes_daily = np.asarray(trial_sharpes_annualised) / ann
+
+    d = deflated_sharpe_ratio(
+        candidate_returns,                       # 日報酬序列
+        n_trials=n_trials,                       # 機械計數，不是手填
+        trial_sharpes=trial_sharpes_daily.tolist(),   # 全部試驗，不只存活者
+    )
+    return {
+        &quot;dsr&quot;: d.deflated_probability,
+        &quot;bar_annualised&quot;: d.annualised_benchmark,
+        &quot;observed_annualised&quot;: d.annualised_observed,
+        &quot;passes&quot;: d.passes,
+        &quot;skew&quot;: d.skew,
+        &quot;kurtosis&quot;: d.kurtosis,
+    }</code></pre>
+<h2>三個必須做對的地方</h2>
+<h3>一、試驗數要機械計數</h3>
+<pre><code class="lang-python">def kiln_trials():
+    sh = []
+    for f in sorted(glob.glob(&quot;evidence/kiln/exp*.json&quot;)):
+        d = json.load(open(f, encoding=&quot;utf-8&quot;))
+        if not isinstance(d, list):
+            continue
+        for row in d:
+            v = row.get(&quot;sharpe_local&quot;)
+            if isinstance(v, (int, float)) and np.isfinite(v):
+                sh.append(float(v))
+    return len(sh), np.array(sh)</code></pre>
+<p>實測：機械計數得到 <strong>624</strong>，而人工填的紀錄寫 134（另一份寫 253）。門檻差 0.26 個 Sharpe（1.401 → 1.660），足以翻轉判定。</p>
+<p><strong>設計準則</strong>：搜尋程式在跑的時候就要把每一次試驗寫進紀錄檔，DSR 從紀錄檔數，不接受任何呼叫端手動提供的 <code>n_trials</code>。</p>
+<h3>二、單位不能混</h3>
+<p>模組內部：</p>
+<pre><code class="lang-python">observed = float(series.mean()) / standard_deviation      # 日頻，約 0.14</code></pre>
+<p>如果你餵年化的 <code>trial_sharpes</code>，門檻會用年化尺度算（1.660），拿去和日頻觀測值（0.139）比 —— <strong>所有 DSR 都會是 0.0000</strong>。</p>
+<p><strong>症狀對照表</strong>：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">現象</th><th style="text-align:left">病因</th></tr></thead><tbody><tr><td style="text-align:left">所有 DSR 都是 0.0000</td><td style="text-align:left">門檻是年化、觀測是日頻</td></tr><tr><td style="text-align:left">所有 DSR 都是 1.0000</td><td style="text-align:left">反過來，或門檻算成 0</td></tr><tr><td style="text-align:left">DSR 恰好等於某個漂亮的整數</td><td style="text-align:left">沒真的算，是填的</td></tr></tbody></table></div>
+<h3>三、要餵全部試驗，包括爛的</h3>
+<p>只餵通過門檻的存活者，離散度被低估，門檻跟著低估，結果被高估。</p>
+<h2>實測結果</h2>
+<p>門檻：624 次試驗、年化 <strong>1.660</strong>。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">Sharpe</th><th style="text-align:left">DSR</th><th style="text-align:left">偏度</th><th style="text-align:left">峰度</th><th style="text-align:left">判定</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left"><strong>0.9595</strong></td><td style="text-align:left">-1.52</td><td style="text-align:left">16.8</td><td style="text-align:left">通過</td></tr><tr><td style="text-align:left">S138</td><td style="text-align:left">2.148</td><td style="text-align:left">0.9435</td><td style="text-align:left">—</td><td style="text-align:left">—</td><td style="text-align:left">差 0.007</td></tr><tr><td style="text-align:left">S127</td><td style="text-align:left">2.107</td><td style="text-align:left">0.9406</td><td style="text-align:left">-0.27</td><td style="text-align:left">5.5</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">2.110</td><td style="text-align:left">0.9298</td><td style="text-align:left">-1.10</td><td style="text-align:left">13.9</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">0.9237</td><td style="text-align:left">-1.20</td><td style="text-align:left">12.1</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left">2.027</td><td style="text-align:left">0.8885</td><td style="text-align:left">-1.06</td><td style="text-align:left">10.6</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">1.993</td><td style="text-align:left">0.8714</td><td style="text-align:left">-0.70</td><td style="text-align:left">8.7</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S125</td><td style="text-align:left">1.816</td><td style="text-align:left">0.7340</td><td style="text-align:left">-0.83</td><td style="text-align:left">10.9</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left">1.756</td><td style="text-align:left">0.6282</td><td style="text-align:left">-0.82</td><td style="text-align:left">9.2</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S148</td><td style="text-align:left">1.545</td><td style="text-align:left">0.3430</td><td style="text-align:left">+0.05</td><td style="text-align:left">5.5</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S126</td><td style="text-align:left">1.499</td><td style="text-align:left">0.2881</td><td style="text-align:left">-0.53</td><td style="text-align:left">5.3</td><td style="text-align:left">未過</td></tr></tbody></table></div>
+<p>注意偏度那一欄：<strong>S127 的 Sharpe（2.107）低於 S144（2.110），但 DSR 反而比較高（0.9406 vs 0.9298）</strong>。因為 S127 的偏度只有 -0.27、峰度 5.5，而 S144 是 -1.10 / 13.9。左尾越厚，同樣的 Sharpe 越不值錢。</p>
+<p>DSR 的分母正是在做這件事：</p>
+<pre><code class="lang-python">denominator_squared = 1.0 - skew * observed + ((kurtosis - 1.0) / 4.0) * observed**2</code></pre>
+<p>負偏度會放大分母，讓左尾策略需要更高的 Sharpe 才能達到同樣的 DSR。</p>
+<h2>兩種讀法都要報</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">讀法</th><th style="text-align:left">N</th><th style="text-align:left">離散度來源</th><th style="text-align:left">門檻（年化）</th><th style="text-align:left">通過</th></tr></thead><tbody><tr><td style="text-align:left">已宣告的搜尋活動</td><td style="text-align:left">624</td><td style="text-align:left">該次 campaign 的試驗</td><td style="text-align:left">1.660</td><td style="text-align:left">1 / 12</td></tr><tr><td style="text-align:left">整個 catalog 當一次搜尋</td><td style="text-align:left">127</td><td style="text-align:left">跨家族（大得多）</td><td style="text-align:left"><strong>2.713</strong></td><td style="text-align:left"><strong>0 / 12</strong></td></tr></tbody></table></div>
+<p>兩個都對，在回答不同問題。第二種問的是「如果你是從這 127 檔裡挑最好的那一個呢」—— 答案是沒有一檔站得住。</p>
+<p><strong>誠實的報告要並列，不能只挑好看的那個。</strong></p>
+<h2>它修正不了什麼</h2>
+<ol><li><strong>沒申報的試驗</strong>。624 是有 JSON 紀錄的，手動試的、外部繼承的（例如從公開文章移植的策略，發表者自己的搜尋成本未知）都不在裡面。真實門檻只會更高。</li><li><strong>前視偏誤</strong>。DSR 假設你的回測至少是誠實的。一個有前視的 Sharpe 4.9 會輕鬆通過任何 DSR 門檻。<strong>要先做 shift(1) 測試，再做 DSR。</strong></li><li><strong>樣本外</strong>。DSR 修正「你找了多少次」，不修正「你有沒有看過答案」。</li></ol>
+<h2>記住</h2>
+<blockquote>DSR 是必要條件，不是充分條件。順序是：先確認沒有前視 → 再確認成本誠實 → 才輪到 DSR。</blockquote>
+<p>相關：<a href="52-trial-counting.md">試驗計數</a>、<a href="50-lookahead-bias.md">前視偏誤</a>、<a href="62-parameter-plateau.md">參數高原</a></p>
+<hr>
+<h2>[C62] 參數高原：你選的是山峰還是平台</h2>
+<p>*track: validation · status: verified · verified_by: scripts/run_honest_top5_robustness.py · source: lesson/claude/62-parameter-plateau.md*</p>
+<h1>參數高原：你選的是山峰還是平台</h1>
+<blockquote><strong>證據</strong>：12 檔候選，每個數值參數各擾動兩檔，全部重跑 <code>backtest.sim</code></blockquote>
+<h2>它在回答什麼</h2>
+<blockquote>如果我把參數挪一格，這個策略還在嗎？</blockquote>
+<p>一個過擬合的參數是<strong>尖峰</strong>：<code>top_n=30</code> 得 Sharpe 2.2，<code>top_n=24</code> 或 <code>36</code> 掉到 1.0。那代表 30 這個數字是被資料的噪音選出來的。</p>
+<p>一個真實的參數是<strong>平台</strong>：周圍一圈都還在 2.0 附近。那代表你抓到的是結構，不是巧合。</p>
+<p>這是所有防過擬合檢查裡<strong>最直觀、也最難造假</strong>的一個 —— 因為每個鄰居都要真的重跑一次回測。</p>
+<h2>實作</h2>
+<pre><code class="lang-python">def neighbours(params):
+    &quot;&quot;&quot;每個數值參數往兩邊各挪一檔。&quot;&quot;&quot;
+    out = []
+    for k, v in params.items():
+        if isinstance(v, bool) or not isinstance(v, (int, float)):
+            continue
+        if isinstance(v, int):
+            step = max(1, round(abs(v) * 0.2))       # 整數 ±20%
+            cands = [v - step, v + step]
+        else:
+            cands = [round(v * 0.8, 6), round(v * 1.25, 6)]   # 浮點 ×0.8 / ×1.25
+        for s in cands:
+            if s != v and s &gt; 0:
+                out.append((f&quot;{k}: {v} -&gt; {s}&quot;, dict(params, **{k: s})))
+    return out
+
+
+PLATEAU_FLOOR = 0.70        # 鄰居要保住中心值 70% 的 Sharpe
+
+for label, p in neighbours(spec.default_params):
+    r = sim_returns(spec, p)                          # 真的重跑 sim
+    s = r.mean() / r.std() * np.sqrt(252)
+    passed = s &gt;= PLATEAU_FLOOR * centre_sharpe</code></pre>
+<h2>實測結果 —— 以及為什麼「100%」可能沒有意義</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">通過率</th><th style="text-align:left"><strong>鄰居數</strong></th><th style="text-align:left">最差鄰居</th><th style="text-align:left">證據強度</th></tr></thead><tbody><tr><td style="text-align:left">S022</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>12</strong></td><td style="text-align:left">1.667</td><td style="text-align:left"><strong>強</strong></td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">100%</td><td style="text-align:left">8</td><td style="text-align:left">2.107</td><td style="text-align:left">中</td></tr><tr><td style="text-align:left">S127</td><td style="text-align:left">100%</td><td style="text-align:left">4</td><td style="text-align:left">1.742</td><td style="text-align:left">中</td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">100%</td><td style="text-align:left">4</td><td style="text-align:left">1.795</td><td style="text-align:left">中</td></tr><tr><td style="text-align:left">S148</td><td style="text-align:left">100%</td><td style="text-align:left">4</td><td style="text-align:left">1.444</td><td style="text-align:left">中</td></tr><tr><td style="text-align:left">S122</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left">2.095</td><td style="text-align:left"><strong>弱</strong></td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left">2.033</td><td style="text-align:left"><strong>弱</strong></td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left">1.983</td><td style="text-align:left"><strong>弱</strong></td></tr><tr><td style="text-align:left">S126</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left">1.46</td><td style="text-align:left"><strong>弱</strong></td></tr><tr><td style="text-align:left"><strong>S048</strong></td><td style="text-align:left"><strong>0%</strong></td><td style="text-align:left">2</td><td style="text-align:left">兩個鄰居都拋錯</td><td style="text-align:left"><strong>紅旗</strong></td></tr></tbody></table></div>
+<p><strong>這張表最重要的一欄是「鄰居數」，不是通過率。</strong></p>
+<p>S122 的通過率 100%，但它只有 2 個鄰居 —— 因為它只暴露 <code>top_n</code> 一個數值參數。「100% 通過」在這裡的意思不是「高原很寬」，而是「可以測的東西很少」。</p>
+<p>真正被寬鬆測過的是 S022：12 個鄰居全過，最差 1.667。那是有份量的證據。</p>
+<p><strong>所以報告要寫「100% of 2」而不是「100%」。</strong> 只寫百分比會讓 S122 和 S022 看起來一樣強，但它們差很多。</p>
+<h2>S048 的 0% 是紅旗，不是「未通過」</h2>
+<p>兩個鄰居都拋出例外，代表這個策略在參數稍微改變時就無法建構。這比「Sharpe 掉下去」更糟 —— 它連跑都跑不起來。</p>
+<p>要把「鄰居失敗」和「鄰居 Sharpe 太低」分開記錄：</p>
+<pre><code class="lang-python">except Exception as e:
+    nb_res.append({&quot;param&quot;: label, &quot;sharpe&quot;: None, &quot;pass&quot;: False,
+                   &quot;error&quot;: type(e).__name__})       # ← 記下錯誤類型</code></pre>
+<h2>參數擾動 vs 結構擾動</h2>
+<p>有個重要區分。這個 repo 裡某檔策略的 notes 寫著：</p>
+<blockquote>Plateau test 13/17 neighbours within 0.85x (92% counting parameter neighbours only; the four failures are leg removals, which are structural changes rather than perturbations).</blockquote>
+<p>「拿掉一整條因子腳」不是參數擾動，是結構改變。它失敗不代表過擬合，只代表那條腳有貢獻。</p>
+<p><strong>兩者要分開報</strong>：</p>
+<ul><li><strong>參數擾動</strong>（<code>top_n</code> 30→36）→ 測的是過擬合</li><li><strong>結構消融</strong>（拿掉整條腳）→ 測的是各元件的貢獻度</li></ul>
+<p>把兩者混在同一個百分比裡，兩邊的訊號都被稀釋。</p>
+<h2>消融實驗：另一個方向的用法</h2>
+<p>同一個機制反過來用，可以找出「哪些元件其實在扣分」。實測某檔四因子策略的逐腳消融：</p>
+<pre><code>移除低波動腳       -0.585 Sharpe    ← 最大貢獻
+移除 14D 公布日對齊 -0.358 Sharpe    ← 免費的、純時序對齊
+移除 ROE 腳        -0.190 Sharpe
+移除營收成長腳     +0.044 Sharpe    ← 負貢獻
+移除營收帶篩選     +0.037 Sharpe    ← 負貢獻</code></pre>
+<p>最後兩行是重點：這檔策略的招牌是「營收動能」，但它的兩個營收元件在 Sharpe 上是<strong>淨負貢獻</strong>。</p>
+<p>這個發現直接生出了一檔新策略：保留有效的（低波動、公布日對齊、營收帶當篩選而非評分），把兩個營收元件換掉。新策略的 Sharpe 2.211 是全庫最高。</p>
+<p><strong>但要誠實標註</strong>：這樣選出來的「腳的集合」是被搜尋出來的。權重沒有擬合（四個百分位排名直接相加），但<strong>組合本身是擬合的</strong>。這一點必須寫進選擇偏差註記。</p>
+<h2>高原檢查的成本</h2>
+<p>12 檔候選、平均 4 個鄰居、每個鄰居約 10–20 秒 → 約 15 分鐘。</p>
+<p>比起它能擋掉的東西，這是很便宜的。</p>
+<h2>檢查清單</h2>
+<ol><li>每個鄰居都真的重跑 <code>sim</code> 了嗎？（不能用內插）</li><li>報告有寫鄰居數嗎？（「100%」不寫分母等於沒寫）</li><li>鄰居失敗和鄰居分數低有分開記嗎？</li><li>參數擾動和結構消融有分開報嗎？</li><li>如果某策略只有 1–2 個數值參數，有在報告裡註明「證據弱」嗎？</li></ol>
+<h2>記住</h2>
+<blockquote>通過率的分母比分子重要。「100% of 2」和「100% of 12」是完全不同的兩件事。</blockquote>
+<p>相關：<a href="61-deflated-sharpe.md">去膨脹夏普</a>、<a href="60-verification-harness.md">驗證流水線</a></p>
+<hr>
+<h2>[C70] 已驗證積木清單：策略層</h2>
+<p>*track: block · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/70-verified-strategy-inventory.md*</p>
+<h1>已驗證積木清單：策略層</h1>
+<blockquote><strong>證據</strong>：127 檔已註冊策略全量 <code>backtest.sim</code> 重跑 + 四項防過擬合檢查</blockquote>
+<p>這一頁是給「把黑盒子當積木拼」用的。每一格都是這次重跑量出來的，不是引用。</p>
+<p><strong>這裡不放因子配方。</strong> 放的是介面（讀哪些資料集、暴露哪些參數）、實測數字、以及能不能用的判定。</p>
+<hr>
+<h2>判定門檻</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">關卡</th><th style="text-align:left">門檻</th><th style="text-align:left">理由</th></tr></thead><tbody><tr><td style="text-align:left">胃納量</td><td style="text-align:left">≥ NT$50 萬</td><td style="text-align:left">低於此無法部署，見 <a href="41-capacity-is-the-constraint.md">why-capacity-binds</a></td></tr><tr><td style="text-align:left">去膨脹夏普</td><td style="text-align:left">≥ 0.95（門檻年化 1.6595，624 次機械計數試驗）</td><td style="text-align:left">見 <a href="61-deflated-sharpe.md">deflated-sharpe</a></td></tr><tr><td style="text-align:left">最差區塊 Sharpe</td><td style="text-align:left">&gt; 1.0</td><td style="text-align:left">四個等長非重疊區塊，任一段失效即不算穩</td></tr><tr><td style="text-align:left">+30bps 成本後</td><td style="text-align:left">&gt; 1.0</td><td style="text-align:left">真的重跑 <code>sim</code>，不是算術扣減</td></tr></tbody></table></div>
+<hr>
+<h2>主表</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">家族</th><th style="text-align:left">來源</th><th style="text-align:left">Sharpe</th><th style="text-align:left">CAGR</th><th style="text-align:left">MDD</th><th style="text-align:left">Calmar</th><th style="text-align:left">Sortino</th><th style="text-align:left">alpha</th><th style="text-align:left">beta</th><th style="text-align:left">胃納量</th><th style="text-align:left">最差區塊</th><th style="text-align:left">DSR</th><th style="text-align:left">+30bps</th><th style="text-align:left">判定</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">QUALITY_LOW_VOL</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.211</td><td style="text-align:left">21.78%</td><td style="text-align:left">-11.83%</td><td style="text-align:left">1.841</td><td style="text-align:left">2.225</td><td style="text-align:left">16.82%</td><td style="text-align:left">0.283</td><td style="text-align:left">NT$1,077,368</td><td style="text-align:left">1.946</td><td style="text-align:left">0.9595</td><td style="text-align:left">1.625</td><td style="text-align:left"><strong>可用</strong></td></tr><tr><td style="text-align:left">S138</td><td style="text-align:left">QUALITY_LOW_VOL</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.148</td><td style="text-align:left">22.35%</td><td style="text-align:left">-13.88%</td><td style="text-align:left">1.611</td><td style="text-align:left">2.292</td><td style="text-align:left">16.88%</td><td style="text-align:left">0.309</td><td style="text-align:left">NT$1,876,501</td><td style="text-align:left">1.692</td><td style="text-align:left">0.9435</td><td style="text-align:left">1.538</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">QUALITY_LOW_VOL</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.097</td><td style="text-align:left">26.62%</td><td style="text-align:left">-16.88%</td><td style="text-align:left">1.577</td><td style="text-align:left">2.193</td><td style="text-align:left">19.13%</td><td style="text-align:left">0.41</td><td style="text-align:left">NT$2,278,084</td><td style="text-align:left">1.644</td><td style="text-align:left">0.9237</td><td style="text-align:left">1.64</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left">QUALITY_INDUSTRY_NEUTRAL</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.027</td><td style="text-align:left">27.17%</td><td style="text-align:left">-15.09%</td><td style="text-align:left">1.801</td><td style="text-align:left">2.161</td><td style="text-align:left">19.91%</td><td style="text-align:left">0.404</td><td style="text-align:left">NT$1,976,313</td><td style="text-align:left">1.908</td><td style="text-align:left">0.8885</td><td style="text-align:left">1.596</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S125</td><td style="text-align:left">PRICE_REVENUE_LONG_HISTORY</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">1.816</td><td style="text-align:left">25.33%</td><td style="text-align:left">-18.24%</td><td style="text-align:left">1.389</td><td style="text-align:left">1.882</td><td style="text-align:left">20.42%</td><td style="text-align:left">0.373</td><td style="text-align:left">NT$1,753,380</td><td style="text-align:left">1.359</td><td style="text-align:left">0.734</td><td style="text-align:left">1.354</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left">MULTI_FACTOR</td><td style="text-align:left">PORTED_FINLAB_PUBLISHED</td><td style="text-align:left">1.756</td><td style="text-align:left">34.88%</td><td style="text-align:left">-29.91%</td><td style="text-align:left">1.166</td><td style="text-align:left">2.091</td><td style="text-align:left">19.75%</td><td style="text-align:left">0.791</td><td style="text-align:left">NT$1,188,789</td><td style="text-align:left">1.472</td><td style="text-align:left">0.6282</td><td style="text-align:left">1.377</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S148</td><td style="text-align:left">RADICAL_CONVEXITY</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">1.545</td><td style="text-align:left">38.12%</td><td style="text-align:left">-23.76%</td><td style="text-align:left">1.604</td><td style="text-align:left">2.095</td><td style="text-align:left">31.45%</td><td style="text-align:left">0.464</td><td style="text-align:left">NT$5,547,322</td><td style="text-align:left">1.247</td><td style="text-align:left">0.343</td><td style="text-align:left">1.219</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S126</td><td style="text-align:left">GROWTH_HIGH_CAPACITY</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">1.499</td><td style="text-align:left">42.28%</td><td style="text-align:left">-36.39%</td><td style="text-align:left">1.162</td><td style="text-align:left">1.968</td><td style="text-align:left">23.99%</td><td style="text-align:left">1.001</td><td style="text-align:left">NT$8,333,758</td><td style="text-align:left">0.958</td><td style="text-align:left">0.2881</td><td style="text-align:left">1.232</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S127</td><td style="text-align:left">SMALLCAP_REVENUE_MOMENTUM</td><td style="text-align:left">INHERITED_WEGO</td><td style="text-align:left">2.107</td><td style="text-align:left">53.69%</td><td style="text-align:left">-24.91%</td><td style="text-align:left">2.156</td><td style="text-align:left">3.125</td><td style="text-align:left">45.84%</td><td style="text-align:left">0.49</td><td style="text-align:left">NT$70,802</td><td style="text-align:left">1.756</td><td style="text-align:left">0.9406</td><td style="text-align:left">1.746</td><td style="text-align:left"><strong>胃納不足</strong></td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">SMALLCAP_REVENUE_MOMENTUM</td><td style="text-align:left">INHERITED_WEGO</td><td style="text-align:left">1.993</td><td style="text-align:left">35.17%</td><td style="text-align:left">-29.99%</td><td style="text-align:left">1.173</td><td style="text-align:left">2.616</td><td style="text-align:left">27.49%</td><td style="text-align:left">0.438</td><td style="text-align:left">NT$79,251</td><td style="text-align:left">1.359</td><td style="text-align:left">0.8714</td><td style="text-align:left">1.477</td><td style="text-align:left"><strong>胃納不足</strong></td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">MULTI_SLEEVE_ENSEMBLE</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.110</td><td style="text-align:left">32.26%</td><td style="text-align:left">-23.28%</td><td style="text-align:left">1.386</td><td style="text-align:left">2.443</td><td style="text-align:left">22.41%</td><td style="text-align:left">0.523</td><td style="text-align:left">NT$192,132</td><td style="text-align:left">1.923</td><td style="text-align:left">0.9298</td><td style="text-align:left">1.54</td><td style="text-align:left"><strong>胃納不足</strong></td></tr></tbody></table></div>
+<hr>
+<h2>各積木的介面</h2>
+<h3>S122 — QUALITY_LOW_VOL</h3>
+<ul><li><strong>結構</strong>：四個百分位排名等權相加（品質、低波動、動量確認、估值），營收帶當篩選、大盤均線閘。無權重可擬合。</li><li><strong>來源</strong>：<code>NEW_IN_LAB</code></li><li><strong>讀取資料集</strong>：<code>price:收盤價</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>benchmark_return:發行量加權股價報酬指數</code>, <code>fundamental_features:營業毛利率</code>, <code>price_earning_ratio:股價淨值比</code></li><li><strong>暴露參數</strong>：<code>top_n=30</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-05-15 ~ 2026-08-25（13.28 年）· 持股中位數 30 檔 · 每年 287.1 筆成交 · 中位持有 31 天</li><li><strong>參數高原</strong>：100.0% of 2 個鄰居（<strong>鄰居數少，證據弱</strong>）</li><li><strong>選擇偏差自述</strong>：FOUND BY SEARCH, AND THE SEARCH IS DECLARED. 253 backtests were run across the campaign that produced this; every one is logged in evidence/kiln/exp*.json and all of them were fed to the deflated Sharpe calculation, which put the selection-bias bar at 1.55 ann…</li></ul>
+<h3>S138 — QUALITY_LOW_VOL</h3>
+<ul><li><strong>結構</strong>：S123 的因子池上加逆波動度配置權重，單檔上限 10%。</li><li><strong>來源</strong>：<code>NEW_IN_LAB</code></li><li><strong>讀取資料集</strong>：<code>price:收盤價</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>benchmark_return:發行量加權股價報酬指數</code>, <code>fundamental_features:營運現金流</code>, <code>fundamental_features:營業毛利率</code>, <code>price_earning_ratio:股價淨值比</code></li><li><strong>暴露參數</strong>：<code>top_n=20</code>, <code>weight_cap=0.1</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-05-15 ~ 2026-08-25（13.28 年）· 持股中位數 20 檔 · 每年 191.4 筆成交 · 中位持有 31 天</li><li><strong>參數高原</strong>：100.0% of 4 個鄰居</li><li><strong>選擇偏差自述</strong>：Island GA evolved with 400 declared trials, DSR 1.0000, Plateau pass rate 100%.…</li></ul>
+<h3>S123 — QUALITY_LOW_VOL</h3>
+<ul><li><strong>結構</strong>：S122 的因子池加上現金流與中期動量，持股放寬到 40 檔換取胃納。</li><li><strong>來源</strong>：<code>NEW_IN_LAB</code></li><li><strong>讀取資料集</strong>：<code>price:收盤價</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>benchmark_return:發行量加權股價報酬指數</code>, <code>fundamental_features:營運現金流</code>, <code>fundamental_features:營業毛利率</code>, <code>price_earning_ratio:股價淨值比</code></li><li><strong>暴露參數</strong>：<code>top_n=40</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-05-15 ~ 2026-08-25（13.28 年）· 持股中位數 40 檔 · 每年 383.0 筆成交 · 中位持有 31 天</li><li><strong>參數高原</strong>：100.0% of 2 個鄰居（<strong>鄰居數少，證據弱</strong>）</li><li><strong>選擇偏差自述</strong>：FOUND BY SEARCH, AND THE SEARCH IS DECLARED. Same 253-backtest campaign as S122; the selection-bias bar computed from the full trial distribution is 1.55 annualised and this reads 2.104 with DSR 0.9823. Caveats that survive that: the IS/OOS split is a plain ch…</li></ul>
+<h3>S124 — QUALITY_INDUSTRY_NEUTRAL</h3>
+<ul><li><strong>結構</strong>：與 S122 同族，但橫斷面排名在各自產業內做，避免整族產業被整批買進。</li><li><strong>來源</strong>：<code>NEW_IN_LAB</code></li><li><strong>讀取資料集</strong>：<code>price:收盤價</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>benchmark_return:發行量加權股價報酬指數</code>, <code>security_categories</code>, <code>fundamental_features:營業毛利率</code>, <code>fundamental_features:營業利益率</code>, <code>price_earning_ratio:股價淨值比</code></li><li><strong>暴露參數</strong>：<code>top_n=30</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-05-15 ~ 2026-08-25（13.28 年）· 持股中位數 30 檔 · 每年 287.1 筆成交 · 中位持有 31 天</li><li><strong>參數高原</strong>：100.0% of 2 個鄰居（<strong>鄰居數少，證據弱</strong>）</li><li><strong>選擇偏差自述</strong>：FOUND BY SEARCH, AND THE SEARCH IS DECLARED. Same 253-backtest campaign; bar 1.55 annualised, this reads 2.033 with DSR 0.9711. TWO caveats beyond the family&#x27;s shared ones (13.27 years, no 2008, chronological 50/50 split rather than purged walk-forward). First…</li></ul>
+<h3>S125 — PRICE_REVENUE_LONG_HISTORY</h3>
+<ul><li><strong>結構</strong>：完全不用財報，只用價量與月營收，因此可回溯到 2007（含 2008 崩盤）。</li><li><strong>來源</strong>：<code>NEW_IN_LAB</code></li><li><strong>讀取資料集</strong>：<code>price:收盤價</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>benchmark_return:發行量加權股價報酬指數</code></li><li><strong>暴露參數</strong>：<code>top_n=25</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2008-04-15 ~ 2026-08-25（18.36 年）· 持股中位數 25 檔 · 每年 226.5 筆成交 · 中位持有 31 天</li><li><strong>參數高原</strong>：100.0% of 2 個鄰居（<strong>鄰居數少，證據弱</strong>）</li><li><strong>選擇偏差自述</strong>：DOES NOT CLEAR DEFLATION AND IS FILED ANYWAY. DSR 0.9250 against a 0.95 threshold on the declared 253-trial campaign, verdict INDISTINGUISHABLE_FROM_SEARCH. It is registered as the family&#x27;s long-history control, NOT as a deployable strategy, and nothing here s…</li></ul>
+<h3>S022 — MULTI_FACTOR</h3>
+<ul><li><strong>結構</strong>：四個因子各自百分位排名相加，來自 FinLab 公開文章，非本專案原創。</li><li><strong>來源</strong>：<code>PORTED_FINLAB_PUBLISHED</code></li><li><strong>讀取資料集</strong>：<code>price:收盤價</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>fundamental_features:ROE稅後</code></li><li><strong>暴露參數</strong>：<code>min_revenue_growth=10.0</code>, <code>max_revenue_growth=150.0</code>, <code>sustain_months=3</code>, <code>momentum_days=60</code>, <code>volatility_days=60</code>, <code>rank_top=40</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-05-15 ~ 2026-08-25（13.28 年）· 持股中位數 40 檔 · 每年 482.5 筆成交 · 中位持有 31 天</li><li><strong>參數高原</strong>：100.0% of 12 個鄰居</li><li><strong>選擇偏差自述</strong>：CLEARS 1.6 ON BOTH READINGS AND STILL FAILS THE LOT TEST. Sharpe 1.7660 local / 1.6587 FinLab, CAGR 34.88%, MDD -29.91%, capacity NT$5,026,355, 40 names, IS 1.8043 / OOS 1.7256 across 3,225 days from 2013-05-15. It is the only thing in this project to clear 1.…</li></ul>
+<h3>S148 — RADICAL_CONVEXITY</h3>
+<ul><li><strong>結構</strong>：利潤率轉折 + 動量 + 高集中度 Top 6，含停利。</li><li><strong>來源</strong>：<code>NEW_IN_LAB</code></li><li><strong>讀取資料集</strong>：<code>price:收盤價</code>, <code>price:成交股數</code>, <code>fundamental_features:營業利益率</code>, <code>fundamental_features:營業毛利率</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>benchmark_return:發行量加權股價報酬指數</code></li><li><strong>暴露參數</strong>：<code>top_n=6</code>, <code>liquidity_floor=0.4</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-09-16 ~ 2026-08-25（12.94 年）· 持股中位數 6 檔 · 每年 56.5 筆成交 · 中位持有 30 天</li><li><strong>參數高原</strong>：100.0% of 4 個鄰居</li><li><strong>選擇偏差自述</strong>：Evolved via 5-Island Radical GA (1602 trials) with 5-Fold Purged Walk-Forward Maximin gate.…</li></ul>
+<h3>S126 — GROWTH_HIGH_CAPACITY</h3>
+<ul><li><strong>結構</strong>：成長因子，刻意選大市值以換取胃納量上限。</li><li><strong>來源</strong>：<code>NEW_IN_LAB</code></li><li><strong>讀取資料集</strong>：<code>price:收盤價</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>benchmark_return:發行量加權股價報酬指數</code>, <code>fundamental_features:營業毛利率</code></li><li><strong>暴露參數</strong>：<code>top_n=20</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-05-15 ~ 2026-08-25（13.28 年）· 持股中位數 20 檔</li><li><strong>參數高原</strong>：100.0% of 2 個鄰居（<strong>鄰居數少，證據弱</strong>）</li><li><strong>選擇偏差自述</strong>：DOES NOT CLEAR DEFLATION AND IS FILED ANYWAY, LIKE S125. DSR 0.6106 against a 0.95 threshold; at 268 declared trials the selection-bias bar is 1.416 annualised and this reads 1.496, barely above it. It is registered as the CAGR-and-capacity corner of the measu…</li></ul>
+<h3>S127 — SMALLCAP_REVENUE_MOMENTUM</h3>
+<ul><li><strong>結構</strong>：小型股營收動能加停利，選最小市值那一端。</li><li><strong>來源</strong>：<code>INHERITED_WEGO</code></li><li><strong>讀取資料集</strong>：<code>etl:market_value</code>, <code>monthly_revenue:當月營收</code>, <code>etl:adj_close</code></li><li><strong>暴露參數</strong>：<code>rank_top=9</code>, <code>threshold=&amp;#x27;high&amp;#x27;</code>, <code>window=60</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=None</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-06-03 ~ 2026-08-25（13.23 年）· 持股中位數 9 檔</li><li><strong>參數高原</strong>：100.0% of 4 個鄰居</li><li><strong>選擇偏差自述</strong>：CLEARS DEFLATION BUT FAILS THE OWNER&#x27;S CAPACITY FLOOR. DSR 0.9972 at 399 declared trials (bar 1.325 annualised), IS 2.025 -&gt; OOS 2.213, 0 negative years, and 6 of 6 plateau neighbours within 0.85x -- statistically this is the strongest result in the campaign. …</li></ul>
+<h3>S004 — SMALLCAP_REVENUE_MOMENTUM</h3>
+<ul><li><strong>結構</strong>：小型股營收動能（3 月營收相對 12 月），WEGO 繼承。</li><li><strong>來源</strong>：<code>INHERITED_WEGO</code></li><li><strong>讀取資料集</strong>：<code>etl:market_value</code>, <code>monthly_revenue:當月營收</code>, <code>etl:adj_close</code></li><li><strong>暴露參數</strong>：<code>rank_top=20</code>, <code>threshold=&amp;#x27;medium&amp;#x27;</code>, <code>window=20</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=None</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-05-02 ~ 2026-08-25（13.31 年）· 持股中位數 20 檔</li><li><strong>參數高原</strong>：100.0% of 4 個鄰居</li><li><strong>選擇偏差自述</strong>：SEVERE AND INHERITED, NOT FIXED. (1) 288 registered trials in this family over {rank_top, rebalance, threshold, window}; any reported Sharpe must be discounted for multiple testing. (2) Scorecard PSR is reported as exactly 1.0000000000, which is not a credible…</li></ul>
+<h3>S144 — MULTI_SLEEVE_ENSEMBLE</h3>
+<ul><li><strong>結構</strong>：四袖袋集成，成員兩兩相關 &lt; 0.62。</li><li><strong>來源</strong>：<code>NEW_IN_LAB</code></li><li><strong>讀取資料集</strong>：<code>etl:market_value</code>, <code>monthly_revenue:當月營收</code>, <code>etl:adj_close</code>, <code>price:收盤價</code>, <code>monthly_revenue:去年同月增減(%)</code>, <code>benchmark_return:發行量加權股價報酬指數</code>, <code>fundamental_features:營運現金流</code>, <code>fundamental_features:營業毛利率</code>, <code>price_earning_ratio:股價淨值比</code>, <code>etl:market_value</code>, <code>monthly_revenue:當月營收</code>, <code>etl:adj_close</code>, <code>price_earning_ratio:本益比</code>, <code>monthly_revenue:當月營收</code>, <code>fundamental_features:營業利益成長率</code>, <code>margin_transactions:融資使用率</code>, <code>etl:adj_close</code>, <code>price:成交金額</code>, <code>etl:is_flagged_stock</code></li><li><strong>暴露參數</strong>：<code>w_s127=0.1</code>, <code>w_s139=0.5</code>, <code>w_s004=0.3</code>, <code>w_s021=0.1</code></li><li><strong>換股</strong>：<code>resample=&amp;#x27;M&amp;#x27;</code>, <code>resample_offset=&amp;#x27;14D&amp;#x27;</code>, <code>trade_at_price=&amp;#x27;open&amp;#x27;</code></li><li><strong>期間</strong>：2013-05-15 ~ 2026-08-25（13.28 年）· 持股中位數 64 檔</li><li><strong>參數高原</strong>：100.0% of 8 個鄰居</li><li><strong>選擇偏差自述</strong>：Evaluated across 87,225 weight/sleeve combinations with 5-fold Purged Walk-Forward verification.…</li></ul>
+<hr>
+<h2>相關係數：哪些積木其實是同一塊</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">S122</th><th style="text-align:left">S138</th><th style="text-align:left">S144</th><th style="text-align:left">S127</th><th style="text-align:left">S123</th><th style="text-align:left">S124</th><th style="text-align:left">S004</th><th style="text-align:left">S125</th><th style="text-align:left">S022</th><th style="text-align:left">S148</th><th style="text-align:left">S048</th><th style="text-align:left">S126</th></tr></thead><tbody><tr><td style="text-align:left"><strong>S122</strong></td><td style="text-align:left">1.00</td><td style="text-align:left">0.89</td><td style="text-align:left">0.66</td><td style="text-align:left">0.36</td><td style="text-align:left">0.87</td><td style="text-align:left">0.83</td><td style="text-align:left">0.43</td><td style="text-align:left">0.78</td><td style="text-align:left">0.62</td><td style="text-align:left">0.52</td><td style="text-align:left">0.64</td><td style="text-align:left">0.54</td></tr><tr><td style="text-align:left"><strong>S138</strong></td><td style="text-align:left">0.89</td><td style="text-align:left">1.00</td><td style="text-align:left">0.66</td><td style="text-align:left">0.34</td><td style="text-align:left">0.90</td><td style="text-align:left">0.82</td><td style="text-align:left">0.39</td><td style="text-align:left">0.79</td><td style="text-align:left">0.61</td><td style="text-align:left">0.52</td><td style="text-align:left">0.62</td><td style="text-align:left">0.54</td></tr><tr><td style="text-align:left"><strong>S144</strong></td><td style="text-align:left">0.66</td><td style="text-align:left">0.66</td><td style="text-align:left">1.00</td><td style="text-align:left">0.56</td><td style="text-align:left">0.73</td><td style="text-align:left">0.68</td><td style="text-align:left">0.69</td><td style="text-align:left">0.63</td><td style="text-align:left">0.74</td><td style="text-align:left">0.44</td><td style="text-align:left">0.80</td><td style="text-align:left">0.68</td></tr><tr><td style="text-align:left"><strong>S127</strong></td><td style="text-align:left">0.36</td><td style="text-align:left">0.34</td><td style="text-align:left">0.56</td><td style="text-align:left">1.00</td><td style="text-align:left">0.38</td><td style="text-align:left">0.39</td><td style="text-align:left">0.61</td><td style="text-align:left">0.36</td><td style="text-align:left">0.45</td><td style="text-align:left">0.25</td><td style="text-align:left">0.55</td><td style="text-align:left">0.41</td></tr><tr><td style="text-align:left"><strong>S123</strong></td><td style="text-align:left">0.87</td><td style="text-align:left">0.90</td><td style="text-align:left">0.73</td><td style="text-align:left">0.38</td><td style="text-align:left">1.00</td><td style="text-align:left">0.90</td><td style="text-align:left">0.44</td><td style="text-align:left">0.85</td><td style="text-align:left">0.71</td><td style="text-align:left">0.59</td><td style="text-align:left">0.71</td><td style="text-align:left">0.67</td></tr><tr><td style="text-align:left"><strong>S124</strong></td><td style="text-align:left">0.83</td><td style="text-align:left">0.82</td><td style="text-align:left">0.68</td><td style="text-align:left">0.39</td><td style="text-align:left">0.90</td><td style="text-align:left">1.00</td><td style="text-align:left">0.44</td><td style="text-align:left">0.81</td><td style="text-align:left">0.72</td><td style="text-align:left">0.59</td><td style="text-align:left">0.72</td><td style="text-align:left">0.68</td></tr><tr><td style="text-align:left"><strong>S004</strong></td><td style="text-align:left">0.43</td><td style="text-align:left">0.39</td><td style="text-align:left">0.69</td><td style="text-align:left">0.61</td><td style="text-align:left">0.44</td><td style="text-align:left">0.44</td><td style="text-align:left">1.00</td><td style="text-align:left">0.38</td><td style="text-align:left">0.54</td><td style="text-align:left">0.29</td><td style="text-align:left">0.66</td><td style="text-align:left">0.49</td></tr><tr><td style="text-align:left"><strong>S125</strong></td><td style="text-align:left">0.78</td><td style="text-align:left">0.79</td><td style="text-align:left">0.63</td><td style="text-align:left">0.36</td><td style="text-align:left">0.85</td><td style="text-align:left">0.81</td><td style="text-align:left">0.38</td><td style="text-align:left">1.00</td><td style="text-align:left">0.70</td><td style="text-align:left">0.57</td><td style="text-align:left">0.67</td><td style="text-align:left">0.64</td></tr><tr><td style="text-align:left"><strong>S022</strong></td><td style="text-align:left">0.62</td><td style="text-align:left">0.61</td><td style="text-align:left">0.74</td><td style="text-align:left">0.45</td><td style="text-align:left">0.71</td><td style="text-align:left">0.72</td><td style="text-align:left">0.54</td><td style="text-align:left">0.70</td><td style="text-align:left">1.00</td><td style="text-align:left">0.50</td><td style="text-align:left">0.92</td><td style="text-align:left">0.87</td></tr><tr><td style="text-align:left"><strong>S148</strong></td><td style="text-align:left">0.52</td><td style="text-align:left">0.52</td><td style="text-align:left">0.44</td><td style="text-align:left">0.25</td><td style="text-align:left">0.59</td><td style="text-align:left">0.59</td><td style="text-align:left">0.29</td><td style="text-align:left">0.57</td><td style="text-align:left">0.50</td><td style="text-align:left">1.00</td><td style="text-align:left">0.50</td><td style="text-align:left">0.55</td></tr><tr><td style="text-align:left"><strong>S048</strong></td><td style="text-align:left">0.64</td><td style="text-align:left">0.62</td><td style="text-align:left">0.80</td><td style="text-align:left">0.55</td><td style="text-align:left">0.71</td><td style="text-align:left">0.72</td><td style="text-align:left">0.66</td><td style="text-align:left">0.67</td><td style="text-align:left">0.92</td><td style="text-align:left">0.50</td><td style="text-align:left">1.00</td><td style="text-align:left">0.84</td></tr><tr><td style="text-align:left"><strong>S126</strong></td><td style="text-align:left">0.54</td><td style="text-align:left">0.54</td><td style="text-align:left">0.68</td><td style="text-align:left">0.41</td><td style="text-align:left">0.67</td><td style="text-align:left">0.68</td><td style="text-align:left">0.49</td><td style="text-align:left">0.64</td><td style="text-align:left">0.87</td><td style="text-align:left">0.55</td><td style="text-align:left">0.84</td><td style="text-align:left">1.00</td></tr></tbody></table></div>
+<p>去重門檻 ρ ≥ 0.95。實測被判為重複而移出候選的：</p>
+<ul><li><code>S139</code>, <code>S141</code> 與 <code>S123</code> 相關係數 ≥ 0.95</li><li><code>S047</code>, <code>S050</code> 與 <code>S048</code> 相關係數 ≥ 0.95</li></ul>
+<hr>
+<h2>拼積木的規則</h2>
+<ol><li><strong>先看相關係數，再看 Sharpe。</strong> 前五名彼此 0.78–0.90，各配 20% 買到的是同一個因子的五種寫法。</li><li><strong>混合帳本的胃納由最緊的那一腳綁死。</strong> 配 30% 給胃納 NT$7 萬的積木，總帳本上限就是 NT$23 萬。</li><li><strong>任何乘在報酬序列上的疊加都要先過 shift(1) 測試</strong>，見 <a href="50-lookahead-bias.md">lookahead</a>。</li><li><strong>組合本身是一次新的試驗。</strong> 從已知通過的積木裡挑組合，是後選擇（post-selection），要重新計入試驗數。</li></ol>
+<h2>重現</h2>
+<pre><code class="lang-bash">python scripts/run_honest_topN.py</code></pre>
+<pre><code class="lang-bash">python scripts/run_honest_top5_robustness.py 12</code></pre>
+<hr>
+<h2>[C80] 對照分析 · 我的實測落在 Gemini 與 Codex 軌道的哪裡</h2>
+<p>*track: context · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/80-cross-ai-notes.md*</p>
+<h1>對照分析 · 我的實測落在其他軌道的哪裡</h1>
+<p>依 <a href="../_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL.md</code></a> 規則一，我只寫自己的目錄。這一頁記錄我的實測與其他 AI 軌道的關係 —— 哪裡互補、哪裡口徑不同、哪裡是我把他們的規範<strong>實際跑了一次</strong>之後的結果。</p>
+<p><strong>先講結論：我沒有找到需要進 <code>CORRECTIONS.md</code> 的錯誤。</strong> 下面全部是互補與口徑差異。</p>
+<hr>
+<h2>一、G06 的 DSR 規範，我實際跑了一次</h2>
+<p><a href="../gemini/06-validation-dsr-and-forward-sim.md">G06 防過擬合鐵律</a> 訂了三條要求：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">G06 的要求</th><th style="text-align:left">我的實測</th><th style="text-align:left">結果</th></tr></thead><tbody><tr><td style="text-align:left">試驗次數必須誠實包含所有被淘汰的試驗（N ≥ 400）</td><td style="text-align:left">機械掃描 23 個實驗紀錄檔，得 <strong>624</strong> 次</td><td style="text-align:left">符合，且比專案自己紀錄的 <code>n_trials: 134</code> 多 4.7 倍</td></tr><tr><td style="text-align:left">核心候選 DSR ≥ 0.95</td><td style="text-align:left">12 檔候選，<strong>只有 1 檔通過</strong>（0.9595）</td><td style="text-align:left">這條規範是有牙齒的</td></tr><tr><td style="text-align:left">參數高原 ≥ 80% 鄰域維持 85%</td><td style="text-align:left">見下節，口徑不同</td><td style="text-align:left">需要對齊</td></tr></tbody></table></div>
+<p><strong>G06 是對的，而且比大多數人做得嚴。</strong> 我能補充的是<strong>執行機制</strong>：G06 說「必須誠實包含」，但 DSR 實作裡 <code>n_trials</code> 是呼叫端填的參數，靠自律。<a href="blocks/B11-mechanical-trial-counter.md">B11 機械試驗計數器</a> 把它改成從紀錄檔數出來、不接受手動覆寫 —— 讓它無法不誠實。</p>
+<p>實測那個 4.7 倍的差距（門檻 1.401 → 1.660）證明自律不夠：專案自己的紀錄檔就少算了。</p>
+<h3>我踩到的實作陷阱，G06 的公式沒寫</h3>
+<p>G06 的公式是對的，但實作時有個尺度陷阱。DSR 內部用<strong>日頻</strong> Sharpe：</p>
+<pre><code class="lang-python">observed = series.mean() / series.std()      # 約 0.14</code></pre>
+<p>而試驗紀錄通常存<strong>年化</strong> Sharpe（1.3–2.5）。直接餵進去，門檻用年化尺度算（1.660），拿去和日頻觀測值（0.139）比 —— <strong>所有 DSR 都會是 0.0000</strong>。</p>
+<p>我第一次跑就中了。症狀對照表寫在 <a href="61-deflated-sharpe.md">C61 去膨脹夏普</a>。</p>
+<hr>
+<h2>二、參數高原：兩邊口徑不同，都要保留</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">G06</th><th style="text-align:left">我（C62 / B13）</th></tr></thead><tbody><tr><td style="text-align:left">鄰域</td><td style="text-align:left">$3^k$ 網格（所有參數同時擾動）</td><td style="text-align:left">每個參數各 ±1 檔（單變量）</td></tr><tr><td style="text-align:left">保持門檻</td><td style="text-align:left">最佳值的 <strong>85%</strong></td><td style="text-align:left">最佳值的 <strong>70%</strong></td></tr><tr><td style="text-align:left">通過率要求</td><td style="text-align:left"><strong>≥ 80%</strong></td><td style="text-align:left">報告通過率與<strong>鄰居數</strong>，不設硬門檻</td></tr></tbody></table></div>
+<p><strong>這是取捨不同，不是誰對誰錯：</strong></p>
+<ul><li>G06 的 $3^k$ 涵蓋參數交互作用，更嚴格，但 $k=6$ 就是 729 次回測。</li><li>我的單變量只有 $2k$ 次，跑得完，但看不到交互作用。</li></ul>
+<p><strong>我要補一條 G06 沒說的</strong>：通過率的<strong>分母</strong>比分子重要。</p>
+<p>實測 12 檔候選全部「100% 通過」，但：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:left">通過率</th><th style="text-align:left">鄰居數</th><th style="text-align:left">證據強度</th></tr></thead><tbody><tr><td style="text-align:left">S022</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>12</strong></td><td style="text-align:left">強</td></tr><tr><td style="text-align:left">S122</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left"><strong>弱</strong></td></tr></tbody></table></div>
+<p>S122 只暴露一個數值參數，所以「100%」的意思不是「高原很寬」，是「可以測的東西很少」。<strong>報告要寫「100% of 2」而不是「100%」</strong>，否則 S122 和 S022 看起來一樣強。</p>
+<p>按 G06 的 ≥80% 標準，兩者都通過 —— 這正是需要補上分母的理由。</p>
+<hr>
+<h2>三、G05 的機制 4，是我實測到前視的現場</h2>
+<p><a href="../gemini/05-alpha-strategies-and-ga.md">G05 50% CAGR GA 藍圖</a> 的機制 4 是「自適應連續市場狀態 —— 牛市 120% 曝險，空頭 0% 空手」。</p>
+<p><strong>這個設計本身沒問題。</strong> 但我驗證一份依此實作的產出時，發現實作長這樣：</p>
+<pre><code class="lang-python">bull_regime = (bm_close &gt; fast_ma) &amp; (bm_close &gt; slow_ma)
+multiplier = np.where(bull_regime, bull_leverage, bear_exposure)
+r_lev = d_base * multiplier          # ← 沒有 shift(1)</code></pre>
+<p>第 t 日的收盤價決定第 t 日的曝險。結果 Sharpe 從 2.104 變成 4.269，MDD 從 -16.88% 變成 -7.45%。加上 <code>.shift(1)</code> 之後掉回 1.992 —— <strong>比不加這個疊加還差</strong>。</p>
+<p><strong>這不是 G05 的錯，是實作缺了一道檢查。</strong> 但它說明：任何「regime 決定曝險」的機制，都必須配一個 shift(1) 測試才能宣稱結果。</p>
+<p>所以我把 <a href="blocks/B10-shift1-lookahead-test.md">B10 shift(1) 前視測試</a> 寫成獨立積木。任何人要實作 G05 機制 4，先過 B10。</p>
+<p><strong>和 GB02 的分工</strong>：<a href="../gemini/blocks/GB02-pit-lag-aligner.md">GB02 PIT 對齊器</a> 守的是「因子讀到未來的財報」，B10 守的是「疊加層讀到今天的收盤」。兩個缺口不同，都要堵，缺一個就會漏。</p>
+<hr>
+<h2>四、胃納量：研究端與執行端要用同一個常數</h2>
+<p><a href="../gemini/blocks/GB04-adv-capacity-guard.md">GB04 ADV20 容量守門員</a> 是<strong>下單當下</strong>的守門（這張單會不會超過 ADV）。 <a href="blocks/B12-local-capacity-model.md">B12 本地胃納模型</a> 是<strong>研究階段</strong>的估計（這個策略整體能放多少錢）。</p>
+<p>兩者必須共用同一個 <code>participation</code> 常數。不一致的後果很具體：研究階段用 10% 算出「胃納 NT$200 萬」，執行端用 5% 擋單 —— 你會核准一個執行端拒絕的策略，然後在實盤第一天才發現。</p>
+<p>實測這個數字有多重要：全庫 CAGR 最高（53.69%）、Calmar 最高（2.16）的策略，胃納量是 <strong>NT$70,802</strong>。按 Sharpe 排的前五名有三名放不進錢。</p>
+<hr>
+<h2>五、和 Codex 軌道的關係</h2>
+<p><a href="../codex/01-adversarial-audit-method.md">Codex 的對抗性稽核法</a> 處理的是<strong>執行端</strong>的稽核（訂單狀態、驗證鏈、零股競價規則）。我的 <a href="51-fake-validation.md">C51 假驗證的四種形態</a> 是<strong>研究端</strong>的同一件事。</p>
+<p>共通的方法論：<strong>不要看結論，看產出物對不對得上。</strong></p>
+<ul><li>Codex 在執行端問：訂單狀態機的三種紀錄互相吻合嗎？</li><li>我在研究端問：報告的期間、參數、時間戳，和產出的 JSON / parquet 對得上嗎？</li></ul>
+<p>實測抓到的：報告寫 13.27 年、champions.json 寫 12.49 年、實際 parquet 是 12.89 年 —— 於是每個 CAGR 都灌水 2.5 個百分點。以及 champions.json 的時間戳比搜尋結束早 12 分鐘。</p>
+<hr>
+<h2>給下一個 AI</h2>
+<p>如果你要推翻我的結論，最有效的路徑：</p>
+<ol><li><strong>重跑全量 harness</strong>（<a href="60-verification-harness.md">C60</a>），看數字對不對得上。全部都應該重現得出來。</li><li><strong>挑戰胃納模型的三個選擇</strong>：ADV20 的 5%、取中位數、等權假設。這三個都可以有不同意見。</li><li><strong>挑戰試驗計數</strong>。624 是我從實驗紀錄檔數的。你找到更多沒被計入的，門檻會升高，我的「唯一通過者」可能也會掉下來。</li><li><strong>做真正的走步驗證</strong>。我做的是分段穩定度，而且我在 <a href="51-fake-validation.md">C51</a> 裡說清楚那不是走步驗證。這個缺口還在，G06 的 Forward SIM 是正確方向。</li></ol>
+<p><strong>不要做的事</strong>：不要用「我重新跑了一遍 GA 找到更好的」來回應。先讓你的新東西通過 <a href="blocks/B10-shift1-lookahead-test.md">B10</a>。</p>
 <hr>
 <h2>[B01] 已實現損益 · FIFO 對沖，只認落袋現金</h2>
 <p>*track: block · status: verified · verified_by: tests/test_realized.py (5 tests) · source: lesson/claude/blocks/B01-realized-pnl-fifo.md*</p>
@@ -764,6 +1520,322 @@ def build_roster(signals, bars, held):
 <blockquote><strong>如果 A 可以從 B 算出來，那 A 不應該被儲存。</strong> 如果非存不可（效能），那必須有一個測試證明存的和算的一樣。</blockquote>
 <hr>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::build_roster</code></p>
+<hr>
+<h2>[B10] shift(1) 前視測試 · 任何疊加層的有罪推定</h2>
+<p>*track: block · status: verified · verified_by: evidence/CLAUDE_VERIFICATION_GEMINI_CAGR50_2026-08-26.md · source: lesson/claude/blocks/B10-shift1-lookahead-test.md*</p>
+<h1>B10 · shift(1) 前視測試</h1>
+<h2>它解決什麼</h2>
+<p>回測引擎可以擋住「同棒成交」，但擋不住<strong>在引擎外面對報酬序列做乘法</strong>的疊加層：</p>
+<pre><code class="lang-python">r_levered = base_returns * regime_multiplier      # 引擎完全看不到這一行</code></pre>
+<p>這一行如果 <code>regime_multiplier</code> 用了當日資訊，你會得到一條 Sharpe 4.9、MDD -5.5% 的曲線，而且回測引擎的每一項檢查都會通過。</p>
+<p><strong>實測過的後果</strong>：一份宣稱 CAGR 61–65% 的報告，全部超額報酬來自這一行少了 <code>.shift(1)</code>。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">def shift1_test(base_returns, signal, overlay, floor=0.95):
+    &quot;&quot;&quot;比較同日訊號與落後一日訊號。回傳兩組指標與判定。
+
+    base_returns : pd.Series  疊加之前的日報酬
+    signal       : pd.Series  布林訊號（例如 close &gt; MA）
+    overlay      : callable   (returns, signal) -&gt; returns
+    floor        : float      lag1 至少要保住 lag0 的多少比例才算通過
+    &quot;&quot;&quot;
+    out = {}
+    for lag in (0, 1):
+        s = signal.shift(lag).fillna(False).infer_objects(copy=False)
+        idx = base_returns.index.intersection(s.index)
+        out[lag] = metrics(overlay(base_returns.loc[idx], s.loc[idx]))
+
+    base = metrics(base_returns)
+    return {
+        &quot;base&quot;: base,
+        &quot;lag0&quot;: out[0],
+        &quot;lag1&quot;: out[1],
+        # 關鍵：lag1 要跟「沒加疊加」比，不是跟 lag0 比
+        &quot;overlay_adds_value&quot;: out[1][&quot;sharpe&quot;] &gt; base[&quot;sharpe&quot;],
+        &quot;leakage_ratio&quot;: out[0][&quot;sharpe&quot;] / out[1][&quot;sharpe&quot;],
+    }</code></pre>
+<h2>怎麼讀結果</h2>
+<p>實測三個案例（台股 2013–2026）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">基礎（無疊加）</th><th style="text-align:left">lag0（同日）</th><th style="text-align:left">lag1（可交易）</th><th style="text-align:left">洩漏比</th></tr></thead><tbody><tr><td style="text-align:left">A</td><td style="text-align:left">2.559</td><td style="text-align:left"><strong>4.963</strong></td><td style="text-align:left">2.598</td><td style="text-align:left">1.91x</td></tr><tr><td style="text-align:left">B</td><td style="text-align:left">2.401</td><td style="text-align:left"><strong>4.894</strong></td><td style="text-align:left">2.513</td><td style="text-align:left">1.95x</td></tr><tr><td style="text-align:left">C</td><td style="text-align:left">2.104</td><td style="text-align:left"><strong>4.269</strong></td><td style="text-align:left"><strong>1.992</strong></td><td style="text-align:left">2.14x</td></tr></tbody></table></div>
+<p><strong>最關鍵的一欄是「基礎」，不是 lag0。</strong></p>
+<p>看到 C 從 4.269 掉到 1.992，很多人會說「還有 1.992 嘛」。錯 —— 1.992 要跟<strong>這個疊加根本沒加之前</strong>的 2.104 比。加了之後<strong>變差</strong>。這個疊加的價值是負的。</p>
+<p>判定規則：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">條件</th><th style="text-align:left">判定</th></tr></thead><tbody><tr><td style="text-align:left"><code>lag1.sharpe &amp;lt;= base.sharpe</code></td><td style="text-align:left"><strong>疊加無價值</strong>，不管 lag0 多好看</td></tr><tr><td style="text-align:left"><code>leakage_ratio &amp;gt; 1.3</code></td><td style="text-align:left"><strong>強烈懷疑前視</strong>，要逐行檢查訊號的時間索引</td></tr><tr><td style="text-align:left"><code>lag1.sharpe &amp;gt; base.sharpe</code> 且 <code>leakage_ratio &amp;lt; 1.15</code></td><td style="text-align:left">可以繼續評估</td></tr></tbody></table></div>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：以為 <code>trade_at_price=&amp;#x27;open&amp;#x27;</code> 就安全了。</strong> 那個設定守的是引擎內的成交價。疊加層在引擎外，完全不受它管。</p>
+<p><strong>陷阱 2：只 shift 訊號，忘了 shift 用來算訊號的中間變數。</strong></p>
+<pre><code class="lang-python">r20 = curve.pct_change(20)                              # 第 t 日的值含第 t 日報酬
+tp_scale = np.where(r20 &gt; tp, 0.70, 1.0)
+r_daily = r_daily * tp_scale                            # ← 同樣的病</code></pre>
+<p>停利、波動度目標、任何「用曲線自身的近期表現決定曝險」的東西都有這個問題。</p>
+<p><strong>陷阱 3：用一天的 lag 就以為夠了。</strong> shift(1) 是<strong>最低</strong>要求，不是充分條件。真實交易還有：訊號要在收盤後算完、要在次日開盤前送出、可能部分成交。保守一點用 shift(2) 再測一次，看衰減幅度。</p>
+<h2>一眼可疑的指紋</h2>
+<p>不用讀程式碼就該懷疑的：</p>
+<ul><li>台股純多頭、月頻換股，13 年 MDD <strong>小於 -10%</strong></li><li>Sharpe <strong>大於 3</strong>（長期台股多頭的實測上限約 2.2）</li><li>Calmar <strong>大於 4</strong></li><li>回撤在 2015 / 2018 / 2022 反而縮小</li></ul>
+<h2>相關</h2>
+<ul><li>完整案例與程式碼片段：<a href="../50-lookahead-bias.md">C50 前視偏誤</a></li><li>契約層怎麼擋成交價前視：<a href="B14-strategy-spec-contract.md">B14 策略契約</a></li><li>Gemini 從資料端防洩漏的作法：<a href="../../gemini/blocks/GB02-pit-lag-aligner.md">GB02 PIT 對齊器</a> —— 那一塊守的是「因子讀到未來的財報」，這一塊守的是「疊加層讀到今天的收盤」。兩個缺口不同，都要堵。</li></ul>
+<hr>
+<h2>[B11] 機械試驗計數器 · 不讓呼叫端自己填 N</h2>
+<p>*track: block · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/blocks/B11-mechanical-trial-counter.md*</p>
+<h1>B11 · 機械試驗計數器</h1>
+<h2>它解決什麼</h2>
+<p>去膨脹夏普的門檻由<strong>試驗次數</strong>決定。而試驗次數在大多數實作裡是<strong>呼叫端自己填的參數</strong> —— 填小一點，門檻就低，你的策略就「通過」了。</p>
+<p>這不需要惡意，只需要健忘：沒有人記得三週前那個沒存檔的參數掃描也算試驗。</p>
+<p><strong>實測</strong>：某專案的紀錄檔寫 <code>n_trials: 134</code>，另一份文件寫 253。機械掃描實驗紀錄得到 <strong>624</strong>。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">宣告的 N</th><th style="text-align:left">選擇偏差門檻（年化 Sharpe）</th></tr></thead><tbody><tr><td style="text-align:left">134</td><td style="text-align:left">1.401</td></tr><tr><td style="text-align:left">253</td><td style="text-align:left">1.512</td></tr><tr><td style="text-align:left"><strong>624（機械計數）</strong></td><td style="text-align:left"><strong>1.660</strong></td></tr></tbody></table></div>
+<p>差 0.26 個 Sharpe。對一個 Sharpe 2.1 的策略，這決定了 DSR 是 0.92 還是 0.96 —— 通過或不通過。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">def mechanical_trial_count(log_glob=&quot;evidence/kiln/exp*.json&quot;, field=&quot;sharpe_local&quot;):
+    &quot;&quot;&quot;從實驗紀錄檔數出試驗次數與 Sharpe 分布。呼叫端不能覆寫。&quot;&quot;&quot;
+    sharpes = []
+    for f in sorted(glob.glob(log_glob)):
+        try:
+            rows = json.load(open(f, encoding=&quot;utf-8&quot;))
+        except Exception:
+            continue                      # 壞掉的檔案不能讓計數靜默變小
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            v = row.get(field)
+            if isinstance(v, (int, float)) and np.isfinite(v):
+                sharpes.append(float(v))
+    return len(sharpes), np.array(sharpes)</code></pre>
+<p>搭配使用時，<strong>不接受任何手動 <code>n_trials</code></strong>：</p>
+<pre><code class="lang-python">n_trials, trial_sharpes = mechanical_trial_count()
+bar = expected_max_sharpe(n_trials, trial_sharpes.var(ddof=1))</code></pre>
+<h2>三個設計決定</h2>
+<p><strong>1. 搜尋程式在跑的時候就要寫紀錄，不是事後補。</strong> 每一次 <code>sim</code> 都要落一列到紀錄檔，包含它的 Sharpe。事後回憶一定會少算。</p>
+<p><strong>2. 全部試驗都要進分布，包含爛的。</strong> 門檻由試驗結果的<strong>離散度</strong>決定。只餵存活者會低估離散度，門檻跟著低估。</p>
+<p><strong>3. 壞掉的紀錄檔要跳過但不能靜默。</strong> 上面的 <code>except: continue</code> 在生產版本應該記一行 warning。一個讀不到的檔案 = 一批沒被計入的試驗 = 偏低的門檻。</p>
+<h2>這個數字仍然是下界</h2>
+<p>機械計數只涵蓋<strong>有留紀錄</strong>的試驗。以下都不在裡面，而且都是真實的搜尋成本：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">來源</th><th style="text-align:left">為什麼算試驗</th></tr></thead><tbody><tr><td style="text-align:left">手動試的參數</td><td style="text-align:left">你看過結果才決定不存</td></tr><tr><td style="text-align:left">從公開文章移植的策略</td><td style="text-align:left"><strong>發表者自己的搜尋成本未知且不是零</strong> —— 一個被發表的策略，按定義就是「看起來夠好所以被發表」的那一個</td></tr><tr><td style="text-align:left">從前一個專案繼承的</td><td style="text-align:left">前一個專案的試驗數可能沒交接過來</td></tr><tr><td style="text-align:left">組合／集成</td><td style="text-align:left">從已知通過的積木裡挑組合，是一次新的後選擇</td></tr></tbody></table></div>
+<p>所以報告要寫「門檻 ≥ 1.660」而不是「門檻 = 1.660」。</p>
+<h2>兩種讀法都要報</h2>
+<pre><code class="lang-python"># 讀法一：這次 campaign 宣告的搜尋
+n1, s1 = mechanical_trial_count(&quot;evidence/kiln/exp*.json&quot;)
+
+# 讀法二：整個 catalog 當成一次搜尋（跨家族離散度大得多）
+s2 = [r[&quot;sharpe&quot;] for r in all_registered_strategies]
+n2 = len(s2)</code></pre>
+<p>實測差距：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">讀法</th><th style="text-align:left">N</th><th style="text-align:left">門檻（年化）</th><th style="text-align:left">12 檔候選通過數</th></tr></thead><tbody><tr><td style="text-align:left">已宣告的 campaign</td><td style="text-align:left">624</td><td style="text-align:left">1.660</td><td style="text-align:left">1</td></tr><tr><td style="text-align:left">整個 catalog</td><td style="text-align:left">127</td><td style="text-align:left"><strong>2.713</strong></td><td style="text-align:left"><strong>0</strong></td></tr></tbody></table></div>
+<p>兩個都對，在回答不同問題。<strong>誠實的報告要並列。</strong></p>
+<h2>陷阱</h2>
+<p><strong>陷阱：把重複註冊的策略當成不同試驗。</strong> 實測發現三個編號指向同一支策略（日報酬相關係數 = 1.000）。用「策略數」當分母時，重複會讓 N 虛胖、離散度失真。先用 <a href="B13-correlation-dedup.md">B13 相關係數去重</a>。</p>
+<h2>相關</h2>
+<ul><li>為什麼要有這個：<a href="../52-trial-counting.md">C52 試驗計數</a></li><li>怎麼用這個數字：<a href="../61-deflated-sharpe.md">C61 去膨脹夏普</a></li><li>Gemini 對 DSR 門檻的要求（N ≥ 400、DSR ≥ 0.95）：<a href="../../gemini/06-validation-dsr-and-forward-sim.md">G06</a>。本塊是那條要求的<strong>執行機制</strong> —— G06 說「必須誠實包含所有被淘汰的試驗」，這裡是讓它無法不誠實的作法。</li></ul>
+<hr>
+<h2>[B12] 本地胃納模型 · 最緊的那一檔決定整本帳</h2>
+<p>*track: block · status: verified · verified_by: evidence/honest_top5/all_metrics.json · source: lesson/claude/blocks/B12-local-capacity-model.md*</p>
+<h1>B12 · 本地胃納模型</h1>
+<h2>它解決什麼</h2>
+<p>FinLab 的 <code>liquidity.capacity</code> 是伺服器端計算，離線取不到。但<strong>胃納量是台股量化最重要的單一數字</strong> —— 實測全庫 CAGR 最高（53.69%）、Calmar 最高（2.16）的那檔策略，胃納量是 <strong>NT$70,802</strong>。</p>
+<p>沒有本地模型，你會在報告裡看到一堆漂亮的 CAGR，卻不知道哪些放得進錢。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">def capacity_ntd(position, close, volume, participation=0.05, adv_window=20, q=0.5):
+    &quot;&quot;&quot;帳本 NAV 上限：持股中最緊的一檔碰到 ADV20 的 participation 時的規模。
+
+    對應執行層規則「單一標的下單量 &gt; ADV20 的 5% 即 BLOCK」。
+    回傳全期中位數。等權假設。
+    &quot;&quot;&quot;
+    adv = (close * volume).average(adv_window)
+
+    held = position.astype(bool)
+    n = held.sum(axis=1)
+    held, n = held[n &gt; 0], n[n &gt; 0]
+    if held.empty:
+        return 0.0
+
+    adv_al = adv.reindex(index=held.index, columns=held.columns, method=&quot;ffill&quot;)
+    # 等權下每檔權重 = 1/n，該檔容得下的 NAV = participation * ADV / (1/n)
+    per_name = adv_al.where(held) * participation
+    tightest = per_name.min(axis=1) * n
+
+    s = tightest.dropna()
+    return float(s.quantile(q)) if len(s) else 0.0</code></pre>
+<p>非等權時把最後兩行換成：</p>
+<pre><code class="lang-python">weights = position.div(position.sum(axis=1), axis=0)
+per_name = (adv_al * participation) / weights.where(weights &gt; 0)
+tightest = per_name.min(axis=1)</code></pre>
+<h2>三個設計決定（都要在報告裡講明）</h2>
+<p><strong>1. 取最緊的那一檔（<code>min</code>），不是平均。</strong> 帳本的胃納由最難買的那檔綁死。取平均會讓一檔流動性極差的股票被 39 檔好股票稀釋掉，得到一個你實際上做不到的數字。</p>
+<p><strong>2. 取中位數（<code>quantile(0.5)</code>），不是最小值也不是平均。</strong> 最小值會被單一異常日綁架（某天某檔停牌、某天成交量枯竭）。平均會被高流動性期間拉高。中位數回答「一般日子你能放多少」。</p>
+<p><strong>3. participation 是常數，不是參數。</strong> 它必須等於執行層真正會 BLOCK 的那個閾值。如果執行層是 5%，這裡就是 5%。兩邊不一致，你的研究會核准執行層拒絕的東西。</p>
+<h2>這個模型不能宣稱的事</h2>
+<p>要在報告裡寫清楚，否則會被過度信任：</p>
+<ul><li><strong>沒有模擬市場衝擊。</strong> 它只回答「不超過 ADV 的 5%」，不回答「買下去會推價多少」。</li><li><strong>沒有考慮進出不對稱。</strong> 賣出的流動性通常比買入差，尤其在你想賣的時候。</li><li><strong>和 FinLab 伺服器端的數字不會一樣。</strong> 要標明是哪一個口徑。</li><li><strong>月頻換股的假設。</strong> 如果你的策略會在幾天內大幅換手，單日參與率會遠高於這個模型的隱含值。</li></ul>
+<h2>混合帳本：胃納由最緊的那一腳綁死</h2>
+<p>想用「70% 大容量 + 30% 小型股爆發」兩全其美？這是恆等式，不是可以設計繞過的東西：</p>
+<pre><code>小型股腳的原生胃納 = C_small
+配置權重           = w
+總帳本 NAV 上限    = C_small / w</code></pre>
+<p><code>C_small = 70,000</code>、<code>w = 0.30</code> → 總帳本上限 <strong>NT$233,333</strong>。</p>
+<p>配得越少總胃納越大，但你稀釋掉的正是你想要的爆發力。</p>
+<p><strong>反面教材</strong>：我驗過一份報告用 <code>cap = 常數 / w_smallcap</code> 宣稱混合後胃納「提升 11 倍」。那個公式確實會隨權重下降而變大，但它不是胃納模型，只是一個倒數 —— 而且代入該報告自己的權重後得到 NT$883,062，它卻寫 NT$630,759。</p>
+<h2>實測：胃納量如何改變排名</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">Sharpe</th><th style="text-align:left">CAGR</th><th style="text-align:left">Calmar</th><th style="text-align:left">胃納量</th><th style="text-align:left">可部署</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left">21.78%</td><td style="text-align:left">1.84</td><td style="text-align:left">NT$1,077,368</td><td style="text-align:left">是</td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">2.110</td><td style="text-align:left">32.26%</td><td style="text-align:left">1.39</td><td style="text-align:left">NT$192,132</td><td style="text-align:left"><strong>否</strong></td></tr><tr><td style="text-align:left">S127</td><td style="text-align:left">2.107</td><td style="text-align:left"><strong>53.69%</strong></td><td style="text-align:left"><strong>2.16</strong></td><td style="text-align:left"><strong>NT$70,802</strong></td><td style="text-align:left"><strong>否</strong></td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">26.62%</td><td style="text-align:left">1.58</td><td style="text-align:left">NT$2,278,084</td><td style="text-align:left">是</td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">1.993</td><td style="text-align:left">35.17%</td><td style="text-align:left">1.17</td><td style="text-align:left"><strong>NT$79,251</strong></td><td style="text-align:left"><strong>否</strong></td></tr></tbody></table></div>
+<p>按 Sharpe 排的前五名，三名放不進錢。</p>
+<p><strong>所以排序邏輯是：先過胃納門檻 → 在通過的裡面排 Sharpe → 沒通過的另立一張表但仍然列出。</strong> 第三步不能省 —— 那些策略告訴你 alpha 在哪裡，只是你拿不到。</p>
+<h2>相關</h2>
+<ul><li>為什麼這是真正的約束：<a href="../41-capacity-is-the-constraint.md">C41 胃納量</a></li><li>造假的三種寫法：<a href="../53-capacity-fiction.md">C53 胃納量造假</a></li><li>Gemini 的執行端版本：<a href="../../gemini/blocks/GB04-adv-capacity-guard.md">GB04 ADV20 容量守門員</a>。那一塊守的是<strong>下單當下</strong>（這張單會不會超過 ADV），本塊算的是<strong>研究階段</strong>（這個策略整體能放多少錢）。兩者的 participation 常數必須一致，否則研究會核准執行端拒絕的東西。</li></ul>
+<hr>
+<h2>[B13] 相關係數去重 · 你的前五名可能是同一支策略</h2>
+<p>*track: block · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/blocks/B13-correlation-dedup.md*</p>
+<h1>B13 · 相關係數去重</h1>
+<h2>它解決什麼</h2>
+<p>兩個問題，同一個工具：</p>
+<p><strong>問題一：同一支策略註冊了很多次。</strong> 實測發現三個永久編號指向同一支策略，日報酬相關係數 <strong>1.000</strong>，績效數字完全相同。另一組三檔 ρ 0.95–0.99。靠檔名或家族欄位抓不出來 —— 它們的名字和家族都不一樣。</p>
+<p><strong>問題二：你的「前五名」是同一個賭注的五種寫法。</strong> 按 Sharpe 排出來的前五名，彼此相關係數 0.78–0.90。各配 20% 資金，你買到的是同一個因子，不是分散。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">def dedup(rows, limit, rho=0.95, min_overlap=252):
+    &quot;&quot;&quot;按 Sharpe 由高到低取，相關係數 &gt;= rho 的視為同一支，只留最好的那個。&quot;&quot;&quot;
+    ranked = sorted(rows, key=lambda r: -(r[&quot;sharpe&quot;] or 0))
+    kept, kept_ret, dropped = [], {}, {}
+
+    for r in ranked:
+        n = r[&quot;strategy_number&quot;]
+        ret = load_returns(n)
+        dup_of = None
+        for k, kr in kept_ret.items():
+            i = ret.index.intersection(kr.index)
+            if len(i) &gt; min_overlap and ret.loc[i].corr(kr.loc[i]) &gt;= rho:
+                dup_of = k
+                break
+        if dup_of is not None:
+            dropped.setdefault(dup_of, []).append(n)
+            continue
+        kept.append(r)
+        kept_ret[n] = ret
+        if len(kept) &gt;= limit:
+            break
+
+    return kept, dropped</code></pre>
+<p><strong><code>min_overlap</code> 不能省。</strong> 兩條只重疊 30 天的曲線可以輕易得到 0.97 的相關係數，那毫無意義。</p>
+<h2>去重之後一定要出相關係數矩陣</h2>
+<p>去重門檻 0.95 只擋掉「幾乎完全一樣」的。<strong>0.90 不會被擋掉，但 0.90 也不是分散。</strong></p>
+<p>實測矩陣（前七名）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">S122</th><th style="text-align:left">S138</th><th style="text-align:left">S123</th><th style="text-align:left">S124</th><th style="text-align:left">S125</th><th style="text-align:left">S022</th><th style="text-align:left">S148</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">1.00</td><td style="text-align:left">0.89</td><td style="text-align:left">0.87</td><td style="text-align:left">0.83</td><td style="text-align:left">0.78</td><td style="text-align:left">0.62</td><td style="text-align:left">0.52</td></tr><tr><td style="text-align:left">S138</td><td style="text-align:left"></td><td style="text-align:left">1.00</td><td style="text-align:left">0.90</td><td style="text-align:left">0.82</td><td style="text-align:left">0.79</td><td style="text-align:left">0.61</td><td style="text-align:left">0.52</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left">1.00</td><td style="text-align:left"><strong>0.90</strong></td><td style="text-align:left">0.85</td><td style="text-align:left">0.71</td><td style="text-align:left">0.59</td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left">1.00</td><td style="text-align:left">0.82</td><td style="text-align:left">0.72</td><td style="text-align:left">0.59</td></tr><tr><td style="text-align:left">S125</td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left">1.00</td><td style="text-align:left">0.70</td><td style="text-align:left">0.57</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left">1.00</td><td style="text-align:left">0.50</td></tr></tbody></table></div>
+<p>讀法：前五名（S122/S138/S123/S124/S125）是<strong>一群</strong>。真正不同的是第 1、第 6、第 7 名 —— S122 + S022 + S148，兩兩 0.50–0.62。</p>
+<h2>分群比排名有用</h2>
+<pre><code class="lang-python">def cluster(corr, threshold=0.75):
+    &quot;&quot;&quot;單連結分群：把相關係數高於 threshold 的視為同一個賭注。&quot;&quot;&quot;
+    groups, seen = [], set()
+    for a in corr.index:
+        if a in seen:
+            continue
+        g = [b for b in corr.index if corr.loc[a, b] &gt;= threshold]
+        seen |= set(g)
+        groups.append(g)
+    return groups</code></pre>
+<p>實測 12 檔可部署候選，分成三群：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">群</th><th style="text-align:left">成員</th><th style="text-align:left">群內最佳 Sharpe</th><th style="text-align:left">對其他群的相關</th></tr></thead><tbody><tr><td style="text-align:left">品質低波</td><td style="text-align:left">S122 / S138 / S123 / S124 / S125</td><td style="text-align:left">2.211</td><td style="text-align:left">—</td></tr><tr><td style="text-align:left">多因子價值</td><td style="text-align:left">S022 / S048 / S126</td><td style="text-align:left">1.756</td><td style="text-align:left">0.61–0.72</td></tr><tr><td style="text-align:left">凸性動能</td><td style="text-align:left">S148</td><td style="text-align:left">1.545</td><td style="text-align:left">0.50–0.59</td></tr></tbody></table></div>
+<p><strong>127 檔已註冊策略，真正不同的賭注只有三個。</strong> 這是分群才看得出來的事。</p>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：以為家族欄位可以代替相關係數。</strong> 被判為完全重複的那三檔，家族欄位不完全一樣。名字騙人，報酬序列不騙人。</p>
+<p><strong>陷阱 2：只在最後選投組時才去重。</strong> 去重要在<strong>計算 DSR 之前</strong>做。重複註冊會讓試驗數虛胖、離散度失真。見 <a href="B11-mechanical-trial-counter.md">B11 機械試驗計數器</a>。</p>
+<p><strong>陷阱 3：把低相關當成「可以各配 20%」。</strong> 相關係數低只代表它們不是同一個東西，不代表它們各自都經得起考驗。實測那三群裡，只有第一群的代表通過去膨脹檢定；另外兩群的代表沒過。<strong>分散是為了降低單一因子依賴，不是為了讓沒通過的東西混進來。</strong></p>
+<h2>相關</h2>
+<ul><li>完整清單與矩陣：<a href="../70-verified-strategy-inventory.md">C70 已驗證積木清單</a></li><li>為什麼要在 DSR 之前做：<a href="../52-trial-counting.md">C52 試驗計數</a></li><li>整條驗證流水線：<a href="../60-verification-harness.md">C60 驗證流水線</a></li></ul>
+<hr>
+<h2>[B14] 策略契約：讓作弊在建構物件時就爆掉</h2>
+<p>*track: block · status: verified · verified_by: src/quant_grill_lab/strategies/base.py · source: lesson/claude/blocks/B14-strategy-spec-contract.md*</p>
+<h1>策略契約：讓作弊在建構物件時就爆掉</h1>
+<blockquote><strong>證據</strong>：本專案 <code>StrategySpec</code> 的實際設計與它擋下來的東西</blockquote>
+<h2>問題</h2>
+<p>多 AI 協作的研究專案裡，最貴的失敗不是「策略不賺錢」，而是<strong>你花了三天讀一份數字很漂亮的報告，最後發現它用當日收盤價成交</strong>。</p>
+<p>防守的地方應該在契約層 —— 讓錯誤在<strong>寫策略的時候</strong>就報錯，而不是在<strong>讀報告的時候</strong>才被發現。</p>
+<h2>契約要強制什麼</h2>
+<p>不是文件建議，是 <code>__post_init__</code> 裡的 <code>raise</code>。</p>
+<h3>一、禁止同棒成交</h3>
+<pre><code class="lang-python">def __post_init__(self):
+    if self.trade_at_price == &quot;close&quot;:
+        raise StrategyContractError(
+            &quot;trade_at_price=&#x27;close&#x27; fills at the same bar that produced the &quot;
+            &quot;signal. AGENTS.md forbids presenting that as an executable &quot;
+            &quot;fill. Use &#x27;open&#x27; (next bar) or supply an explicit price frame.&quot;
+        )</code></pre>
+<p>預設值是次日開盤。要用收盤價成交，你得先刪掉這段程式碼 —— 那是一個明確的、可被 code review 抓到的動作，而不是一個容易漏掉的參數。</p>
+<h3>二、強制申報讀了哪些資料集</h3>
+<pre><code class="lang-python">if not self.data_keys:
+    raise StrategyContractError(
+        &quot;data_keys must list every FinLab dataset the strategy reads, &quot;
+        &quot;so each source&#x27;s data_asof can be recorded&quot;
+    )</code></pre>
+<p>為什麼重要：每個資料集有自己的 <code>data_asof</code>。申報之後，跑一次就能產生「這次用的每個來源分別更新到哪一天」的收據，而不是只有一個牆上時鐘的時間戳。</p>
+<p>副作用同樣有用：<code>data_keys</code> 就是這塊積木的<strong>輸入介面</strong>。要拼積木，你需要知道每塊讀什麼。</p>
+<h3>三、強制申報來源與選擇偏差</h3>
+<pre><code class="lang-python">ORIGINS = (&quot;NEW_IN_LAB&quot;, &quot;INHERITED_WEGO&quot;, &quot;PORTED_FINLAB_PUBLISHED&quot;)
+
+def __post_init__(self):
+    if self.origin not in ORIGINS:
+        raise StrategyContractError(f&quot;origin must be one of {ORIGINS}&quot;)
+    if not self.selection_bias_note.strip():
+        raise StrategyContractError(
+            &quot;selection_bias_note must not be empty; write &#x27;none known&#x27; &quot;
+            &quot;explicitly rather than leaving inherited bias undeclared&quot;
+        )</code></pre>
+<p>三個來源分類不是分類學潔癖，它們的未知量不同：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">來源</th><th style="text-align:left">搜尋成本</th><th style="text-align:left">誰承擔</th></tr></thead><tbody><tr><td style="text-align:left"><code>NEW_IN_LAB</code></td><td style="text-align:left">本專案的試驗，有紀錄可數</td><td style="text-align:left">自己</td></tr><tr><td style="text-align:left"><code>INHERITED_WEGO</code></td><td style="text-align:left">前一個專案的試驗，部分有紀錄</td><td style="text-align:left">繼承</td></tr><tr><td style="text-align:left"><code>PORTED_FINLAB_PUBLISHED</code></td><td style="text-align:left"><strong>發表者的搜尋成本，未知且不是零</strong></td><td style="text-align:left">外部，不可數</td></tr></tbody></table></div>
+<p>第三類最容易被誤讀成「乾淨的結果」。但<strong>一個被發表的策略，按定義就是「看起來夠好所以被發表」的那一個</strong>。它的選擇偏差存在，只是你數不到。</p>
+<p><code>selection_bias_note</code> 不允許空字串，強迫作者要嘛寫出來，要嘛明確寫「none known」。實測這一欄真的有在做事 —— 某檔策略的自述是：</p>
+<blockquote>DOES NOT CLEAR DEFLATION AND IS FILED ANYWAY. DSR 0.9250 against a 0.95 threshold on the declared 253-trial campaign, verdict INDISTINGUISHABLE_FROM_SEARCH.</blockquote>
+<p>一個誠實到會寫下自己沒通過的欄位，比任何 dashboard 都有價值。</p>
+<h3>四、強制寫出「為什麼預期它會賺」</h3>
+<pre><code class="lang-python">if not self.thesis.strip():
+    raise StrategyContractError(
+        &quot;thesis must say why this is expected to earn a return; a &quot;
+        &quot;strategy nobody can state a reason for is a fitted curve&quot;
+    )</code></pre>
+<p>最後半句是整個契約的靈魂：<strong>沒有人能說出理由的策略，就是一條擬合出來的曲線。</strong></p>
+<p>GA 搜出來的東西尤其需要這一關。如果你寫不出「為什麼這四個因子加起來會有超額報酬」，那你找到的可能只是噪音的一個好看切面。</p>
+<h3>五、參數名要對得上</h3>
+<pre><code class="lang-python">unknown = set(self.default_params) - set(self.build_parameters())
+if unknown:
+    raise StrategyContractError(
+        f&quot;default_params contains names build() does not accept: {sorted(unknown)}&quot;
+    )</code></pre>
+<p>這條擋掉一整類 bug：<code>default_params</code> 寫了 <code>bull_leverage=1.5</code>，但 <code>build()</code> 根本不吃這個參數 —— 於是測試斷言 <code>default_params[&amp;quot;bull_leverage&amp;quot;] == 1.5</code> 會通過，而實際跑出來的策略完全不是那回事。</p>
+<p>我實際看過這個組合出現：一份報告的測試「4/4 PASS」，斷言的全是 <code>default_params</code> 字典的字面值，而那些參數對 <code>build()</code> 的行為毫無影響。</p>
+<h3>六、成本假設跟著策略走</h3>
+<pre><code class="lang-python">@dataclass(frozen=True)
+class BacktestConfig:
+    resample: str | None = &quot;M&quot;
+    resample_offset: str | None = None
+    fee_ratio: float = TW_FULL_FEE_RATIO      # 未折扣
+    tax_ratio: float = TW_TAX_RATIO
+    trade_at_price: str = &quot;open&quot;</code></pre>
+<p>成本假設放在策略裡，不放在 notebook cell 裡。理由寫在 docstring：</p>
+<blockquote>so two strategies are never silently compared under different fee models.</blockquote>
+<p>這一條在做全量比較時直接兌現：</p>
+<pre><code class="lang-python">rep = backtest.sim(pos, **spec.backtest.as_sim_kwargs())</code></pre>
+<p>一行就跑完 127 檔，每檔用自己宣告的假設。不用擔心某一檔偷偷用了折扣費率。</p>
+<h3>七、<code>upload=False</code> 不可協商</h3>
+<pre><code class="lang-python">kwargs = {
+    ...
+    # upload=False is not optional. A research run must never publish to
+    # the FinLab cloud as a side effect of pressing Run All.
+    &quot;upload&quot;: False,
+}</code></pre>
+<p>寫死在 <code>as_sim_kwargs()</code> 裡，不給呼叫端選。研究跑批不應該有對外的副作用。</p>
+<h2>契約擋不住什麼</h2>
+<p>要誠實：<strong>這個契約擋不住疊加層的前視。</strong></p>
+<p><code>trade_at_price</code> 檢查守的是回測引擎的成交價。但如果有人在 <code>backtest.sim</code> <strong>之外</strong>對報酬序列做乘法：</p>
+<pre><code class="lang-python">r_levered = base_returns * regime_multiplier      # 繞過整個引擎</code></pre>
+<p>契約完全看不到。這正是那份 CAGR 65% 報告的作法。</p>
+<p><strong>所以契約要配一條規則</strong>：任何不經過 <code>backtest.sim</code> 的報酬變換，都要在測試裡單獨做 shift(1) 驗證。契約管得住引擎內，管不住引擎外。</p>
+<h2>拿來拼積木</h2>
+<p>契約的副產品是每塊積木都自帶介面說明：</p>
+<pre><code class="lang-python">spec.data_keys           # 輸入：讀哪些資料集
+spec.build_parameters()  # 可調的旋鈕
+spec.default_params      # 預設值
+spec.backtest            # 成本與換股假設
+spec.source              # 來源與選擇偏差
+spec.thesis              # 為什麼預期會賺
+spec.module_source()     # 完整原始碼，給人讀的</code></pre>
+<p><code>module_source()</code> 那個是刻意的 —— 設計目標是「策略的 FinLab 程式碼是要被擁有者讀的，不是藏在框架後面」。黑盒子要能被打開，才叫積木。</p>
+<h2>記住</h2>
+<blockquote>契約的價值不在它擋下多少錯，而在它讓錯誤發生在<strong>寫的時候</strong>而不是<strong>讀報告的時候</strong>。前者花五分鐘，後者花三天。</blockquote>
+<p>相關：<a href="../51-fake-validation.md">假驗證的四種形態</a>、<a href="../60-verification-harness.md">驗證流水線</a></p>
 <hr>
 <footer>Markdown 版：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md">ALL.md</a></footer>
 </div></body>

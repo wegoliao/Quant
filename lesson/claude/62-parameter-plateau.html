@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C62 · 參數高原：你選的是山峰還是平台</title>
+<meta name="description" content="一個過擬合的參數是**尖峰**：`top_n=30` 得 Sharpe 2.2，`top_n=24` 或 `36` 掉到 1.0。那代表 30 這個數字是被資料的噪音選出來的。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C62</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">驗證</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>scripts/run_honest_top5_robustness.py</code></p><h1>參數高原：你選的是山峰還是平台</h1>
+<blockquote><strong>證據</strong>：12 檔候選，每個數值參數各擾動兩檔，全部重跑 <code>backtest.sim</code></blockquote>
+<h2>它在回答什麼</h2>
+<blockquote>如果我把參數挪一格，這個策略還在嗎？</blockquote>
+<p>一個過擬合的參數是<strong>尖峰</strong>：<code>top_n=30</code> 得 Sharpe 2.2，<code>top_n=24</code> 或 <code>36</code> 掉到 1.0。那代表 30 這個數字是被資料的噪音選出來的。</p>
+<p>一個真實的參數是<strong>平台</strong>：周圍一圈都還在 2.0 附近。那代表你抓到的是結構，不是巧合。</p>
+<p>這是所有防過擬合檢查裡<strong>最直觀、也最難造假</strong>的一個 —— 因為每個鄰居都要真的重跑一次回測。</p>
+<h2>實作</h2>
+<pre><code class="lang-python">def neighbours(params):
+    &quot;&quot;&quot;每個數值參數往兩邊各挪一檔。&quot;&quot;&quot;
+    out = []
+    for k, v in params.items():
+        if isinstance(v, bool) or not isinstance(v, (int, float)):
+            continue
+        if isinstance(v, int):
+            step = max(1, round(abs(v) * 0.2))       # 整數 ±20%
+            cands = [v - step, v + step]
+        else:
+            cands = [round(v * 0.8, 6), round(v * 1.25, 6)]   # 浮點 ×0.8 / ×1.25
+        for s in cands:
+            if s != v and s &gt; 0:
+                out.append((f&quot;{k}: {v} -&gt; {s}&quot;, dict(params, **{k: s})))
+    return out
+
+
+PLATEAU_FLOOR = 0.70        # 鄰居要保住中心值 70% 的 Sharpe
+
+for label, p in neighbours(spec.default_params):
+    r = sim_returns(spec, p)                          # 真的重跑 sim
+    s = r.mean() / r.std() * np.sqrt(252)
+    passed = s &gt;= PLATEAU_FLOOR * centre_sharpe</code></pre>
+<h2>實測結果 —— 以及為什麼「100%」可能沒有意義</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">通過率</th><th style="text-align:left"><strong>鄰居數</strong></th><th style="text-align:left">最差鄰居</th><th style="text-align:left">證據強度</th></tr></thead><tbody><tr><td style="text-align:left">S022</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>12</strong></td><td style="text-align:left">1.667</td><td style="text-align:left"><strong>強</strong></td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">100%</td><td style="text-align:left">8</td><td style="text-align:left">2.107</td><td style="text-align:left">中</td></tr><tr><td style="text-align:left">S127</td><td style="text-align:left">100%</td><td style="text-align:left">4</td><td style="text-align:left">1.742</td><td style="text-align:left">中</td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">100%</td><td style="text-align:left">4</td><td style="text-align:left">1.795</td><td style="text-align:left">中</td></tr><tr><td style="text-align:left">S148</td><td style="text-align:left">100%</td><td style="text-align:left">4</td><td style="text-align:left">1.444</td><td style="text-align:left">中</td></tr><tr><td style="text-align:left">S122</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left">2.095</td><td style="text-align:left"><strong>弱</strong></td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left">2.033</td><td style="text-align:left"><strong>弱</strong></td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left">1.983</td><td style="text-align:left"><strong>弱</strong></td></tr><tr><td style="text-align:left">S126</td><td style="text-align:left">100%</td><td style="text-align:left"><strong>2</strong></td><td style="text-align:left">1.46</td><td style="text-align:left"><strong>弱</strong></td></tr><tr><td style="text-align:left"><strong>S048</strong></td><td style="text-align:left"><strong>0%</strong></td><td style="text-align:left">2</td><td style="text-align:left">兩個鄰居都拋錯</td><td style="text-align:left"><strong>紅旗</strong></td></tr></tbody></table></div>
+<p><strong>這張表最重要的一欄是「鄰居數」，不是通過率。</strong></p>
+<p>S122 的通過率 100%，但它只有 2 個鄰居 —— 因為它只暴露 <code>top_n</code> 一個數值參數。「100% 通過」在這裡的意思不是「高原很寬」，而是「可以測的東西很少」。</p>
+<p>真正被寬鬆測過的是 S022：12 個鄰居全過，最差 1.667。那是有份量的證據。</p>
+<p><strong>所以報告要寫「100% of 2」而不是「100%」。</strong> 只寫百分比會讓 S122 和 S022 看起來一樣強，但它們差很多。</p>
+<h2>S048 的 0% 是紅旗，不是「未通過」</h2>
+<p>兩個鄰居都拋出例外，代表這個策略在參數稍微改變時就無法建構。這比「Sharpe 掉下去」更糟 —— 它連跑都跑不起來。</p>
+<p>要把「鄰居失敗」和「鄰居 Sharpe 太低」分開記錄：</p>
+<pre><code class="lang-python">except Exception as e:
+    nb_res.append({&quot;param&quot;: label, &quot;sharpe&quot;: None, &quot;pass&quot;: False,
+                   &quot;error&quot;: type(e).__name__})       # ← 記下錯誤類型</code></pre>
+<h2>參數擾動 vs 結構擾動</h2>
+<p>有個重要區分。這個 repo 裡某檔策略的 notes 寫著：</p>
+<blockquote>Plateau test 13/17 neighbours within 0.85x (92% counting parameter neighbours only; the four failures are leg removals, which are structural changes rather than perturbations).</blockquote>
+<p>「拿掉一整條因子腳」不是參數擾動，是結構改變。它失敗不代表過擬合，只代表那條腳有貢獻。</p>
+<p><strong>兩者要分開報</strong>：</p>
+<ul><li><strong>參數擾動</strong>（<code>top_n</code> 30→36）→ 測的是過擬合</li><li><strong>結構消融</strong>（拿掉整條腳）→ 測的是各元件的貢獻度</li></ul>
+<p>把兩者混在同一個百分比裡，兩邊的訊號都被稀釋。</p>
+<h2>消融實驗：另一個方向的用法</h2>
+<p>同一個機制反過來用，可以找出「哪些元件其實在扣分」。實測某檔四因子策略的逐腳消融：</p>
+<pre><code>移除低波動腳       -0.585 Sharpe    ← 最大貢獻
+移除 14D 公布日對齊 -0.358 Sharpe    ← 免費的、純時序對齊
+移除 ROE 腳        -0.190 Sharpe
+移除營收成長腳     +0.044 Sharpe    ← 負貢獻
+移除營收帶篩選     +0.037 Sharpe    ← 負貢獻</code></pre>
+<p>最後兩行是重點：這檔策略的招牌是「營收動能」，但它的兩個營收元件在 Sharpe 上是<strong>淨負貢獻</strong>。</p>
+<p>這個發現直接生出了一檔新策略：保留有效的（低波動、公布日對齊、營收帶當篩選而非評分），把兩個營收元件換掉。新策略的 Sharpe 2.211 是全庫最高。</p>
+<p><strong>但要誠實標註</strong>：這樣選出來的「腳的集合」是被搜尋出來的。權重沒有擬合（四個百分位排名直接相加），但<strong>組合本身是擬合的</strong>。這一點必須寫進選擇偏差註記。</p>
+<h2>高原檢查的成本</h2>
+<p>12 檔候選、平均 4 個鄰居、每個鄰居約 10–20 秒 → 約 15 分鐘。</p>
+<p>比起它能擋掉的東西，這是很便宜的。</p>
+<h2>檢查清單</h2>
+<ol><li>每個鄰居都真的重跑 <code>sim</code> 了嗎？（不能用內插）</li><li>報告有寫鄰居數嗎？（「100%」不寫分母等於沒寫）</li><li>鄰居失敗和鄰居分數低有分開記嗎？</li><li>參數擾動和結構消融有分開報嗎？</li><li>如果某策略只有 1–2 個數值參數，有在報告裡註明「證據弱」嗎？</li></ol>
+<h2>記住</h2>
+<blockquote>通過率的分母比分子重要。「100% of 2」和「100% of 12」是完全不同的兩件事。</blockquote>
+<p>相關：<a href="61-deflated-sharpe.md">去膨脹夏普</a>、<a href="60-verification-harness.md">驗證流水線</a></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/62-parameter-plateau.md">claude/62-parameter-plateau.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

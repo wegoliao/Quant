@@ -101,6 +101,126 @@
           "html": "https://wegoliao.github.io/Quant/lesson/claude/30-prompts.html"
         },
         {
+          "id": "C40",
+          "title": "資料的真相：你的回測期間由最短的那個資料集決定",
+          "track": "context",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/all_metrics.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/40-research-data-truth.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/40-research-data-truth.html"
+        },
+        {
+          "id": "C41",
+          "title": "為什麼胃納量是真正的約束",
+          "track": "context",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/all_metrics.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/41-capacity-is-the-constraint.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/41-capacity-is-the-constraint.html"
+        },
+        {
+          "id": "C42",
+          "title": "成本模型：不打折、次日開盤、重跑而非扣減",
+          "track": "context",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/robustness.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/42-cost-model.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/42-cost-model.html"
+        },
+        {
+          "id": "C50",
+          "title": "前視偏誤：一天的時差可以製造出 Sharpe 4.9",
+          "track": "traps",
+          "status": "verified",
+          "verified_by": "scripts/run_honest_top5_robustness.py",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/50-lookahead-bias.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/50-lookahead-bias.html"
+        },
+        {
+          "id": "C51",
+          "title": "假驗證的四種形態",
+          "track": "traps",
+          "status": "verified",
+          "verified_by": "evidence/CLAUDE_VERIFICATION_GEMINI_CAGR50_2026-08-26.md",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/51-fake-validation.html"
+        },
+        {
+          "id": "C52",
+          "title": "試驗計數：少算 4.7 倍，門檻就低了 0.26 個 Sharpe",
+          "track": "traps",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/robustness.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/52-trial-counting.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/52-trial-counting.html"
+        },
+        {
+          "id": "C53",
+          "title": "胃納量造假：三種寫法，都不是胃納量",
+          "track": "traps",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/all_metrics.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/53-capacity-fiction.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/53-capacity-fiction.html"
+        },
+        {
+          "id": "C60",
+          "title": "驗證流水線：怎麼一次驗完整個策略庫",
+          "track": "validation",
+          "status": "verified",
+          "verified_by": "scripts/run_honest_topN.py",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/60-verification-harness.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/60-verification-harness.html"
+        },
+        {
+          "id": "C61",
+          "title": "去膨脹夏普：怎麼算才算數",
+          "track": "validation",
+          "status": "verified",
+          "verified_by": "src/quant_grill_lab/search/deflated.py",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/61-deflated-sharpe.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/61-deflated-sharpe.html"
+        },
+        {
+          "id": "C62",
+          "title": "參數高原：你選的是山峰還是平台",
+          "track": "validation",
+          "status": "verified",
+          "verified_by": "scripts/run_honest_top5_robustness.py",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/62-parameter-plateau.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/62-parameter-plateau.html"
+        },
+        {
+          "id": "C70",
+          "title": "已驗證積木清單：策略層",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/robustness.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/70-verified-strategy-inventory.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/70-verified-strategy-inventory.html"
+        },
+        {
+          "id": "C80",
+          "title": "對照分析 · 我的實測落在 Gemini 與 Codex 軌道的哪裡",
+          "track": "context",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/robustness.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/80-cross-ai-notes.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/80-cross-ai-notes.html"
+        },
+        {
           "id": "B01",
           "title": "已實現損益 · FIFO 對沖，只認落袋現金",
           "track": "block",
@@ -189,6 +309,56 @@
           "updated": "2026-08-26",
           "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B09-derived-state.md",
           "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B09-derived-state.html"
+        },
+        {
+          "id": "B10",
+          "title": "shift(1) 前視測試 · 任何疊加層的有罪推定",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "evidence/CLAUDE_VERIFICATION_GEMINI_CAGR50_2026-08-26.md",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B10-shift1-lookahead-test.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B10-shift1-lookahead-test.html"
+        },
+        {
+          "id": "B11",
+          "title": "機械試驗計數器 · 不讓呼叫端自己填 N",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/robustness.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B11-mechanical-trial-counter.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B11-mechanical-trial-counter.html"
+        },
+        {
+          "id": "B12",
+          "title": "本地胃納模型 · 最緊的那一檔決定整本帳",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/all_metrics.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B12-local-capacity-model.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B12-local-capacity-model.html"
+        },
+        {
+          "id": "B13",
+          "title": "相關係數去重 · 你的前五名可能是同一支策略",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "evidence/honest_top5/robustness.json",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B13-correlation-dedup.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B13-correlation-dedup.html"
+        },
+        {
+          "id": "B14",
+          "title": "策略契約：讓作弊在建構物件時就爆掉",
+          "track": "block",
+          "status": "verified",
+          "verified_by": "src/quant_grill_lab/strategies/base.py",
+          "updated": "2026-08-26",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B14-strategy-spec-contract.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/claude/blocks/B14-strategy-spec-contract.html"
         }
       ]
     },

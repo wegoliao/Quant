@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B14 · 策略契約：讓作弊在建構物件時就爆掉</title>
+<meta name="description" content="多 AI 協作的研究專案裡，最貴的失敗不是「策略不賺錢」，而是**你花了三天讀一份數字很漂亮的報告，最後發現它用當日收盤價成交**。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B14</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>src/quant_grill_lab/strategies/base.py</code></p><h1>策略契約：讓作弊在建構物件時就爆掉</h1>
+<blockquote><strong>證據</strong>：本專案 <code>StrategySpec</code> 的實際設計與它擋下來的東西</blockquote>
+<h2>問題</h2>
+<p>多 AI 協作的研究專案裡，最貴的失敗不是「策略不賺錢」，而是<strong>你花了三天讀一份數字很漂亮的報告，最後發現它用當日收盤價成交</strong>。</p>
+<p>防守的地方應該在契約層 —— 讓錯誤在<strong>寫策略的時候</strong>就報錯，而不是在<strong>讀報告的時候</strong>才被發現。</p>
+<h2>契約要強制什麼</h2>
+<p>不是文件建議，是 <code>__post_init__</code> 裡的 <code>raise</code>。</p>
+<h3>一、禁止同棒成交</h3>
+<pre><code class="lang-python">def __post_init__(self):
+    if self.trade_at_price == &quot;close&quot;:
+        raise StrategyContractError(
+            &quot;trade_at_price=&#x27;close&#x27; fills at the same bar that produced the &quot;
+            &quot;signal. AGENTS.md forbids presenting that as an executable &quot;
+            &quot;fill. Use &#x27;open&#x27; (next bar) or supply an explicit price frame.&quot;
+        )</code></pre>
+<p>預設值是次日開盤。要用收盤價成交，你得先刪掉這段程式碼 —— 那是一個明確的、可被 code review 抓到的動作，而不是一個容易漏掉的參數。</p>
+<h3>二、強制申報讀了哪些資料集</h3>
+<pre><code class="lang-python">if not self.data_keys:
+    raise StrategyContractError(
+        &quot;data_keys must list every FinLab dataset the strategy reads, &quot;
+        &quot;so each source&#x27;s data_asof can be recorded&quot;
+    )</code></pre>
+<p>為什麼重要：每個資料集有自己的 <code>data_asof</code>。申報之後，跑一次就能產生「這次用的每個來源分別更新到哪一天」的收據，而不是只有一個牆上時鐘的時間戳。</p>
+<p>副作用同樣有用：<code>data_keys</code> 就是這塊積木的<strong>輸入介面</strong>。要拼積木，你需要知道每塊讀什麼。</p>
+<h3>三、強制申報來源與選擇偏差</h3>
+<pre><code class="lang-python">ORIGINS = (&quot;NEW_IN_LAB&quot;, &quot;INHERITED_WEGO&quot;, &quot;PORTED_FINLAB_PUBLISHED&quot;)
+
+def __post_init__(self):
+    if self.origin not in ORIGINS:
+        raise StrategyContractError(f&quot;origin must be one of {ORIGINS}&quot;)
+    if not self.selection_bias_note.strip():
+        raise StrategyContractError(
+            &quot;selection_bias_note must not be empty; write &#x27;none known&#x27; &quot;
+            &quot;explicitly rather than leaving inherited bias undeclared&quot;
+        )</code></pre>
+<p>三個來源分類不是分類學潔癖，它們的未知量不同：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">來源</th><th style="text-align:left">搜尋成本</th><th style="text-align:left">誰承擔</th></tr></thead><tbody><tr><td style="text-align:left"><code>NEW_IN_LAB</code></td><td style="text-align:left">本專案的試驗，有紀錄可數</td><td style="text-align:left">自己</td></tr><tr><td style="text-align:left"><code>INHERITED_WEGO</code></td><td style="text-align:left">前一個專案的試驗，部分有紀錄</td><td style="text-align:left">繼承</td></tr><tr><td style="text-align:left"><code>PORTED_FINLAB_PUBLISHED</code></td><td style="text-align:left"><strong>發表者的搜尋成本，未知且不是零</strong></td><td style="text-align:left">外部，不可數</td></tr></tbody></table></div>
+<p>第三類最容易被誤讀成「乾淨的結果」。但<strong>一個被發表的策略，按定義就是「看起來夠好所以被發表」的那一個</strong>。它的選擇偏差存在，只是你數不到。</p>
+<p><code>selection_bias_note</code> 不允許空字串，強迫作者要嘛寫出來，要嘛明確寫「none known」。實測這一欄真的有在做事 —— 某檔策略的自述是：</p>
+<blockquote>DOES NOT CLEAR DEFLATION AND IS FILED ANYWAY. DSR 0.9250 against a 0.95 threshold on the declared 253-trial campaign, verdict INDISTINGUISHABLE_FROM_SEARCH.</blockquote>
+<p>一個誠實到會寫下自己沒通過的欄位，比任何 dashboard 都有價值。</p>
+<h3>四、強制寫出「為什麼預期它會賺」</h3>
+<pre><code class="lang-python">if not self.thesis.strip():
+    raise StrategyContractError(
+        &quot;thesis must say why this is expected to earn a return; a &quot;
+        &quot;strategy nobody can state a reason for is a fitted curve&quot;
+    )</code></pre>
+<p>最後半句是整個契約的靈魂：<strong>沒有人能說出理由的策略，就是一條擬合出來的曲線。</strong></p>
+<p>GA 搜出來的東西尤其需要這一關。如果你寫不出「為什麼這四個因子加起來會有超額報酬」，那你找到的可能只是噪音的一個好看切面。</p>
+<h3>五、參數名要對得上</h3>
+<pre><code class="lang-python">unknown = set(self.default_params) - set(self.build_parameters())
+if unknown:
+    raise StrategyContractError(
+        f&quot;default_params contains names build() does not accept: {sorted(unknown)}&quot;
+    )</code></pre>
+<p>這條擋掉一整類 bug：<code>default_params</code> 寫了 <code>bull_leverage=1.5</code>，但 <code>build()</code> 根本不吃這個參數 —— 於是測試斷言 <code>default_params[&amp;quot;bull_leverage&amp;quot;] == 1.5</code> 會通過，而實際跑出來的策略完全不是那回事。</p>
+<p>我實際看過這個組合出現：一份報告的測試「4/4 PASS」，斷言的全是 <code>default_params</code> 字典的字面值，而那些參數對 <code>build()</code> 的行為毫無影響。</p>
+<h3>六、成本假設跟著策略走</h3>
+<pre><code class="lang-python">@dataclass(frozen=True)
+class BacktestConfig:
+    resample: str | None = &quot;M&quot;
+    resample_offset: str | None = None
+    fee_ratio: float = TW_FULL_FEE_RATIO      # 未折扣
+    tax_ratio: float = TW_TAX_RATIO
+    trade_at_price: str = &quot;open&quot;</code></pre>
+<p>成本假設放在策略裡，不放在 notebook cell 裡。理由寫在 docstring：</p>
+<blockquote>so two strategies are never silently compared under different fee models.</blockquote>
+<p>這一條在做全量比較時直接兌現：</p>
+<pre><code class="lang-python">rep = backtest.sim(pos, **spec.backtest.as_sim_kwargs())</code></pre>
+<p>一行就跑完 127 檔，每檔用自己宣告的假設。不用擔心某一檔偷偷用了折扣費率。</p>
+<h3>七、<code>upload=False</code> 不可協商</h3>
+<pre><code class="lang-python">kwargs = {
+    ...
+    # upload=False is not optional. A research run must never publish to
+    # the FinLab cloud as a side effect of pressing Run All.
+    &quot;upload&quot;: False,
+}</code></pre>
+<p>寫死在 <code>as_sim_kwargs()</code> 裡，不給呼叫端選。研究跑批不應該有對外的副作用。</p>
+<h2>契約擋不住什麼</h2>
+<p>要誠實：<strong>這個契約擋不住疊加層的前視。</strong></p>
+<p><code>trade_at_price</code> 檢查守的是回測引擎的成交價。但如果有人在 <code>backtest.sim</code> <strong>之外</strong>對報酬序列做乘法：</p>
+<pre><code class="lang-python">r_levered = base_returns * regime_multiplier      # 繞過整個引擎</code></pre>
+<p>契約完全看不到。這正是那份 CAGR 65% 報告的作法。</p>
+<p><strong>所以契約要配一條規則</strong>：任何不經過 <code>backtest.sim</code> 的報酬變換，都要在測試裡單獨做 shift(1) 驗證。契約管得住引擎內，管不住引擎外。</p>
+<h2>拿來拼積木</h2>
+<p>契約的副產品是每塊積木都自帶介面說明：</p>
+<pre><code class="lang-python">spec.data_keys           # 輸入：讀哪些資料集
+spec.build_parameters()  # 可調的旋鈕
+spec.default_params      # 預設值
+spec.backtest            # 成本與換股假設
+spec.source              # 來源與選擇偏差
+spec.thesis              # 為什麼預期會賺
+spec.module_source()     # 完整原始碼，給人讀的</code></pre>
+<p><code>module_source()</code> 那個是刻意的 —— 設計目標是「策略的 FinLab 程式碼是要被擁有者讀的，不是藏在框架後面」。黑盒子要能被打開，才叫積木。</p>
+<h2>記住</h2>
+<blockquote>契約的價值不在它擋下多少錯，而在它讓錯誤發生在<strong>寫的時候</strong>而不是<strong>讀報告的時候</strong>。前者花五分鐘，後者花三天。</blockquote>
+<p>相關：<a href="../51-fake-validation.md">假驗證的四種形態</a>、<a href="../60-verification-harness.md">驗證流水線</a></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B14-strategy-spec-contract.md">claude/blocks/B14-strategy-spec-contract.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

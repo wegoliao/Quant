@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B10 · shift(1) 前視測試 · 任何疊加層的有罪推定</title>
+<meta name="description" content="回測引擎可以擋住「同棒成交」，但擋不住**在引擎外面對報酬序列做乘法**的疊加層：">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B10</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>evidence/CLAUDE_VERIFICATION_GEMINI_CAGR50_2026-08-26.md</code></p><h1>B10 · shift(1) 前視測試</h1>
+<h2>它解決什麼</h2>
+<p>回測引擎可以擋住「同棒成交」，但擋不住<strong>在引擎外面對報酬序列做乘法</strong>的疊加層：</p>
+<pre><code class="lang-python">r_levered = base_returns * regime_multiplier      # 引擎完全看不到這一行</code></pre>
+<p>這一行如果 <code>regime_multiplier</code> 用了當日資訊，你會得到一條 Sharpe 4.9、MDD -5.5% 的曲線，而且回測引擎的每一項檢查都會通過。</p>
+<p><strong>實測過的後果</strong>：一份宣稱 CAGR 61–65% 的報告，全部超額報酬來自這一行少了 <code>.shift(1)</code>。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">def shift1_test(base_returns, signal, overlay, floor=0.95):
+    &quot;&quot;&quot;比較同日訊號與落後一日訊號。回傳兩組指標與判定。
+
+    base_returns : pd.Series  疊加之前的日報酬
+    signal       : pd.Series  布林訊號（例如 close &gt; MA）
+    overlay      : callable   (returns, signal) -&gt; returns
+    floor        : float      lag1 至少要保住 lag0 的多少比例才算通過
+    &quot;&quot;&quot;
+    out = {}
+    for lag in (0, 1):
+        s = signal.shift(lag).fillna(False).infer_objects(copy=False)
+        idx = base_returns.index.intersection(s.index)
+        out[lag] = metrics(overlay(base_returns.loc[idx], s.loc[idx]))
+
+    base = metrics(base_returns)
+    return {
+        &quot;base&quot;: base,
+        &quot;lag0&quot;: out[0],
+        &quot;lag1&quot;: out[1],
+        # 關鍵：lag1 要跟「沒加疊加」比，不是跟 lag0 比
+        &quot;overlay_adds_value&quot;: out[1][&quot;sharpe&quot;] &gt; base[&quot;sharpe&quot;],
+        &quot;leakage_ratio&quot;: out[0][&quot;sharpe&quot;] / out[1][&quot;sharpe&quot;],
+    }</code></pre>
+<h2>怎麼讀結果</h2>
+<p>實測三個案例（台股 2013–2026）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">基礎（無疊加）</th><th style="text-align:left">lag0（同日）</th><th style="text-align:left">lag1（可交易）</th><th style="text-align:left">洩漏比</th></tr></thead><tbody><tr><td style="text-align:left">A</td><td style="text-align:left">2.559</td><td style="text-align:left"><strong>4.963</strong></td><td style="text-align:left">2.598</td><td style="text-align:left">1.91x</td></tr><tr><td style="text-align:left">B</td><td style="text-align:left">2.401</td><td style="text-align:left"><strong>4.894</strong></td><td style="text-align:left">2.513</td><td style="text-align:left">1.95x</td></tr><tr><td style="text-align:left">C</td><td style="text-align:left">2.104</td><td style="text-align:left"><strong>4.269</strong></td><td style="text-align:left"><strong>1.992</strong></td><td style="text-align:left">2.14x</td></tr></tbody></table></div>
+<p><strong>最關鍵的一欄是「基礎」，不是 lag0。</strong></p>
+<p>看到 C 從 4.269 掉到 1.992，很多人會說「還有 1.992 嘛」。錯 —— 1.992 要跟<strong>這個疊加根本沒加之前</strong>的 2.104 比。加了之後<strong>變差</strong>。這個疊加的價值是負的。</p>
+<p>判定規則：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">條件</th><th style="text-align:left">判定</th></tr></thead><tbody><tr><td style="text-align:left"><code>lag1.sharpe &amp;lt;= base.sharpe</code></td><td style="text-align:left"><strong>疊加無價值</strong>，不管 lag0 多好看</td></tr><tr><td style="text-align:left"><code>leakage_ratio &amp;gt; 1.3</code></td><td style="text-align:left"><strong>強烈懷疑前視</strong>，要逐行檢查訊號的時間索引</td></tr><tr><td style="text-align:left"><code>lag1.sharpe &amp;gt; base.sharpe</code> 且 <code>leakage_ratio &amp;lt; 1.15</code></td><td style="text-align:left">可以繼續評估</td></tr></tbody></table></div>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：以為 <code>trade_at_price=&amp;#x27;open&amp;#x27;</code> 就安全了。</strong> 那個設定守的是引擎內的成交價。疊加層在引擎外，完全不受它管。</p>
+<p><strong>陷阱 2：只 shift 訊號，忘了 shift 用來算訊號的中間變數。</strong></p>
+<pre><code class="lang-python">r20 = curve.pct_change(20)                              # 第 t 日的值含第 t 日報酬
+tp_scale = np.where(r20 &gt; tp, 0.70, 1.0)
+r_daily = r_daily * tp_scale                            # ← 同樣的病</code></pre>
+<p>停利、波動度目標、任何「用曲線自身的近期表現決定曝險」的東西都有這個問題。</p>
+<p><strong>陷阱 3：用一天的 lag 就以為夠了。</strong> shift(1) 是<strong>最低</strong>要求，不是充分條件。真實交易還有：訊號要在收盤後算完、要在次日開盤前送出、可能部分成交。保守一點用 shift(2) 再測一次，看衰減幅度。</p>
+<h2>一眼可疑的指紋</h2>
+<p>不用讀程式碼就該懷疑的：</p>
+<ul><li>台股純多頭、月頻換股，13 年 MDD <strong>小於 -10%</strong></li><li>Sharpe <strong>大於 3</strong>（長期台股多頭的實測上限約 2.2）</li><li>Calmar <strong>大於 4</strong></li><li>回撤在 2015 / 2018 / 2022 反而縮小</li></ul>
+<h2>相關</h2>
+<ul><li>完整案例與程式碼片段：<a href="../50-lookahead-bias.md">C50 前視偏誤</a></li><li>契約層怎麼擋成交價前視：<a href="B14-strategy-spec-contract.md">B14 策略契約</a></li><li>Gemini 從資料端防洩漏的作法：<a href="../../gemini/blocks/GB02-pit-lag-aligner.md">GB02 PIT 對齊器</a> —— 那一塊守的是「因子讀到未來的財報」，這一塊守的是「疊加層讀到今天的收盤」。兩個缺口不同，都要堵。</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B10-shift1-lookahead-test.md">claude/blocks/B10-shift1-lookahead-test.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

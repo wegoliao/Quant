@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B11 · 機械試驗計數器 · 不讓呼叫端自己填 N</title>
+<meta name="description" content="去膨脹夏普的門檻由**試驗次數**決定。而試驗次數在大多數實作裡是**呼叫端自己填的參數** —— 填小一點，門檻就低，你的策略就「通過」了。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B11</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>evidence/honest_top5/robustness.json</code></p><h1>B11 · 機械試驗計數器</h1>
+<h2>它解決什麼</h2>
+<p>去膨脹夏普的門檻由<strong>試驗次數</strong>決定。而試驗次數在大多數實作裡是<strong>呼叫端自己填的參數</strong> —— 填小一點，門檻就低，你的策略就「通過」了。</p>
+<p>這不需要惡意，只需要健忘：沒有人記得三週前那個沒存檔的參數掃描也算試驗。</p>
+<p><strong>實測</strong>：某專案的紀錄檔寫 <code>n_trials: 134</code>，另一份文件寫 253。機械掃描實驗紀錄得到 <strong>624</strong>。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">宣告的 N</th><th style="text-align:left">選擇偏差門檻（年化 Sharpe）</th></tr></thead><tbody><tr><td style="text-align:left">134</td><td style="text-align:left">1.401</td></tr><tr><td style="text-align:left">253</td><td style="text-align:left">1.512</td></tr><tr><td style="text-align:left"><strong>624（機械計數）</strong></td><td style="text-align:left"><strong>1.660</strong></td></tr></tbody></table></div>
+<p>差 0.26 個 Sharpe。對一個 Sharpe 2.1 的策略，這決定了 DSR 是 0.92 還是 0.96 —— 通過或不通過。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">def mechanical_trial_count(log_glob=&quot;evidence/kiln/exp*.json&quot;, field=&quot;sharpe_local&quot;):
+    &quot;&quot;&quot;從實驗紀錄檔數出試驗次數與 Sharpe 分布。呼叫端不能覆寫。&quot;&quot;&quot;
+    sharpes = []
+    for f in sorted(glob.glob(log_glob)):
+        try:
+            rows = json.load(open(f, encoding=&quot;utf-8&quot;))
+        except Exception:
+            continue                      # 壞掉的檔案不能讓計數靜默變小
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            v = row.get(field)
+            if isinstance(v, (int, float)) and np.isfinite(v):
+                sharpes.append(float(v))
+    return len(sharpes), np.array(sharpes)</code></pre>
+<p>搭配使用時，<strong>不接受任何手動 <code>n_trials</code></strong>：</p>
+<pre><code class="lang-python">n_trials, trial_sharpes = mechanical_trial_count()
+bar = expected_max_sharpe(n_trials, trial_sharpes.var(ddof=1))</code></pre>
+<h2>三個設計決定</h2>
+<p><strong>1. 搜尋程式在跑的時候就要寫紀錄，不是事後補。</strong> 每一次 <code>sim</code> 都要落一列到紀錄檔，包含它的 Sharpe。事後回憶一定會少算。</p>
+<p><strong>2. 全部試驗都要進分布，包含爛的。</strong> 門檻由試驗結果的<strong>離散度</strong>決定。只餵存活者會低估離散度，門檻跟著低估。</p>
+<p><strong>3. 壞掉的紀錄檔要跳過但不能靜默。</strong> 上面的 <code>except: continue</code> 在生產版本應該記一行 warning。一個讀不到的檔案 = 一批沒被計入的試驗 = 偏低的門檻。</p>
+<h2>這個數字仍然是下界</h2>
+<p>機械計數只涵蓋<strong>有留紀錄</strong>的試驗。以下都不在裡面，而且都是真實的搜尋成本：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">來源</th><th style="text-align:left">為什麼算試驗</th></tr></thead><tbody><tr><td style="text-align:left">手動試的參數</td><td style="text-align:left">你看過結果才決定不存</td></tr><tr><td style="text-align:left">從公開文章移植的策略</td><td style="text-align:left"><strong>發表者自己的搜尋成本未知且不是零</strong> —— 一個被發表的策略，按定義就是「看起來夠好所以被發表」的那一個</td></tr><tr><td style="text-align:left">從前一個專案繼承的</td><td style="text-align:left">前一個專案的試驗數可能沒交接過來</td></tr><tr><td style="text-align:left">組合／集成</td><td style="text-align:left">從已知通過的積木裡挑組合，是一次新的後選擇</td></tr></tbody></table></div>
+<p>所以報告要寫「門檻 ≥ 1.660」而不是「門檻 = 1.660」。</p>
+<h2>兩種讀法都要報</h2>
+<pre><code class="lang-python"># 讀法一：這次 campaign 宣告的搜尋
+n1, s1 = mechanical_trial_count(&quot;evidence/kiln/exp*.json&quot;)
+
+# 讀法二：整個 catalog 當成一次搜尋（跨家族離散度大得多）
+s2 = [r[&quot;sharpe&quot;] for r in all_registered_strategies]
+n2 = len(s2)</code></pre>
+<p>實測差距：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">讀法</th><th style="text-align:left">N</th><th style="text-align:left">門檻（年化）</th><th style="text-align:left">12 檔候選通過數</th></tr></thead><tbody><tr><td style="text-align:left">已宣告的 campaign</td><td style="text-align:left">624</td><td style="text-align:left">1.660</td><td style="text-align:left">1</td></tr><tr><td style="text-align:left">整個 catalog</td><td style="text-align:left">127</td><td style="text-align:left"><strong>2.713</strong></td><td style="text-align:left"><strong>0</strong></td></tr></tbody></table></div>
+<p>兩個都對，在回答不同問題。<strong>誠實的報告要並列。</strong></p>
+<h2>陷阱</h2>
+<p><strong>陷阱：把重複註冊的策略當成不同試驗。</strong> 實測發現三個編號指向同一支策略（日報酬相關係數 = 1.000）。用「策略數」當分母時，重複會讓 N 虛胖、離散度失真。先用 <a href="B13-correlation-dedup.md">B13 相關係數去重</a>。</p>
+<h2>相關</h2>
+<ul><li>為什麼要有這個：<a href="../52-trial-counting.md">C52 試驗計數</a></li><li>怎麼用這個數字：<a href="../61-deflated-sharpe.md">C61 去膨脹夏普</a></li><li>Gemini 對 DSR 門檻的要求（N ≥ 400、DSR ≥ 0.95）：<a href="../../gemini/06-validation-dsr-and-forward-sim.md">G06</a>。本塊是那條要求的<strong>執行機制</strong> —— G06 說「必須誠實包含所有被淘汰的試驗」，這裡是讓它無法不誠實的作法。</li></ul>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B11-mechanical-trial-counter.md">claude/blocks/B11-mechanical-trial-counter.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

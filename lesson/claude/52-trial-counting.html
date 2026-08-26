@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C52 · 試驗計數：少算 4.7 倍，門檻就低了 0.26 個 Sharpe</title>
+<meta name="description" content="去膨脹夏普（Deflated Sharpe Ratio, Bailey &amp; López de Prado 2014）在回答一件事：">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C52</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">陷阱</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>evidence/honest_top5/robustness.json</code></p><h1>試驗計數：少算 4.7 倍，門檻就低了 0.26 個 Sharpe</h1>
+<blockquote><strong>證據</strong>：機械掃描 23 個實驗紀錄檔，得到 624 次試驗；repo 自己的紀錄用的是 134</blockquote>
+<h2>問題</h2>
+<p>去膨脹夏普（Deflated Sharpe Ratio, Bailey &amp; López de Prado 2014）在回答一件事：</p>
+<blockquote>就算所有策略都毫無價值，你試了 N 次之後，最好的那一個仍然會呈現多高的 Sharpe？</blockquote>
+<p>這個「門檻」隨 N 上升，也隨試驗結果的<strong>離散度</strong>上升。所以 DSR 有一個致命的操作弱點：<strong>N 是你自己填的</strong>。填小一點，門檻就低，你的策略就「通過」了。</p>
+<h2>實測</h2>
+<p>這個 repo 的實驗紀錄留在 <code>evidence/kiln/exp*.json</code>。機械掃描全部 23 個檔案：</p>
+<pre><code class="lang-python">def kiln_trials():
+    sh = []
+    for f in sorted(glob.glob(&quot;evidence/kiln/exp*.json&quot;)):
+        d = json.load(open(f, encoding=&quot;utf-8&quot;))
+        if not isinstance(d, list):
+            continue
+        for row in d:
+            v = row.get(&quot;sharpe_local&quot;)
+            if isinstance(v, (int, float)) and np.isfinite(v):
+                sh.append(float(v))
+    return len(sh), np.array(sh)</code></pre>
+<p>結果：<strong>624 次有記錄 Sharpe 的試驗</strong>。</p>
+<p>但 repo 自己的 <code>evidence/kiln/dsr.json</code> 寫的是 <code>&amp;quot;n_trials&amp;quot;: 134</code>，另一份文件寫 253。</p>
+<p>門檻的差距：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">宣告的試驗數</th><th style="text-align:left">選擇偏差門檻（年化 Sharpe）</th></tr></thead><tbody><tr><td style="text-align:left">134</td><td style="text-align:left">1.401</td></tr><tr><td style="text-align:left">253</td><td style="text-align:left">1.512</td></tr><tr><td style="text-align:left"><strong>624（機械計數）</strong></td><td style="text-align:left"><strong>1.660</strong></td></tr></tbody></table></div>
+<p>差 0.26 個 Sharpe。對一個 Sharpe 2.1 的策略來說，這決定了 DSR 是 0.92 還是 0.96 —— 也就是「通過」還是「不通過」。</p>
+<p>用 624 重算，12 檔候選只有 1 檔通過：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:left">Sharpe</th><th style="text-align:left">DSR (n=624)</th><th style="text-align:left">判定</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">2.211</td><td style="text-align:left"><strong>0.9595</strong></td><td style="text-align:left">通過</td></tr><tr><td style="text-align:left">S138</td><td style="text-align:left">2.148</td><td style="text-align:left">0.9435</td><td style="text-align:left">差 0.007</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">2.097</td><td style="text-align:left">0.9237</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left">2.027</td><td style="text-align:left">0.8885</td><td style="text-align:left">未過</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left">1.756</td><td style="text-align:left">0.6282</td><td style="text-align:left">未過</td></tr></tbody></table></div>
+<h2>而且 624 還是下界</h2>
+<p><code>evidence/kiln/exp*.json</code> 只是<strong>有留下 JSON 紀錄</strong>的試驗。沒留紀錄的探索、手動試的參數、以及外部繼承的搜尋成本都不在裡面：</p>
+<ul><li>某檔策略是從 FinLab 公開文章移植的 —— 發表者自己試了多少次才發表這一個？未知，但不是零。<strong>一個被發表的策略，按定義就是「看起來夠好所以被發表」的那一個。</strong></li><li>某檔繼承的策略自帶 288 次家族內試驗。</li></ul>
+<p>所以真實門檻只會比 1.660 更高，DSR 只會更低。這一點必須寫進報告，不能只寫「通過」。</p>
+<h2>兩個容易踩的技術陷阱</h2>
+<h3>陷阱一：日頻 vs 年化的單位混用</h3>
+<p>大部分 DSR 實作內部用<strong>每期（日頻）</strong> Sharpe：</p>
+<pre><code class="lang-python">observed = float(series.mean()) / standard_deviation      # 日頻，約 0.14</code></pre>
+<p>但你手上的試驗紀錄通常是<strong>年化</strong> Sharpe（1.3 ~ 2.5）。如果你把年化的 <code>trial_sharpes</code> 直接餵進去，門檻會用年化尺度算出來（1.660），再拿去和日頻的觀測值（0.139）比較 —— <strong>每一檔的 DSR 都會是 0.0000</strong>。</p>
+<p>我第一次跑就中了這個。修法是先去年化：</p>
+<pre><code class="lang-python">ann = np.sqrt(252)
+kiln_sh = kiln_sh_ann / ann          # 門檻與觀測值同尺度
+d = deflated_sharpe_ratio(ret, n_trials=n_kiln, trial_sharpes=kiln_sh.tolist())
+print(d.annualised_benchmark)        # 顯示時再年化回來</code></pre>
+<p><strong>症狀</strong>：所有 DSR 都是 0.0000，或所有都是 1.0000。兩者都代表尺度錯了，不是策略特別爛或特別好。</p>
+<h3>陷阱二：只餵存活者</h3>
+<pre><code>trial_sharpes:
+    Per-period Sharpes of every trial. Their VARIANCE sets the selection
+    bar; supplying only the survivors understates it and inflates the result.</code></pre>
+<p>只餵通過門檻的那 20 個，離散度會被低估，門檻跟著低估。要餵<strong>全部</strong>試驗，包括爛的。</p>
+<h2>「整個 catalog 當成一次搜尋」的讀法</h2>
+<p>還有一種更嚴格的框法：如果你是從 127 檔已註冊策略裡挑出「最好的那一個」，那 N 就是 127，離散度是跨家族的離散度（大得多）。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">讀法</th><th style="text-align:left">N</th><th style="text-align:left">門檻（年化）</th><th style="text-align:left">通過數</th></tr></thead><tbody><tr><td style="text-align:left">已宣告的搜尋活動</td><td style="text-align:left">624</td><td style="text-align:left">1.660</td><td style="text-align:left">1 / 12</td></tr><tr><td style="text-align:left">整個 catalog</td><td style="text-align:left">127</td><td style="text-align:left"><strong>2.713</strong></td><td style="text-align:left"><strong>0 / 12</strong></td></tr></tbody></table></div>
+<p>第二種讀法下，<strong>沒有任何一檔通過</strong>（最高的 S122 只有 0.0563）。</p>
+<p>這兩種讀法都對，只是在回答不同的問題。誠實的報告要把兩個都列出來，不能只挑好看的那個。</p>
+<h2>還有一個會汙染分母的東西：重複註冊</h2>
+<p>用日報酬相關係數做去重時發現：</p>
+<ul><li><strong>S123 = S139 = S141</strong>，ρ = 1.000，績效數字完全相同 —— 同一支策略佔了三個永久編號</li><li>S047 ≈ S048 ≈ S050，ρ 0.95–0.99</li></ul>
+<p>如果你用「策略數」當分母做任何統計（包括試驗計數），重複註冊會讓數字失真。去重要用報酬序列的相關係數，不能靠檔名或家族欄位。</p>
+<pre><code class="lang-python">def dedup(rows, limit, rho=0.95):
+    ranked = sorted(rows, key=lambda r: -(r[&quot;sharpe&quot;] or 0))
+    kept, kept_ret, dropped = [], {}, {}
+    for r in ranked:
+        ret = load_returns(r[&quot;strategy_number&quot;])
+        dup_of = next((k for k, kr in kept_ret.items()
+                       if ret.corr(kr) &gt;= rho), None)
+        if dup_of:
+            dropped.setdefault(dup_of, []).append(r[&quot;strategy_number&quot;])
+            continue
+        kept.append(r); kept_ret[r[&quot;strategy_number&quot;]] = ret
+        if len(kept) &gt;= limit:
+            break
+    return kept, dropped</code></pre>
+<h2>記住</h2>
+<blockquote>DSR 唯一能修正的是「你申報了多少次試驗」。它修正不了你沒申報的、也修正不了你有沒有偷看未來。它是必要條件，不是充分條件。</blockquote>
+<p>相關：<a href="61-deflated-sharpe.md">怎麼算去膨脹夏普</a>、<a href="51-fake-validation.md">假驗證的四種形態</a></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/52-trial-counting.md">claude/52-trial-counting.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>

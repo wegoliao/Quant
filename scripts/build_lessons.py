@@ -35,6 +35,8 @@ TRACK_LABEL = {
     "traps": "陷阱",
     "prompts": "提問法",
     "shared": "共用",
+    "validation": "驗證",
+    "strategy": "策略",
 }
 
 

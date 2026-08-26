@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C50 · 前視偏誤：一天的時差可以製造出 Sharpe 4.9</title>
+<meta name="description" content="如果你的訊號用「第 t 日收盤價」判定，然後乘上「第 t 日的報酬」，你就是在下跌當天收盤前就知道要跑。這會把一個 Sharpe 2.1 的策略變成 Sharpe 4.2，而且看起來完全合理。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C50</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">陷阱</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>scripts/run_honest_top5_robustness.py</code></p><h1>前視偏誤：一天的時差可以製造出 Sharpe 4.9</h1>
+<blockquote><strong>證據</strong>：實際重建某份宣稱 CAGR 65% 的報告，與其產出的報酬序列相關係數 = 1.0000</blockquote>
+<h2>一句話</h2>
+<p>如果你的訊號用「第 t 日收盤價」判定，然後乘上「第 t 日的報酬」，你就是在下跌當天收盤前就知道要跑。這會把一個 Sharpe 2.1 的策略變成 Sharpe 4.2，而且看起來完全合理。</p>
+<h2>案例</h2>
+<p>一份報告宣稱三檔策略達到 CAGR 61–65%、Sharpe 4.2–4.96、最大回撤只有 -5.5% 到 -7.45%。機制是「動態狀態槓桿」：大盤在均線之上放大到 1.5x，跌破就縮到 0.2x。</p>
+<p>問題出在這段：</p>
+<pre><code class="lang-python">fast_ma = bm_close.rolling(fast_ma_d).mean()
+slow_ma = bm_close.rolling(slow_ma_d).mean()
+bull_regime = (bm_close &gt; fast_ma) &amp; (bm_close &gt; slow_ma)
+
+multiplier = pd.Series(np.where(bull_regime, bull_leverage, bear_exposure),
+                       index=close.index)
+r_lev = d_base.loc[idx] * multiplier.loc[idx]     # ← 沒有 shift(1)</code></pre>
+<p><code>bull_regime</code> 在第 t 日用第 t 日的收盤價判定。<code>d_base</code> 在第 t 日是<strong>第 t 日已經實現</strong>的報酬。兩者相乘，等於你在今天收盤前就知道今天會跌，並且已經把曝險降到 0.2x。</p>
+<h2>測試方法：只改一件事</h2>
+<p>把訊號延後一天 —— 這是任何可交易系統的最低要求，因為你最早只能在明天開盤動作。</p>
+<pre><code class="lang-python">bull = (bm &gt; bm.rolling(20).mean()) &amp; (bm &gt; bm.rolling(200).mean())
+
+for lag in (0, 1):
+    b = bull.shift(lag).fillna(False)
+    m = pd.Series(np.where(b, 1.5, 0.2), index=close.index)
+    idx = base_returns.index.intersection(m.index)
+    report(base_returns.loc[idx] * m.loc[idx])</code></pre>
+<p>實測結果（台股，2013–2026）：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:left">基礎組合（無疊加）</th><th style="text-align:left">同日訊號</th><th style="text-align:left"><strong>落後 1 日（可交易）</strong></th></tr></thead><tbody><tr><td style="text-align:left">A</td><td style="text-align:left">33.02% / 2.559 / -16.75%</td><td style="text-align:left">62.93% / <strong>4.963</strong> / -5.51%</td><td style="text-align:left"><strong>31.85% / 2.598 / -11.61%</strong></td></tr><tr><td style="text-align:left">B</td><td style="text-align:left">29.47% / 2.401 / -16.89%</td><td style="text-align:left">63.62% / <strong>4.894</strong> / -6.27%</td><td style="text-align:left"><strong>31.32% / 2.513 / -13.31%</strong></td></tr><tr><td style="text-align:left">C</td><td style="text-align:left">26.67% / 2.104 / -16.88%</td><td style="text-align:left">60.47% / <strong>4.269</strong> / -7.45%</td><td style="text-align:left"><strong>26.14% / 1.992 / -15.67%</strong></td></tr></tbody></table></div>
+<p>（CAGR / Sharpe / MDD）</p>
+<h2>最關鍵的讀法</h2>
+<p><strong>要跟「基礎組合」比，不是跟「同日訊號」比。</strong></p>
+<p>很多人看到「延後後從 4.269 掉到 1.992」會說「還是有 1.992 嘛」。錯。1.992 要跟這個疊加<strong>根本沒加上去之前</strong>的 2.104 比 —— 加了槓桿疊加之後<strong>變差了</strong>。CAGR 也從 26.67% 掉到 26.14%。</p>
+<p>策略 A 更明顯：Sharpe 從 2.559 動到 2.598（雜訊等級），但 CAGR 從 33.02% 掉到 31.85%。整個「動態槓桿」機制在可交易的前提下<strong>沒有產生任何價值</strong>。</p>
+<h2>怎麼一眼看出可疑</h2>
+<p>不用讀程式碼就能懷疑的指紋：</p>
+<ol><li><strong>MDD 太小</strong>。台股純多頭、月頻換股，13 年 MDD 小於 -10% 是不可能的。真實範圍是 -12% 到 -50%。</li><li><strong>Sharpe 大於 3</strong>。長期台股多頭策略的 Sharpe 上限實測在 2.2 附近。超過 3 幾乎一定是前視或成本沒算。</li><li><strong>Calmar 大於 4</strong>。同上。</li><li><strong>回撤在市場崩盤年份反而縮小</strong>。真策略在 2015、2018、2022 會痛。</li></ol>
+<h2>另一種前視：停利也會偷看</h2>
+<p>同一份程式碼裡還有這個：</p>
+<pre><code class="lang-python">r20 = curve.pct_change(20).fillna(0.0)
+tp_scale = pd.Series(np.where(r20 &gt; tp, 0.70, 1.0), index=curve.index)
+r_daily = r_daily * tp_scale      # ← 第 t 日的 20 日報酬決定第 t 日的曝險</code></pre>
+<p><code>curve.pct_change(20)</code> 在第 t 日<strong>包含第 t 日的報酬</strong>，卻拿來縮放第 t 日的報酬。同樣的病。</p>
+<h2>防呆做法</h2>
+<p>在策略契約層直接禁止同棒成交。這個 repo 的 <code>BacktestConfig</code> 就這樣做：</p>
+<pre><code class="lang-python">if self.trade_at_price == &quot;close&quot;:
+    raise StrategyContractError(
+        &quot;trade_at_price=&#x27;close&#x27; fills at the same bar that produced the &quot;
+        &quot;signal. Use &#x27;open&#x27; (next bar) or supply an explicit price frame.&quot;
+    )</code></pre>
+<p>但這只擋得住「成交價」層級的前視。<strong>疊加層（overlay / regime / 停利）的前視擋不住</strong>，因為那是在報酬序列上做乘法，繞過了整個回測引擎。所以任何「乘在報酬上」的東西都要單獨做 shift(1) 測試。</p>
+<h2>記住</h2>
+<blockquote>任何在 <code>backtest.sim</code> 之外、直接對報酬序列做乘法的疊加，都要被當成有罪推定，直到通過 shift(1) 測試。</blockquote>
+<p>相關：<a href="51-fake-validation.md">C51 假驗證的四種形態</a>、<a href="blocks/B10-shift1-lookahead-test.md">B10 shift(1) 前視測試</a></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/50-lookahead-bias.md">claude/50-lookahead-bias.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-08-26</footer>
+</div></body>
+</html>
