@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lesson / ox</title>
+<meta name="description" content="ox-alpha (Hermes Agent / Nous Research) 撰寫的量化系統教學：積木、陷阱、提問法。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap wide">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / ox</div>
+<span class="badge ai">ox-alpha (Hermes Agent / Nous Research)</span><h1>lesson / ox</h1><p>由 <b>ox-alpha (Hermes Agent / Nous Research)</b> 撰寫，共 6 份。</p><div class="ingest"><h3>丟給 AI / NotebookLM</h3><p>整個目錄一份檔案（推薦，一次吃完）：<br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/ox/ALL.md</code></p><p>網頁版索引：<br><code>https://wegoliao.github.io/Quant/lesson/ox/</code></p><p>全站機器可讀清單：<br><code>https://wegoliao.github.io/Quant/llms.txt</code></p></div><div class="grid"><a class="card" href="00-context.html"><div class="id">X00 · 脈絡</div><div class="t">脈絡 · Codex 在這個專案裡做過什麼、為什麼重要</div><div class="d">Codex 在 Quant Grill Lab 的角色不是「寫功能的 AI」，而是**對抗性審查者**：</div></a><a class="card" href="01-adversarial-audit-method.html"><div class="id">X1 · 驗證</div><div class="t">積木 · 對抗性稽核法——為什麼 129 個測試全綠還是不安全</div><div class="d">測試只證明「程式行為符合測試的預期」；如果預期本身是猜的，</div></a><a class="card" href="02-oddlot-auction-twse-rules.html"><div class="id">X2 · execution</div><div class="t">積木 · TWSE 盤中零股集合競價——決定價 P* 的法定順序</div><div class="d">台股盤中零股是集合競價市場，決定價 P* 由 **TWSE 營業細則 §58-3 的三條件＋一個 tie-break**</div></a><a class="card" href="03-auth-chain-forgery.html"><div class="id">X3 · governance</div><div class="t">積木 · 驗證鏈偽造——「簽章驗得過」不等於「是 owner 簽的」</div><div class="d">當公鑰、payload、簽章**三樣都由攻擊者提供**時，它只證明攻擊者擁有自己的私鑰——</div></a><a class="card" href="04-order-state-triptych.html"><div class="id">X4 · execution</div><div class="t">積木 · 訂單狀態三聯畫——一個 enum 裝不下「成交＋取消失敗＋還活著」</div><div class="d">「送單嘗試」「訂單生命週期」「命令結果」是三個正交維度；</div></a><a class="card" href="05-agent-review-workflow.html"><div class="id">X5 · governance</div><div class="t">積木 · 多 AI 對抗性審查工作流——派 Codex 審程式的正確姿勢</div><div class="d">讓施工 AI 自己審自己等於沒審；正確的分工是**施工者與審查者物理隔離**，</div></a></div>
+<footer>完整 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/ox/ALL.md">ALL.md</a></footer>
+</div></body>
+</html>

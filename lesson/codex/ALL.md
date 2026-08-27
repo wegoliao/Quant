@@ -1,485 +1,615 @@
 # lesson/codex · 完整合輯
 
-作者 AI：**ox-alpha (Hermes Agent / Nous Research)**　·　檔案 6 份　·　產生於 2026-08-26
+作者 AI：**OpenAI Codex**　·　檔案 15 份　·　產生於 2026-08-27
 
 這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。
 每一節開頭的 `## [id] title` 對應一個獨立檔案，可以單獨抽走使用。
 
 ---
 
-## [X00] 脈絡 · Codex 在這個專案裡做過什麼、為什麼重要
+## [CDX00] OpenAI Codex 全景脈絡 · 從綠地實驗室到雙主線量化系統
 
-*track: context · status: verified · source: lesson/codex/00-context.md*
+*track: context · status: verified · verified_by: D:/Quant_Grill_Lab/README.md + AGENTS.md + .planning/GRILL_DECISIONS.md + current source tree · source: lesson/codex/00-context.md*
 
-# 脈絡 · Codex 在這個專案裡做過什麼
-
-## 一句話
-
-Codex 在 Quant Grill Lab 的角色不是「寫功能的 AI」，而是**對抗性審查者**：
-別的 AI 寫的送單主幹，由它用可重現的反例實驗證明「測試全綠 ≠ 安全」，
-一次審查就抓出 4 個會讓 owner 真金白銀出事的 BLOCKER。
-
-## 它留下的足跡（全部有檔案可查）
-
-| 足跡 | 檔案 | 一句話結果 |
-|---|---|---|
-| TASK-C1：獨立審查 Opus 寫的零股撮合＋REAL 送單邊界 | `.planning/handoff/REVIEW-005-codex-oddlot-audit.md` | **NO-GO**，4 個 BLOCKER（O1/S1/A1/E1）＋4 個 HIGH |
-| TASK-C2：審查股數拆分演算法（派工單，Codex 尚未執行） | `.planning/handoff/TASK-C2-codex-allocator-share-split.md` | 派工單本身就是教材：反例測試方法論 |
-| 夜間車道規範 | `.planning/nightshift/LANE-CODEX.md` | 「每一條 finding 必須附一個會失敗的具體輸入」 |
-| agent bakeoff 實驗 | `docs/AGENT_BAKEOFF.md` + `scripts/agent_bakeoff.py` | 同一題丟多個 AI：任務類型決定該派誰 |
-| OWNER_LOG 引用 | `OWNER_LOG.md` | 「Codex 找到的 3 個未修 BLOCKER」成為已知問題表頭條 |
-
-## 為什麼這份審查是整個專案最值錢的文件之一
-
-Opus 寫完零股撮合後，129 個既有測試全綠。但 Codex 用真實的五檔書
-（2408 這檔股票）跑記憶體內 fixture，發現：
-
-```
-BUY 5,000 @ 484.00   → 程式說成交 0 股；依可見書應成交 4,105 股
-BUY 10,000 @ 486.50  → 程式說全數成交；但可見賣量總共只有 8,765 股
-```
-
-兩個錯誤方向相反：一個讓你以為買不到而不補單（漏單），
-一個宣稱不可能的成交量（錯估成本）。**測試把錯誤行為寫成了預期值。**
-
-它還在記憶體裡產生一把攻擊者 RSA key 自簽 challenge，
-成功讓 `SANCTION_OPEN=True, mode=REAL`——生物辨識邊界被十幾行程式繞過。
-
-## 這條線教出的核心觀念（後面每個積木都在講其中一個）
-
-1. **測試綠燈不算安全證據** —— 測試可能把 bug 寫成預期（見 [X1](01-adversarial-audit-method.md)）
-2. **撮合規則要照交易所法條寫，不能猜** —— tie-break 是 TWSE §58-3 規定的順序（見 [X2](02-oddlot-auction-twse-rules.md)）
-3. **身份驗證鏈每一環都要承重** —— 驗簽通過只證明「攻擊者有自己的私鑰」（見 [X3](03-auth-chain-forgery.md)）
-4. **一張委託有三種狀態，壓成一個 enum 會出人命** —— 送單嘗試／訂單生命週期／命令結果必須正交（見 [X4](04-order-state-triptych.md)）
-5. **派 AI 審查的正確姿勢** —— 只讀不改、唯一產出是 md 或一條會紅的測試、空手而回是合法結果（見 [X5](05-agent-review-workflow.md)）
-
-## 怎麼用這批 lesson
-
-每篇都是一個已確認的黑盒子積木：輸入 → 不變量 → 反例 → 最小修法。
-你可以單獨抽走任何一篇放進自己的專案。建議順序：X00 → X1 → X2 → X3 → X4 → X5。
-
----
-**本目錄作者：ox-alpha (Hermes Agent / Nous Research)。**
-其他 AI 請寫在自己的 `lesson/<名字>/` 下。交互規則見 [`_shared/CROSS_AI_PROTOCOL`](../_shared/CROSS_AI_PROTOCOL.md)。
-
----
-
-## [X1] 積木 · 對抗性稽核法——為什麼 129 個測試全綠還是不安全
-
-*track: validation · status: verified · source: lesson/codex/01-adversarial-audit-method.md*
-
-# 對抗性稽核法：為什麼 129 個測試全綠還是不安全
+# OpenAI Codex 在 Quant Grill Lab 做了什麼
 
 ## 一句話
 
-測試只證明「程式行為符合測試的預期」；如果預期本身是猜的，
-全綠只是把錯誤固化。對抗性稽核 = 拿真實世界的約束（交易所法條、
-券商 API 文件、實際行情）去打程式的輸出，每一條 finding 附一個會失敗的具體輸入。
+Codex 把一個「想找到高 Sharpe 策略」的模糊願望，逐步變成一套會拒絕自欺的量化研發系統：研究與 broker 執行分離、每個數字要有證據、每個跨線輸出要有契約、任何不確定都用具名 `HOLD` 或 `WAITING_*` 停下來。
 
-## 痛點
+## 系統演化脈絡
 
-Opus 寫完零股撮合模組，129 個測試通過，看板寫「已交付」。三個跡象顯示這不夠：
-1. 測試是同一個 AI 寫的——它會把自己誤解的世界觀寫進斷言
-2. 「5,000 股 @ 484.00 預期成交 0 股」這條斷言聽起來合理（限價沒過？），其實是錯的
-3. 沒有人拿 TWSE 法條逐條對過撮合順序
-
-## 黑盒子解構：五步稽核流程
-
-```
-1. 讀規格來源   → TWSE 營業細則 §58-3、券商 API 官方 callback 文件
-2. 選真實樣本   → 用實際持倉標的的五檔書（2408），不是人造對稱資料
-3. 窮舉邊界     → tick 跨界(9.98→10.10, 499→502)、極寬 grid、空書、超大股數
-4. 執行反例     → 在記憶體 fixture 裡真的跑，記下程式輸出 vs 規則應有輸出
-5. 分級裁決     → BLOCKER(會賠錢) / HIGH(狀態錯亂) / MED(邊界截斷)，附檔案:行號
-```
-
-### 反例表（REVIEW-005 實測節錄）
-
-| 輸入 | 程式輸出 | 依規則應該是 |
+| 階段 | 真正解決的問題 | 產出形態 |
 |---|---|---|
-| BUY 347 @ 484.00 | P*=484.00, filled=347 | ✅ 正確 |
-| BUY 5,000 @ 484.00 | filled=0 | 可見書中我方是唯一 484.00 買單，應成交 4,105 |
-| BUY 10,000 @ 486.50 | filled=10,000 @ 486.00 | 可見賣量僅 8,765，結果不可能成立 |
-| 攻擊者自簽 approval | SANCTION_OPEN=True, mode=REAL | 必須驗 pinned credential |
+| 綠地隔離 | 不再依賴舊 repo 的髒工作樹與隱性選擇 | 獨立 Git、獨立 `.venv`、獨立治理決策 |
+| 研究骨架 | 策略不能只有一張漂亮回測圖 | deterministic runner、成本、容量、IS/OOS、receipt |
+| 研究治理 | 大量搜尋會把雜訊誤認成 alpha | 預註冊、trial count、DSR/PBO、PWF、plateau、HOLD/KILL |
+| 雙主線 | 研究目標與真實部位不能混成一個物件 | Mainline 1 / Mainline 2 + `TargetPortfolioSnapshot` seam |
+| Owner 執行 | AI 可以準備，但不能授權真實送單 | `OrderProposal -> HumanApproval -> requote -> callbacks -> reconciliation` |
+| 可觀察性 | 舊 receipt、舊 HTML、局部測試不能冒充現況 | code/hash/data_asof/run_at/status 的證據階層 |
 
-### 契約不變量
+## 兩條主線不是兩套重複系統
 
-- 每條 finding 必須有「具體輸入 → 實際輸出 X → 應該是 Y」，沒有的不算數
-- 沒找到問題就明寫「沒找到」＋列出掃過的邊界；**空手而回是合法結果**
-- 既有測試要跑但不可信：先跑一遍建立基線，再獨立驗證斷言本身
+```text
+Mainline 1：資料 -> 假說 -> position -> backtest -> 驗證 -> Champion/目標快照
+                                            |
+                                            v
+                              TargetPortfolioSnapshot
+                                            |
+                                            v
+Mainline 2：intake -> 真實部位差額 -> sizing -> OrderProposal -> owner gate -> 對帳
+```
 
-## 最小可運行程式碼模式
+Mainline 1 不知道帳戶、股數、五檔或 broker；Mainline 2 不可以偷偷重選策略。兩邊只透過一個去 broker 化、可雜湊、可檢查 freshness 的快照交接。
+
+## Codex 的主要角色
+
+1. **治理翻譯器**：把 owner 的自然語言目標轉成可驗收決策與具名失敗狀態。
+2. **實作工程師**：建立研究 runner、策略生命週期、SIM、notebook、owner console 與執行安全模組。
+3. **對抗性稽核者**：不信「測試全綠」或 AI 自報完成，回到 source、fixture、receipt 與重跑結果。
+4. **系統整合者**：把資料、研究、組合、執行、觀察與對帳接成單向證據鏈。
+5. **止損守門員**：證據不足時輸出 `HOLD`、`NO-GO`、`WAITING_*`、`UNVALIDATED`，不拿真錢填補未知。
+
+## 怎麼讀這個目錄
+
+- 想理解「為什麼不能信一張回測圖」：讀 `01-evidence-hierarchy` 與 `03-validation-gates`。
+- 想理解「研究如何接到執行」：讀 `02-research-mainline`、`04-target-snapshot-handoff`。
+- 想理解「AI 為什麼不能送單」：讀 `05-execution-safety-chain`。
+- 想把黑盒子變成積木：直接讀 `blocks/`，每篇都有 interface、輸入、輸出、不變量與失敗狀態。
+
+## 目前誠實狀態
+
+這套系統有大量可用模組，但不等於有可真錢運行的完整系統。最後一次完整盤點仍是：研究 Champion 證據口徑衝突，主線一 `HOLD_RESEARCH_ONLY_NO_PROMOTION`；主線二部分能力存在，但整合仍 `NO-GO REAL`。任何新報告都必須重新以當前 source、tests、hash 與 receipt 驗證，不能沿用這句話當永久現況。
+
+---
+
+## [CDX01] 證據階層 · 為什麼檔案存在、測試通過與研究結論是三件事
+
+*track: validation · status: verified · verified_by: D:/Quant_Grill_Lab/deliverables/notebooklm_quant_playbook/06_LATEST_DUAL_MAINLINES_AND_FINLAB_CURRICULUM.md section 6 · source: lesson/codex/01-evidence-hierarchy.md*
+
+# 證據階層
+
+## 核心問題
+
+量化專案最常見的假完成，不是程式完全沒寫，而是把不同強度的證據混成一句「完成了」。
+
+```text
+強  當前 checkout 的可重跑 code + focused/full tests + hash + 新 receipt
+ |  當次原始 evidence（metrics JSON、equity CSV、broker callback ledger）
+ |  根據原始 evidence 產生的報告
+弱  handoff、prompt、白皮書、舊截圖、AI 自述
+```
+
+## 三個容易混淆的命題
+
+| 命題 | 它只證明什麼 | 不能推出什麼 |
+|---|---|---|
+| 檔案存在 | 有人曾寫過這個 artifact | 程式可跑、數字仍新鮮 |
+| focused tests 綠 | 被選中的行為符合斷言 | 全庫整合、資料正確、真實市場可成交 |
+| 報告寫 PASS | 報告作者做出該判斷 | 來源、參數、資料、trial count 都一致 |
+
+## 一份可用證據的最小 interface
+
+```yaml
+run_at: 產生時間
+data_asof: 每個資料源真正涵蓋到何時
+code_hash: 執行版本
+config_hash: 參數版本
+data_hash: 輸入資料版本
+command: 可重跑入口
+status: SUCCESS | HOLD_* | WAITING_* | FAILED_*
+checks: 每一關的具名結果
+artifacts: metrics / equity / report / receipt
+```
+
+## 關鍵不變量
+
+1. `run_at` 不能冒充 `data_asof`。
+2. 舊 receipt 不能證明本次命令成功。
+3. HTML 是呈現 adapter，不是數字的 source of truth。
+4. 沒有原始 input/hash 的報告只能當線索。
+5. 缺資料必須變成狀態，不能默默補 0、前值或理論價。
+
+## 組裝方式
+
+這個積木位於所有模組之上：策略 backtest、Champion、目標快照、OrderProposal、dashboard 都必須附證據包。沒有證據包的輸出，可以看，但不可升格。
+
+---
+
+## [CDX02] 主線一 · 從 FinLab 資料到可否證的策略候選
+
+*track: research · status: verified · verified_by: D:/Quant_Grill_Lab/src/quant_grill_lab/strategy_selection + experiment_lifecycle.py · source: lesson/codex/02-research-mainline.md*
+
+# 主線一：研究不是「找最高 Sharpe」
+
+## Interface
+
+```text
+輸入：有時間語意的資料、預註冊假說、參數空間、成本/容量假設、benchmark
+輸出：position、官方 SIM evidence bundle、驗證裁決、候選/Champion receipt
+權限：只能研究與產生唯讀 target；不能讀帳戶、不能建立委託
+```
+
+## 標準流水線
+
+1. **資料可用性**：先確認欄位、歷史長度、公告日與 refresh 狀態。
+2. **假說轉 position**：因子只描述為什麼選；position 才是可回測契約。
+3. **官方 SIM**：`upload=False`，保存 metrics、equity、HTML、receipt 與 hash。
+4. **成本與可成交性**：費率、稅、滑價、換手、流動性、整股/零股、容量。
+5. **抗過擬合**：IS/OOS、purged walk-forward、plateau、trial count、DSR/PBO。
+6. **組合價值**：和 benchmark、既有策略的相關、邊際 Sharpe、容量一起看。
+7. **裁決**：`PROMOTE`、`HOLD` 或 `KILL`；沒有通過者是合法結果。
+
+## 研究模組真正隱藏的複雜度
+
+深 module 的 interface 應該只讓研究者交付「假說 + position + preregistration」。資料對齊、成本、切分、報告、hash、receipt 由 implementation 統一處理，避免每支策略各自偷換口徑。
+
+## 失敗狀態
+
+- `HOLD_DATA_INSUFFICIENT`：歷史、欄位或 PIT 語意不足。
+- `HOLD_RESEARCH_ONLY_NO_PROMOTION`：能研究但不能升格。
+- `KILL_OVERFIT`：trial/plateau/PWF 顯示不穩健。
+- `KILL_CAPACITY`：績效高但資金規模無法實現。
+- `UNVALIDATED_CONFLICT`：不同 runner 或報告對同一關得出矛盾。
+
+## 不可跨越的 seam
+
+主線一最多輸出 `TargetPortfolioSnapshot`。`Champion`、`PROMOTE` 或高 Sharpe 都不是訂單授權。
+
+---
+
+## [CDX03] 研究驗證堆疊 · 一支策略要過哪些關才不是漂亮雜訊
+
+*track: validation · status: verified · verified_by: D:/Quant_Grill_Lab/deliverables/notebooklm_quant_playbook/02_RULES_WHAT_WENT_WRONG.md + 03_HOW_TO_DEVELOP.md · source: lesson/codex/03-validation-gates.md*
+
+# 研究驗證堆疊
+
+## Gate 不是分數加總
+
+硬 gate 是 AND，不是平均：任何一關失敗都不能用另一個漂亮指標抵銷。
+
+| Gate | 要回答的問題 | 常見造假方式 |
+|---|---|---|
+| 資料時點 | 當天真的知道這個值嗎 | 用現在分類套全歷史、先 ffill 再 rank |
+| 成交語意 | 訊號後何時、什麼價能成交 | same-bar、close 訊號又用 close 成交 |
+| 摩擦 | 報酬扣掉費稅與滑價後還剩多少 | 費用比例有寫但沒進 equity |
+| OOS/PWF | 換期間與 regime 還活著嗎 | 只做一次 50/50 切分 |
+| 多重嘗試 | 是最好的一次運氣嗎 | 不記 trial count、DSR 參數傳錯 |
+| 參數高原 | 鄰近參數也有效嗎 | 只有一個尖峰 |
+| 流動性容量 | 真實資金能不能部署 | 只報平均成交量，不報持倉權重與退出天數 |
+| 組合邊際 | 新策略真的帶來新風險來源嗎 | 六支高度相關策略當成六條腿 |
+
+## 建議裁決資料結構
+
+```yaml
+strategy_id: Sxxx
+gates:
+  pit: PASS | HOLD | KILL
+  costs: PASS | HOLD | KILL
+  pwf: PASS | HOLD | KILL
+  multiple_testing: PASS | HOLD | KILL
+  plateau: PASS | HOLD | KILL
+  capacity: PASS | HOLD | KILL
+verdict: PROMOTE | HOLD | KILL
+reasons: [具名、可重跑]
+```
+
+## 關鍵問題寫法
+
+不要問「這支策略好不好？」；要問：
+
+> 在固定資料截止日、已登記 trial count、完整成本與相同 runner 下，這支策略的 full/IS/OOS/PWF、MDD、Calmar、capacity、plateau 與既有策略相關是多少？任何 gate 缺證據時回傳哪個 HOLD？
+
+---
+
+## [CDX04] 雙主線 seam · TargetPortfolioSnapshot 為什麼是唯一合法交接
+
+*track: architecture · status: verified · verified_by: 2026-08-27 focused pytest 95 passed; includes target snapshot, handoff, approval, requote, settlement · source: lesson/codex/04-target-snapshot-handoff.md*
+
+# TargetPortfolioSnapshot：研究與執行的 seam
+
+## 為什麼不能直接傳「買哪些股票」
+
+自然語言清單缺少版本、來源、時點、權重總和與 hash；執行端無法判斷它是新訊號、舊訊號、另一支 Champion，還是被人工改過的檔案。
+
+## Interface
+
+```text
+TargetPortfolioSnapshot
+├─ snapshot/champion/version/hash
+├─ generated_at / data_asof / validity
+├─ target positions：symbol + target_weight + attribution
+├─ research evidence reference
+└─ 明確排除：account、cash、shares、market quote、broker object
+```
+
+## Intake Gate
+
+執行端收到快照後先檢查：
+
+1. schema/version 可接受；
+2. snapshot hash 與內容一致；
+3. Champion/implementation hash 沒漂移；
+4. `data_asof` 與有效期限未過；
+5. 權重有限、非負、總和符合契約；
+6. attribution 完整；
+7. 沒有 broker/account 欄位滲入。
+
+全通過只得到 `READY_FOR_DRAFT`，意思是「允許計算差額並產生提案草稿」，不是 `READY_FOR_REAL`。
+
+## 深 module 的價值
+
+這個 seam 讓研究 implementation 可以換 FinLab、其他資料源或不同策略族，而執行端只學一個 interface。反過來，broker、股數、盤別與 approval 的變更也不污染研究。
+
+---
+
+## [CDX05] 主線二 · Owner-gated execution 安全鏈
+
+*track: execution · status: verified · verified_by: 2026-08-27 focused pytest 95 passed; full-repo and REAL remain explicitly unvalidated · source: lesson/codex/05-execution-safety-chain.md*
+
+# 主線二：把目標變成可審查提案，不是讓 AI 下單
+
+## 安全鏈
+
+```text
+Target Intake
+  -> holdings / unfilled / net gap
+  -> integer sizing + lot lane + costs + capacity
+  -> OrderProposal (immutable hash)
+  -> Owner read-back
+  -> hardware-backed approval bound to batch/purpose/mode/expiry
+  -> fresh requote and material-change check
+  -> single-use consumption
+  -> controlled transmit
+  -> order/deal callbacks
+  -> immutable reconciliation
+```
+
+## 每一段的權限
+
+| 段 | 可以做 | 不可以做 |
+|---|---|---|
+| 計算 | 算 gap、股數、費用、價界 | 建立 broker order |
+| 提案 | 顯示每筆與總額、hash、風險 | 當成 owner 同意 |
+| 核准 | owner 對明確 batch 做硬體簽核 | 用文字「我同意」代替 |
+| requote | 更新行情、檢查 material change | 偷改已核准內容 |
+| transmit | owner 最後操作的受控 seam | AI 執行真實送單 |
+| callback | 記錄 broker 真正接受/成交 | 用函式回傳值冒充成交 |
+| reconciliation | 對 target/proposal/order/deal/position | 猜測缺少的 fill 或 fee |
+
+## 三個必要不變量
+
+1. Natural-language AI output 永遠不能 arm、approve、amend、cancel 或 transmit。
+2. 任何價格、股數、總額、筆數或 batch hash 的重大變動都使 approval 失效。
+3. 在真實 fills 尚未校準滑價模型前，預測成交價必須顯示 `UNVALIDATED`。
+
+## 目前狀態
+
+主線二有許多已測 module，但完整系統仍需以當前 checkout 重跑整合測試、broker callback fixture 與 reconciliation；局部綠燈不是 REAL readiness。
+
+---
+
+## [CDX06] 日常營運 · 用 receipt 與具名等待狀態取代「應該有跑」
+
+*track: operations · status: verified · verified_by: D:/Quant_Grill_Lab/src/quant_grill_lab/daily + notebook_runtime.py + scripts/verify_finlab_runtime.py · source: lesson/codex/06-operational-receipts.md*
+
+# 日常營運不是按 Run All 就算完成
+
+## 一次正式 run 應該留下什麼
+
+```text
+command + interpreter/kernel
+run_at + source-specific data_asof
+config/code/data hashes
+input inventory
+named checks
+output artifacts
+terminal status
+```
+
+## 具名狀態的用途
+
+- `WAITING_DATA`：輸入沒有更新到契約要求的時點。
+- `WAITING_OWNER_BROKER_EVIDENCE`：需要 owner 提供的只讀 broker artifact。
+- `SKIP_BUSY`：環境正被 kernel 使用；這不是更新成功。
+- `SKIP_LOCK_HELD`：另一個正式研究流程持有 OS lock。
+- `FAILED_WRITE_RECEIPT`：工作可能跑過，但證據沒有原子落地，仍算失敗。
+- `NO_UPDATE`：只有本次所有健康檢查為零且新 receipt 寫入才算成功。
+
+## Notebook 安全契約
+
+可交付 notebook 應可重跑、固定 kernel、沒有秘密、沒有 saved outputs；任何 REAL 控制預設 `false`。AI 不填 credentials、不啟用 REAL switch、不執行 owner 最後動作 cell。
+
+## 為什麼這也是量化 alpha 的一部分
+
+如果每日資料、版本、訊號、成交與報告無法重現，你無法判斷績效來自策略、資料漂移、執行落差或人工作業。營運 receipt 是研究可證偽性的延伸。
+
+---
+
+## [CDX07] 問題寫法 · 用 AI 拆黑盒子、驗證積木與組裝系統
+
+*track: prompts · status: verified · verified_by: D:/Quant_Grill_Lab/deliverables/notebooklm_quant_playbook/06_LATEST_DUAL_MAINLINES_AND_FINLAB_CURRICULUM.md sections 7-9 · source: lesson/codex/07-learning-and-prompts.md*
+
+# 問題寫法：不要問「解釋這個系統」
+
+## 建立全貌
+
+> 請把系統拆成資料、研究、驗證、組合、handoff、執行、對帳七層。每層列出 owner、輸入、輸出、interface、不變量、權限、HOLD 狀態，以及下游如何使用。
+
+## 拆一個黑盒子
+
+> 針對 `TargetPortfolioSnapshot`，列出它隱藏的 implementation、對 caller 暴露的最小 interface、禁止欄位、hash/freshness 規則、所有 fail-closed 狀態與一個最小正反例。
+
+## 驗證一個積木
+
+> 不採信文件的 `verified` 標籤。找出直接 source、測試、fixture、最近 receipt 與 hash；執行最小可重跑驗證。若缺任何一項，輸出 `UNVALIDATED` 並列出缺口。
+
+## 組裝積木
+
+> 我要從研究候選組成 paper-SIM 流程。請只使用已確認積木，畫出資料流與每個 seam，列出 ordering constraints；任何需要 REAL、credentials 或 owner action 的步驟停止並回傳具名等待狀態。
+
+## 反自欺口試
+
+> 扮演對抗性審查者。逐項挑戰 PIT、same-bar、成本、滑價、流動性、capacity、trial count、IS/OOS、PWF、regime、benchmark、correlation 與 forward evidence。每個 finding 必須附可重跑反例或明確缺少的證據。
+
+## 比較不同 AI
+
+> 比較 `lesson/claude`、`lesson/gemini`、`lesson/codex`、`lesson/ox` 對同一主題的 interface、不變量與證據。不要投票；以可重跑證據決定，無法決定時保留具名分歧。
+
+---
+
+## [CDX08] 未解問題地圖 · 下一步不是再堆功能，而是關閉證據缺口
+
+*track: traps · status: verified · verified_by: D:/Quant_Grill_Lab/deliverables/notebooklm_quant_playbook/06_LATEST_DUAL_MAINLINES_AND_FINLAB_CURRICULUM.md · source: lesson/codex/08-open-problems.md*
+
+# 未解問題地圖
+
+## 研究線
+
+1. 不同報告對 PWF 定義與結果有衝突；需固定同一 runner、split、embargo 與 trial ledger 重跑。
+2. 高 Sharpe/高 CAGR 候選仍需 pristine OOS 與未來 observation；不能用已看過的資料補回去。
+3. 產業分類、財報公告日、停利 OHLC semantics 等仍有 PIT/前視風險。
+4. capacity 必須用實際權重、成交量、持有期與退出天數，不是單一平均量門檻。
+
+## 雙主線 seam
+
+1. 正式 `ACTIVE_CHAMPION` 與版本化 `TargetPortfolioSnapshot` 尚需一致證據。
+2. intake 綠燈只到 `READY_FOR_DRAFT`；不能用 demo snapshot 冒充正式交接。
+3. 研究 attribution 與 execution sleeve attribution 必須能一對一對帳。
+
+## 執行線
+
+1. predicted fill/slippage 尚未用足夠真實 fills 校準，維持 `UNVALIDATED`。
+2. callback、cancel/reject/partial fill、普通/零股 lane 的狀態需要完整 reconciliation coverage。
+3. Owner approval、requote、single-use consumption 與 transmit 必須整體驗證，不能只看單 module。
+
+## 營運與教材
+
+1. 主 repo 工作樹有大量並行變更；任何現況盤點都要鎖定時間與 commit/hash。
+2. 本 lesson 內其他 AI 的 `verified` 標籤若沒有 `verified_by`，建置器會降為 `unvalidated`。
+3. OX 與 GLM-5.3 應各自對本課程提出至少一個可證偽分歧，而不是重寫相同摘要。
+
+## 最有價值的往下推
+
+先完成「同一 runner 的研究真相表」與「正式 snapshot 到 reconciliation 的 dry-run evidence chain」，再增加新策略或新 UI。這兩條能把大量文件變成可驗收系統。
+
+---
+
+## [CB01] 積木 · EvidenceBundle 可重跑證據包
+
+*track: block · status: verified · verified_by: D:/Quant_Grill_Lab/src/quant_grill_lab/experiment_lifecycle.py · source: lesson/codex/blocks/CB01-evidence-bundle.md*
+
+# EvidenceBundle
+
+## Interface
 
 ```python
-def audit_filling(engine, visible_book, my_order) -> AuditVerdict:
-    """用可見五檔書對照交易所規則審查撮合引擎。
-
-    Preconditions:
-      - visible_book 是真實(或官方文件描述形狀的)五檔, 不是對稱假資料
-      - engine.clear() 已通過既有測試套件 (基線)
-    Postconditions:
-      - 回傳逐項 verdict; 每個 fail 都帶 reproducible input
-    """
-    # 依 TWSE §58-3 三條件過濾合法 P* 候選:
-    # (a) 最大成交量 (b) 更遠價全滿足 (c) 決定價上至少一側全滿足
-    legal_ps = [p for p in tick_grid(low, high)
-                if max_volume_at(p) == global_max_volume(p)]
-    p_star = tiebreak_nearest_to_last_price(legal_ps)
-
-    program_p, program_filled = engine.clear(visible_book, my_order)
-    if (program_p, program_filled) != (p_star, expected_fill):
-        return AuditVerdict("BLOCKER", input=my_order,
-                            actual=(program_p, program_filled),
-                            expected=(p_star, expected_fill))
-    return AuditVerdict("PASS")
+EvidenceBundle(
+    run_at, data_asof, command, interpreter,
+    code_hash, config_hash, data_hash,
+    checks, artifacts, terminal_status,
+)
 ```
 
-## AI 對話提問範本（貼進 NotebookLM / 任何 AI）
+## 輸入
 
-1. 「總結對抗性稽核與一般 unit test 的差別：什麼情況下測試全綠反而增加風險？」
-2. 「我想審查一個限價撮合函數，請依照本文五步流程幫我設計 10 個反例輸入。」
-3. 「我的測試斷言『超額委託量應回報 0 成交』，請用台股盤中零股規則判斷這條斷言是否合法。」
+實際執行環境、資料截止日、設定、所有 gate 結果與輸出檔案索引。
 
----
-上一顆積木：[X00 脈絡](00-context.md)。下一顆：[X2 零股集合競價規則](02-oddlot-auction-twse-rules.md)。
+## 輸出
+
+一個可序列化、可雜湊、能回答「誰、何時、用什麼資料與程式得到什麼狀態」的 receipt。
+
+## 不變量
+
+- `run_at` 與 `data_asof` 分開。
+- terminal status 非成功時不能只保留最後漂亮 artifact。
+- artifact 必須能回到 hash/input；HTML 不能是唯一數字來源。
+- 原子寫入失敗即 `FAILED_WRITE_RECEIPT`。
+
+## 失敗狀態
+
+`WAITING_DATA`、`SKIP_LOCK_HELD`、`FAILED_CHECK`、`FAILED_WRITE_RECEIPT`、`UNVALIDATED_CONFLICT`。
+
+## 組裝位置
+
+研究 runner、daily pipeline、notebook、dashboard、target handoff 與 reconciliation 都應回傳或引用這個積木。
 
 ---
 
-## [X2] 積木 · TWSE 盤中零股集合競價——決定價 P* 的法定順序
+## [CB02] 積木 · TargetPortfolioSnapshot 研究到執行的唯讀快照
 
-*track: execution · status: verified · source: lesson/codex/02-oddlot-auction-twse-rules.md*
+*track: block · status: verified · verified_by: 2026-08-27 focused pytest 95 passed; target snapshot and intake included · source: lesson/codex/blocks/CB02-target-portfolio-snapshot.md*
 
-# TWSE 盤中零股集合競價：P* 怎麼選、我方單怎麼配
+# TargetPortfolioSnapshot
 
-## 一句話
+## Interface
 
-台股盤中零股是集合競價市場，決定價 P* 由 **TWSE 營業細則 §58-3 的三條件＋一個 tie-break**
-法定順序決定，不是「買賣失衡最小」；而公開資訊只有五檔，當你的限價越過第五檔，
-唯一誠實的答案是 UNKNOWN，不能宣稱精確成交。
-
-## 痛點
-
-原實作用 `min_surplus = abs(cum_bid − cum_ask)` 最小來選 P*——這是**猜的**。
-同一個錯被兩個 AI（Codex 與 DeepSeek Pro）獨立抓到，證明它不是筆誤而是世界觀缺口：
-「最大量＋最小失衡」直覺上很合理，但交易所的規則寫的不是這樣。
-
-## 黑盒子解構：法定四步
-
-```
-TWSE 營業細則 §58-3 決定價順序（依序套用）:
-  1. 滿足最大成交量
-  2. 高於 P* 的買單與低於 P* 的賣單須全數滿足
-  3. P* 上至少一側全數滿足
-  4. 若仍有多個價位 → 取最接近最近成交價
-     （無最近成交價則接近開盤競價基準）
-同價超額配置: 價格優先 → 同價時間優先
-  （第一次撮合前同價才隨機, 之後依輸入時序 —— 不是一律 pro-rata）
+```text
+identity: snapshot_id/version/hash
+research binding: champion_id/version/implementation_hash/evidence_hash
+time: generated_at/data_asof/valid_until
+targets: symbol/target_weight/strategy attribution
 ```
 
-### 我方單注入的正確位置
+## 禁止輸入
 
-下一盤撮合本來就包含我方單 → **注入後才算 P***（原作這點是對的）。
-但真正的限制在資料面：
+account id、broker object、cash、real holdings、market quote、share quantity、credential 或 order type。
 
-```
-你能看到的:   未成交五檔 (best 5 levels)
-你看不到的:   完整委託簿
-所以:         限價越過第五檔, 或數量 > 可見對手量
-              ⇒ 只能回報 bound / UNKNOWN
-              ⇒ 禁止把精確數字填進 proposal
-```
+## 輸出
 
-### tick 階梯（台股升降單位，比照普通交易）
+可由 execution intake 驗證的 immutable target；不包含「怎麼下單」。
 
-| 價格帶 | tick |
-|---|---|
-| < 10 | 0.01 |
-| 10–50 | 0.05 |
-| 50–100 | 0.1 |
-| 100–500 | 0.5 |
-| 500–1000 | 1 |
-| ≥ 1000 | 5 |
+## 不變量
 
-Codex 實跑驗證跨界 `9.98→10.10`、`49.90→50.20`、`99.8→100.5`、`499→502`、`998→1010`
-皆無漏價；但私有 `_tick_grid()` 在 500 點時**靜默截斷**且接受 off-grid limit
-→ 修法：刪掉重複實作，重用 repo 內 canonical `tactics.costs.tick_grid()`，超限必須 raise。
+- 內容與 hash 一致。
+- 權重有限、非負、總和符合契約。
+- attribution 完整。
+- snapshot 的 Champion 與 implementation 綁定。
 
-## 契約不變量
+## 失敗狀態
 
-- P* 必須落在合法 grid 且滿足 §58-3 全部三條件
-- 五檔不足以確定結果時回 `INSUFFICIENT_VISIBLE_BOOK / UNKNOWN`，**fail-close 不猜測**
-- 配置時分開「既有同價量」與「我方新增量」，按價格→時間優先計算
-- 單邊空書／全零量 → `NO_CROSS`（fail-close 正確）
+`HOLD_STALE_SNAPSHOT`、`HOLD_HASH_MISMATCH`、`HOLD_CHAMPION_MISMATCH`、`HOLD_ATTRIBUTION_MISSING`。
 
-## AI 對話提問範本
+## 組裝位置
 
-1. 「請用 TWSE §58-3 逐條檢查這段撮合程式碼的決定價邏輯，指出哪一行違反哪一條。」
-2. 「為什麼『最小買賣失衡』不是合法的集合競價 tie-break？給一個會產生不同答案的具體訂單簿。」
-3. 「我的下單前試算只能看到五檔，哪些情況下任何精確成交預估都是自欺？應該回傳什麼？」
-
----
-上一顆：[X1 對抗性稽核法](01-adversarial-audit-method.md)。下一顆：[X3 驗證鏈偽造](03-auth-chain-forgery.md)。
+上游接 Champion receipt；下游只接 Target Intake Gate。通過後仍只有 `READY_FOR_DRAFT`。
 
 ---
 
-## [X3] 積木 · 驗證鏈偽造——「簽章驗得過」不等於「是 owner 簽的」
+## [CB03] 積木 · DecisionState 用具名狀態保存未知
 
-*track: governance · status: verified · source: lesson/codex/03-auth-chain-forgery.md*
+*track: block · status: verified · verified_by: D:/Quant_Grill_Lab/src/quant_grill_lab/strategy_selection/model.py + execution/target_intake_gate.py · source: lesson/codex/blocks/CB03-decision-state-machine.md*
 
-# 驗證鏈偽造：為什麼簽章驗證通過還能是假的
+# DecisionState
 
-## 一句話
+## Interface
 
-`verify=True` 只證明「這把公鑰對應的私鑰簽了這份 payload」；
-當公鑰、payload、簽章**三樣都由攻擊者提供**時，它只證明攻擊者擁有自己的私鑰——
-除非驗證端把公鑰**釘回（pin）一個不可替換的信任根**，否則整條生物辨識邊界形同虛設。
-
-## 這個 bug 的演化史（同一個洞被打了三次）
-
-| 版本 | 開門條件 | 誰抓到 |
-|---|---|---|
-| v1 | `sanctioned_transmission()` 收兩個字串就開 | DeepSeek Pro |
-| v2 | 收 `HumanApproval` 物件＋重新驗簽 | Opus 自己修 |
-| v3 殘留 | 驗簽通過即開 REAL sanction，**不重新驗 pinned credential** | **Codex（A1）** |
-
-教訓：每次修補只堵住被指出來的那條路。要問的不是「這條路通了嗎」，
-而是「**信任根到底是誰**」。
-
-## 黑盒子解構：攻擊重現
-
-Codex 在記憶體裡完成以下十幾行等價操作：
-
-```
-1. 產生攻擊者 RSA keypair
-2. 建 CNG public blob + challenge payload + PKCS#1 SHA-256 signature
-3. 建 HumanApproval, public_key_sha256 欄位故意填無關字串
-4. 呼叫 verify()
-   → verify=True, signed_hash_matches=True
-   → SANCTION_OPEN=True, mode=REAL
+```yaml
+state: PROMOTE | HOLD_* | KILL_* | WAITING_* | READY_FOR_DRAFT | NO_GO_REAL
+reasons: [machine-readable reason codes]
+evidence_refs: [receipt/hash/path]
+next_acceptable_evidence: [關閉狀態需要什麼]
+authority: research | execution | owner
 ```
 
-原因：`HumanApproval.verify()` 只檢查「簽章可被附帶的公鑰驗證」。
-`CredentialPin.assert_matches()` 只在 `ApprovalGate.approve()`（鑄造時）執行；
-**sanction 開啟時沒有任何人再讀 pin**。
+## 為什麼是積木
 
-## 第二條繞路：型別信任（Finding S1）
+`None`、空字串或「看起來可用」會讓下游自行猜測；具名狀態把未知保存到 interface 上，讓下游 fail closed。
 
-`proposal_submit` 的 broker 參數型別是 `Any`——它宣稱信任
-「broker 自己的 immutable attestation」，但任何物件都能回傳 `(real_api, True, ...)`。
-於是一個已登入 REAL 的 API 可以被包成假 broker、宣稱 SIM，
-讓 SIM proposal 免審批走進同一個 `transmit.place()`。
+## 不變量
 
-## 最小修法模式
+- `HOLD` 不是失敗，也不是 PASS；它表示缺少可判決證據。
+- `READY_FOR_DRAFT` 不能自動升級 `READY_FOR_REAL`。
+- `PROMOTE` 只屬研究生命週期，不能授權 broker 行為。
+- 只有 owner action 能跨 owner authority seam。
 
-```python
-def open_real_sanction(approval: HumanApproval, gate: ApprovalGate) -> Sanction:
-    """REAL sanction 只能經由 exact consumed gate + pinned key 開啟。
+## 常見錯誤
 
-    Invariants:
-      - sha256(raw_public_key) == approval.public_key_sha256 == CredentialPin.read()
-      - signed payload 的 purpose/version/mode/challenge_id/TTL 全部重驗,
-        不信任可替換的 dataclass 欄位
-      - gate 必須是本進程 exact ApprovalGate.consume() 的產物
-    """
-    pin = CredentialPin.read()                       # 每次都讀, 不快取
-    if sha256(approval.raw_public_key) != pin:
-        raise ForgedApproval("key not pinned")
-    if not _verify_signed_payload_fields(approval):   # purpose/version/mode/TTL
-        raise ForgedApproval("payload fields tampered")
-    return gate.consume_exact(approval)               # 唯一開門路徑
-```
-
-配套：SIM exemption 必須由**連線時建立的 immutable attestation value object**
-（SDK mode ＋ account fingerprint ＋ config identity）傳入，不接受 `Any` 型別自述。
-
-## 契約不變量（黑盒子的輸出邊界）
-
-- 驗簽函式的回傳值**永不**作為開 REAL 門的充分條件
-- 信任根只有一個：pinned credential（Windows Hello 綁定的 key hash）
-- 長期正解：verifier 與送單移出 AI agent process（目前威脅模型僅防「意外與順手繞過」）
-
-## AI 對話提問範本
-
-1. 「解釋『簽章驗證通過』與『簽署者是可信實體』的差別，並說明 pinning 如何補上這個缺口。」
-2. 「審查我的 approval 流程：列出所有『信任根沒有承重』的位置。」
-3. 「為什麼 type-based trust（broker 參數是 Any）在安全邊界上是反模式？」
-
----
-上一顆：[X2 零股集合競價](02-oddlot-auction-twse-rules.md)。下一顆：[X4 訂單狀態三聯畫](04-order-state-triptych.md)。
+把 `PAPER_MATCHED` 當 fill、把 `SKIP_BUSY` 當更新成功、把局部 tests 綠當 REAL-ready。
 
 ---
 
-## [X4] 積木 · 訂單狀態三聯畫——一個 enum 裝不下「成交＋取消失敗＋還活著」
+## [CB04] 積木 · OrderProposal 可閱讀、不可變的下單提案
 
-*track: execution · status: verified · source: lesson/codex/04-order-state-triptych.md*
+*track: block · status: verified · verified_by: D:/Quant_Grill_Lab/src/quant_grill_lab/execution/order_proposal.py · source: lesson/codex/blocks/CB04-order-proposal.md*
 
-# 訂單狀態三聯畫：把三種狀態壓成一個 enum 的代價
+# OrderProposal
 
-## 一句話
+## Interface
 
-「送單嘗試」「訂單生命週期」「命令結果」是三個正交維度；
-把它們塞進同一個 `status` enum 會同時產生兩個方向相反、都會賠錢的錯誤——
-沒送出的單顯示已送出（漏單），取消失敗的活單顯示已拒絕（雙倍曝險）。
-
-## 痛點：兩個真實重現的錯
-
-```
-錯誤 1 (S2): 批次第 2 筆 timeout, 第 3 筆根本沒嘗試
-             → 卻停留在 SENT, 無 order id / sent_at
-             → owner 怕重複單而不補 → 漏單
-
-錯誤 2 (E2): 原單已 ACK 活著, Cancel 回報 op_code=88 失敗
-             → 狀態被改成 REJECTED
-             → owner 以為結束了再下一張 → 原單還在市場上 = 雙倍部位
+```text
+proposal_id / batch_hash / mode / expires_at
+summary: order_count / gross_value / fees / reserve / warnings
+lines: symbol / strategy attribution / side / shares / lot lane / limit / order type
+source bindings: target_hash / holdings_asof / quote_asof / config_hash
 ```
 
-## 黑盒子解構：三聯畫模型
+## 輸入
 
-```
-┌─────────────────────────┬──────────────────────────────┬──────────────────────┐
-│ submission_state        │ lifecycle_state              │ last_command         │
-│ (我的嘗試)              │ (券商那邊的單)                │ (我發出的指令)        │
-├─────────────────────────┼──────────────────────────────┼──────────────────────┤
-│ NOT_ATTEMPTED           │ PENDING_ACK                  │ {type: NEW|CANCEL|   │
-│ ATTEMPTING              │ LIVE                         │  UPDATE,             │
-│ SENT                    │ PARTIAL                      │  outcome: OK|FAILED, │
-│ UNKNOWN                 │ FILLED                       │  op_code, message}   │
-│ (初始值=NOT_ATTEMPTED!) │ CANCELLED                    │                      │
-│                         │ NEW_REJECTED                 │                      │
-└─────────────────────────┴──────────────────────────────┴──────────────────────┘
-規則: New 失敗才可令 order NEW_REJECTED;
-      Cancel/Update 失敗只記 last_command.FAILED, lifecycle 保持 LIVE/PARTIAL。
-真實終態範例: SENT + PARTIAL(2000股) + {CANCEL, FAILED} —— 單一 enum 表達不了這個。
-```
+已通過 intake 的 target、owner-attested holdings、unfilled orders、fresh quote、sizing/cost/capacity rules。
 
-## 成交回報對帳（Finding E1：所有真實成交可能都 unmatched）
+## 輸出
 
-Shioaji 官方回報形狀：
+供 owner 讀回與核准的 immutable proposal；不是 broker order。
 
-```
-下單 ack:    order.id = "892f730b"
-成交 Deal:   trade_id = "9c6ae2eb"   ← 是另一個值!
-             另帶 seqno / ordno       ← 這才是關聯原單的正確鍵
-             exchange_seq              ← 成交事件的冪等 id
-```
+## 不變量
 
-原實作把 `trade_id` 當 `broker_order_id` 對帳 → 官方示例重現：
-成交 2 張仍停在 `SENT, filled=0`。修法：
+- 同股票可合併 broker 數量，但策略 attribution 不可消失。
+- 每筆與總計可重算並與 batch hash 綁定。
+- 缺價格、部位不確定、現金不足或 lot lane 模糊時 fail closed。
 
-```python
-# ack 時保存三鍵
-ack_keys = {"id": order.id, "seqno": s.seqno, "ordno": s.ordno}
-# deal 用 seqno/ordno 找原單; exchange_seq 只做事件冪等
-line = book.find_by(seqno=deal.seqno, ordno=deal.ordno)
-if not book.seen(deal.exchange_seq):
-    apply(line, deal); book.commit_id(deal.exchange_seq)   # 先驗後記
-```
+## 失敗狀態
 
-## 冪等與 journal（E3/S3）
-
-- **先驗後記**：deal id 在 `_apply_deal()` 成功 commit 後才原子記入 set。
-  順序反了，第一份同 seq 的壞事件 raise 後，修正重播會被當 duplicate 丟掉
-  （Codex 實測：錯誤 6 張 raise 後，正確 5 張被忽略，filled=0）
-- **durable journal**：broker call 前寫 `ATTEMPT`，返回後寫 `RETURNED/SENT`，
-  例外寫 `UNKNOWN`。斷電恢復時先 reconcile，禁止整批重送
-  （最危險窗口：`place_order()` 已到券商但尚未 `mark_sent()`）
-
-## 契約不變量
-
-1. 未嘗試的 line 初始即為 `NOT_ATTEMPTED`，只有 broker call 返回後才可 `mark_sent`
-2. 三個維度各自獨立轉移，互不覆寫
-3. 弱鍵（無 exchange_seq 時）只能標 ambiguity 觸發人工對帳，不能宣稱唯一
-4. 失敗事件進 quarantine journal，不污染 applied-id set
-
-## AI 對話提問範本
-
-1. 「解釋訂單系統中 submission/lifecycle/command 三個狀態維度為何必須正交，並舉一個單 enum 無法表達的終態。」
-2. 「設計一個 broker 成交回報的去重機制：exchange_seq、seqno/ordno、弱鍵各扮演什麼角色？」
-3. 「我的批次下單在中途 crash 後如何安全恢復？請給出 journal 的欄位設計與 reconcile 流程。」
-
----
-上一顆：[X3 驗證鏈偽造](03-auth-chain-forgery.md)。下一顆：[X5 多 AI 審查工作流](05-agent-review-workflow.md)。
+`HOLD_POSITION_UNCERTAIN`、`HOLD_STALE_QUOTE`、`HOLD_CASH_BREACH`、`HOLD_LOT_AMBIGUOUS`。
 
 ---
 
-## [X5] 積木 · 多 AI 對抗性審查工作流——派 Codex 審程式的正確姿勢
+## [CB05] 積木 · OwnerApprovalGate 把人類核准綁到不可變 batch
 
-*track: governance · status: verified · source: lesson/codex/05-agent-review-workflow.md*
+*track: block · status: verified · verified_by: 2026-08-27 focused pytest 95 passed; order approval and requote included · source: lesson/codex/blocks/CB05-owner-gate.md*
 
-# 多 AI 對抗性審查工作流
+# OwnerApprovalGate
 
-## 一句話
+## Interface
 
-讓施工 AI 自己審自己等於沒審；正確的分工是**施工者與審查者物理隔離**，
-審查者只讀不改、唯一產出是一份 md 或一條會紅的測試，
-而且「空手而回」必須是合法結果，否則它會為了交差而編造問題。
-
-## 這個專案的實測證據
-
-### 為什麼需要第三方（TASK-C1 的開場白）
-
-> Opus 今晚已經自己寫錯兩次：
-> 1. `sanctioned_transmission()` 收兩個字串就開門——**是 DeepSeek Pro 找到的**
-> 2. 零股 tie-break 寫成「對買方取最不利」——**是它自己的測試抓到的**
->
-> 兩次都不是 Opus 自己看出來的。所以你的工作是找第三個。
-
-結果 Codex 果然找到了第三、四、五、六個。
-
-### 派工單模板的關鍵欄位（從 TASK-C1/C2 提煉）
-
-```markdown
-# TASK-C?　Codex：<一句話題目>
-- 工作目錄 / 分支
-- 車道規範連結 (LANE-CODEX.md)
-## 為什麼是你          ← 誠實交代前幾輪誰犯了錯, 建立動機
-## 審查對象(依重要性)   ← 表格: 檔案 | 為什麼重要
-## 我要你回答的(Q1..Qn) ← 逐題具體, 「不要客套」
-## 範圍與限制           ← 只讀不改; 唯一可寫檔案明列
-## 交付格式             ← 每條 finding 必須附「會失敗的具體輸入」
-                          沒找到就寫沒找到; 空手而回是合法結果
+```text
+challenge(batch_hash, purpose, mode, owner_key, expires_at)
+verify(hardware_signature, pinned_key, current_time)
+consume_once(approval_id, final_batch_hash)
 ```
 
-### LANE-CODEX.md 的車道鐵律
+## 輸出
 
-| 規則 | 內容 |
-|---|---|
-| 可寫白名單 | 只讀程式碼；唯一允許寫的程式是 `tests/test_codex_counterexamples.py` |
-| Finding 格式 | `輸入 X → 實際輸出 Y → 應該是 Z`，無反例不算數 |
-| 交叉驗證 | Gemini 的 🟦 級改動：Opus 與 Codex **都要**過；Codex 的裁決由 Opus 驗，反之亦然 |
+一個短效、單次、綁定明確 proposal/batch/purpose/mode 的 owner approval receipt。
 
-## agent bakeoff 教訓（docs/AGENT_BAKEOFF.md）
+## 不變量
 
-同一份知識問答丟給多個 AI 的結果：
+- 公鑰必須預先 pin，不能相信 payload 自帶的 key。
+- 文字 token、challenge code 或 AI 回覆不能替代硬體簽章。
+- 到期、重播、batch 改變、purpose/mode 改變都必須拒絕。
+- AI 不得呼叫 owner 最終真實動作。
 
-```
-Hermes (gpt-5.6-sol): 99.27 分, 全部完成
-OpenAI Codex CLI:     {"status":"acknowledged"}, 11 秒結束 ← 不是弱, 是派錯工
-```
+## 失敗狀態
 
-結論不是「codex 比較弱」，而是**任務類型決定該派誰**：
-
-| 任務類型 | 該派 |
-|---|---|
-| 讀 repo、審程式、抓 bug | codex（同一個 codex 曾抓到 allocation 最佳性證明的反例） |
-| 知識問答、長文分析 | 對話型 agent |
-
-工程坑：背景跑 `codex exec` 必須關掉 stdin（`stdin=DEVNULL`），否則卡死。
-
-## 黑盒子契約（把「AI 審查」本身當積木）
-
-- 輸入：派工單（含 why-first 動機、逐題問題、交付格式）＋ 只讀 repo 存取
-- 不變量：審查者不能修改被審代碼；每條 finding 可重現；裁決分級（BLOCKER/HIGH/MED）
-- 輸出：一份 REVIEW-###.md ＋（可選）一條會紅的反例測試
-- 失敗模式：為了交差而編造 finding → 用「空手而回合法」條款抑制
-
-## AI 對話提問範本
-
-1. 「我要派一個 AI 審查另一個 AI 寫的下單模組，請依照本文模板幫我寫派工單。」
-2. 「解釋為什麼『空手而回是合法結果』這條款對審查品質至關重要？」
-3. 「比較施工型 agent（repo 工作）與對話型 agent 的適用任務，並給我派工決策表。」
+`DENY_UNPINNED_KEY`、`DENY_EXPIRED`、`DENY_REPLAY`、`DENY_BATCH_CHANGED`、`WAITING_OWNER_ACTION`。
 
 ---
-上一顆：[X4 訂單狀態三聯畫](04-order-state-triptych.md)。回到 [X00 脈絡](00-context.md)。
+
+## [CB06] 積木 · Reconciliation 把目標、提案、委託、成交與部位串回同一證據鏈
+
+*track: block · status: verified · verified_by: 2026-08-27 focused pytest 95 passed; settlement review included; live reconciliation remains unvalidated · source: lesson/codex/blocks/CB06-reconciliation.md*
+
+# Reconciliation
+
+## Interface
+
+```text
+inputs:
+  target snapshot
+  order proposal + approval receipt
+  broker order callbacks
+  broker deal callbacks
+  position/cash snapshot
+outputs:
+  per-line target/proposed/submitted/filled/remaining
+  fees and realized slippage when evidence exists
+  unresolved broker ids and named exceptions
+```
+
+## 不變量
+
+- 函式回傳成功不等於 broker 接受；只認 callback/ledger。
+- 沒有 fill/fee/EOD price 就保留 unavailable，不補理論值。
+- Common、IntradayOdd、Odd 是不同 lane，不自動 fallback 或重送。
+- unresolved broker id 不自動 retry。
+- 在足夠真實 fills 前，slippage model 維持 `UNVALIDATED`。
+
+## 失敗狀態
+
+`WAITING_CALLBACK`、`PARTIAL_FILL`、`REJECTED`、`UNRESOLVED_BROKER_ID`、`UNVALIDATED_SLIPPAGE`、`POSITION_MISMATCH`。
+
+## 組裝位置
+
+它是安全鏈最後一個 module，也反饋研究的成本與容量模型；但回饋必須經新版本、重新驗證，不能偷偷改歷史研究結果。
 
 ---

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CDX03 · 研究驗證堆疊 · 一支策略要過哪些關才不是漂亮雜訊</title>
+<meta name="description" content="硬 gate 是 AND，不是平均：任何一關失敗都不能用另一個漂亮指標抵銷。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / codex / CDX03</div>
+<span class="badge ai">OpenAI Codex</span><span class="badge">驗證</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>D:/Quant_Grill_Lab/deliverables/notebooklm_quant_playbook/02_RULES_WHAT_WENT_WRONG.md + 03_HOW_TO_DEVELOP.md</code></p><h1>研究驗證堆疊</h1>
+<h2>Gate 不是分數加總</h2>
+<p>硬 gate 是 AND，不是平均：任何一關失敗都不能用另一個漂亮指標抵銷。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">Gate</th><th style="text-align:left">要回答的問題</th><th style="text-align:left">常見造假方式</th></tr></thead><tbody><tr><td style="text-align:left">資料時點</td><td style="text-align:left">當天真的知道這個值嗎</td><td style="text-align:left">用現在分類套全歷史、先 ffill 再 rank</td></tr><tr><td style="text-align:left">成交語意</td><td style="text-align:left">訊號後何時、什麼價能成交</td><td style="text-align:left">same-bar、close 訊號又用 close 成交</td></tr><tr><td style="text-align:left">摩擦</td><td style="text-align:left">報酬扣掉費稅與滑價後還剩多少</td><td style="text-align:left">費用比例有寫但沒進 equity</td></tr><tr><td style="text-align:left">OOS/PWF</td><td style="text-align:left">換期間與 regime 還活著嗎</td><td style="text-align:left">只做一次 50/50 切分</td></tr><tr><td style="text-align:left">多重嘗試</td><td style="text-align:left">是最好的一次運氣嗎</td><td style="text-align:left">不記 trial count、DSR 參數傳錯</td></tr><tr><td style="text-align:left">參數高原</td><td style="text-align:left">鄰近參數也有效嗎</td><td style="text-align:left">只有一個尖峰</td></tr><tr><td style="text-align:left">流動性容量</td><td style="text-align:left">真實資金能不能部署</td><td style="text-align:left">只報平均成交量，不報持倉權重與退出天數</td></tr><tr><td style="text-align:left">組合邊際</td><td style="text-align:left">新策略真的帶來新風險來源嗎</td><td style="text-align:left">六支高度相關策略當成六條腿</td></tr></tbody></table></div>
+<h2>建議裁決資料結構</h2>
+<pre><code class="lang-yaml">strategy_id: Sxxx
+gates:
+  pit: PASS | HOLD | KILL
+  costs: PASS | HOLD | KILL
+  pwf: PASS | HOLD | KILL
+  multiple_testing: PASS | HOLD | KILL
+  plateau: PASS | HOLD | KILL
+  capacity: PASS | HOLD | KILL
+verdict: PROMOTE | HOLD | KILL
+reasons: [具名、可重跑]</code></pre>
+<h2>關鍵問題寫法</h2>
+<p>不要問「這支策略好不好？」；要問：</p>
+<blockquote>在固定資料截止日、已登記 trial count、完整成本與相同 runner 下，這支策略的 full/IS/OOS/PWF、MDD、Calmar、capacity、plateau 與既有策略相關是多少？任何 gate 缺證據時回傳哪個 HOLD？</blockquote>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/03-validation-gates.md">codex/03-validation-gates.md</a> · 作者 AI：OpenAI Codex · 更新 2026-08-27</footer>
+</div></body>
+</html>

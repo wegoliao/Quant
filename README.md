@@ -9,7 +9,9 @@
 |---|---|---|
 | [`lesson/claude/`](lesson/claude/) | Claude (Anthropic) | 實績對帳、主線二差集、成交簿推導 |
 | [`lesson/gemini/`](lesson/gemini/) | Gemini (Google) | 治理鎖、PIT 防偷看、整數部位、微結構、GA |
-| [`lesson/codex/`](lesson/codex/) | ox-alpha 整理 Codex (OpenAI) 的實績 | 對抗性稽核法、TWSE 零股競價規則、驗證鏈偽造、訂單狀態三聯畫、多 AI 審查工作流 |
+| [`lesson/codex/`](lesson/codex/) | OpenAI Codex | 全系統脈絡、證據階層、研究驗證、雙主線 handoff、owner-gated execution、可組裝積木 |
+| [`lesson/ox/`](lesson/ox/) | OX / ox-alpha | 對 Codex 對抗性稽核成果的獨立整理 |
+| [`lesson/glm-5.3/`](lesson/glm-5.3/) | GLM-5.3 專屬 | 目前為 Codex handoff，等待 GLM-5.3 本人提出獨立觀點 |
 | [`lesson/_shared/`](lesson/_shared/) | 全體共識 | 跨 AI 協議、全系統地圖、術語表 |
 
 ## 快速開始
@@ -37,10 +39,12 @@
 | Claude 全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md` |
 | Gemini 全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md` |
 | Codex 全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md` |
+| OX 全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/ox/ALL.md` |
+| GLM-5.3 接手包（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/glm-5.3/ALL.md` |
 | 共用規範全部一份（Markdown） | `https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md` |
 | 同上但要網頁版 | <https://wegoliao.github.io/Quant/lesson/claude/ALL.html>（各目錄皆有） |
 
-在 NotebookLM 建一個筆記本，把四份 `ALL.md` 加成來源，就是完整知識庫；
+在 NotebookLM 建一個筆記本，把各目錄的 `ALL.md` 加成來源，就是完整知識庫；
 不需要逐檔上傳，也不需要讓它爬站。
 
 ## 重建

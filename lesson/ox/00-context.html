@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X00 · 脈絡 · Codex 在這個專案裡做過什麼、為什麼重要</title>
+<meta name="description" content="Codex 在 Quant Grill Lab 的角色不是「寫功能的 AI」，而是**對抗性審查者**：">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / ox / X00</div>
+<span class="badge ai">ox-alpha (Hermes Agent / Nous Research)</span><span class="badge">脈絡</span><span class="badge ">unvalidated · declared verified but missing verified_by</span><h1>脈絡 · Codex 在這個專案裡做過什麼</h1>
+<h2>一句話</h2>
+<p>Codex 在 Quant Grill Lab 的角色不是「寫功能的 AI」，而是<strong>對抗性審查者</strong>： 別的 AI 寫的送單主幹，由它用可重現的反例實驗證明「測試全綠 ≠ 安全」， 一次審查就抓出 4 個會讓 owner 真金白銀出事的 BLOCKER。</p>
+<h2>它留下的足跡（全部有檔案可查）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">足跡</th><th style="text-align:left">檔案</th><th style="text-align:left">一句話結果</th></tr></thead><tbody><tr><td style="text-align:left">TASK-C1：獨立審查 Opus 寫的零股撮合＋REAL 送單邊界</td><td style="text-align:left"><code>.planning/handoff/REVIEW-005-codex-oddlot-audit.md</code></td><td style="text-align:left"><strong>NO-GO</strong>，4 個 BLOCKER（O1/S1/A1/E1）＋4 個 HIGH</td></tr><tr><td style="text-align:left">TASK-C2：審查股數拆分演算法（派工單，Codex 尚未執行）</td><td style="text-align:left"><code>.planning/handoff/TASK-C2-codex-allocator-share-split.md</code></td><td style="text-align:left">派工單本身就是教材：反例測試方法論</td></tr><tr><td style="text-align:left">夜間車道規範</td><td style="text-align:left"><code>.planning/nightshift/LANE-CODEX.md</code></td><td style="text-align:left">「每一條 finding 必須附一個會失敗的具體輸入」</td></tr><tr><td style="text-align:left">agent bakeoff 實驗</td><td style="text-align:left"><code>docs/AGENT_BAKEOFF.md</code> + <code>scripts/agent_bakeoff.py</code></td><td style="text-align:left">同一題丟多個 AI：任務類型決定該派誰</td></tr><tr><td style="text-align:left">OWNER_LOG 引用</td><td style="text-align:left"><code>OWNER_LOG.md</code></td><td style="text-align:left">「Codex 找到的 3 個未修 BLOCKER」成為已知問題表頭條</td></tr></tbody></table></div>
+<h2>為什麼這份審查是整個專案最值錢的文件之一</h2>
+<p>Opus 寫完零股撮合後，既有測試全綠。但 Codex 用一份去識別的實際五檔形狀跑記憶體內 fixture，發現：</p>
+<pre><code>BUY 5,000 @ 484.00   → 程式說成交 0 股；依可見書應成交 4,105 股
+BUY 10,000 @ 486.50  → 程式說全數成交；但可見賣量總共只有 8,765 股</code></pre>
+<p>兩個錯誤方向相反：一個讓你以為買不到而不補單（漏單）， 一個宣稱不可能的成交量（錯估成本）。<strong>測試把錯誤行為寫成了預期值。</strong></p>
+<p>它還在記憶體裡產生一把攻擊者 RSA key 自簽 challenge， 成功讓 <code>SANCTION_OPEN=True, mode=REAL</code>——生物辨識邊界被十幾行程式繞過。</p>
+<h2>這條線教出的核心觀念（後面每個積木都在講其中一個）</h2>
+<ol><li><strong>測試綠燈不算安全證據</strong> —— 測試可能把 bug 寫成預期（見 <a href="01-adversarial-audit-method.md">X1</a>）</li><li><strong>撮合規則要照交易所法條寫，不能猜</strong> —— tie-break 是 TWSE §58-3 規定的順序（見 <a href="02-oddlot-auction-twse-rules.md">X2</a>）</li><li><strong>身份驗證鏈每一環都要承重</strong> —— 驗簽通過只證明「攻擊者有自己的私鑰」（見 <a href="03-auth-chain-forgery.md">X3</a>）</li><li><strong>一張委託有三種狀態，壓成一個 enum 會出人命</strong> —— 送單嘗試／訂單生命週期／命令結果必須正交（見 <a href="04-order-state-triptych.md">X4</a>）</li><li><strong>派 AI 審查的正確姿勢</strong> —— 只讀不改、唯一產出是 md 或一條會紅的測試、空手而回是合法結果（見 <a href="05-agent-review-workflow.md">X5</a>）</li></ol>
+<h2>怎麼用這批 lesson</h2>
+<p>每篇都是一個已確認的黑盒子積木：輸入 → 不變量 → 反例 → 最小修法。 你可以單獨抽走任何一篇放進自己的專案。建議順序：X00 → X1 → X2 → X3 → X4 → X5。</p>
+<hr>
+<p><strong>本目錄作者：ox-alpha (Hermes Agent / Nous Research)。</strong> 其他 AI 請寫在自己的 <code>lesson/&amp;lt;名字&amp;gt;/</code> 下。交互規則見 <a href="../_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL</code></a>。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/ox/00-context.md">ox/00-context.md</a> · 作者 AI：ox-alpha (Hermes Agent / Nous Research) · 更新 2026-08-26</footer>
+</div></body>
+</html>

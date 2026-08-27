@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>README · README</title>
-<meta name="description" content="本倉庫收錄 Quant Grill Lab 中由各 AI（**Gemini**、**Claude**、**Codex** 等）共同沉澱之台股工程級量化系統知識、設計哲學與**可獨立拆裝的黑盒子積木庫（Building Blocks）**。">
+<meta name="description" content="本倉庫收錄 Quant Grill Lab 中由 **Claude、Gemini、OpenAI Codex、OX** 整理的台股工程量化知識，並預留 **GLM-5.3** 獨立審查入口。證據強度不一；請以每篇有效 `status` 與 `">
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
 --line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
@@ -62,16 +62,16 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <body><div class="wrap wide">
 <div class="crumb"><a href="../index.html">Quant</a> / <a href="index.html">lesson</a> / README</div>
 <span class="badge ai">—</span><span class="badge">脈絡</span><span class="badge ">draft</span><h1>Quant Lesson · 模組化量化系統課程與黑盒子積木庫</h1>
-<p><a href="https://img.shields.io/badge/status-verified-brightgreen.svg">![Status</a>]() <a href="https://img.shields.io/badge/Multi--AI-Gemini%20%7C%20Claude%20%7C%20Codex-blue.svg">![Multi-AI</a>]() <a href="https://img.shields.io/badge/docs-GitHub%20Pages-orange.svg">![Documentation</a>](https://wegoliao.github.io/Quant/lesson/)</p>
-<p>本倉庫收錄 Quant Grill Lab 中由各 AI（<strong>Gemini</strong>、<strong>Claude</strong>、<strong>Codex</strong> 等）共同沉澱之台股工程級量化系統知識、設計哲學與<strong>可獨立拆裝的黑盒子積木庫（Building Blocks）</strong>。</p>
+<p><a href="https://img.shields.io/badge/status-mixed%20evidence-yellow.svg">![Status</a>]() <a href="https://img.shields.io/badge/Multi--AI-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OX%20%7C%20GLM--5.3-blue.svg">![Multi-AI</a>]() <a href="https://img.shields.io/badge/docs-GitHub%20Pages-orange.svg">![Documentation</a>](https://wegoliao.github.io/Quant/lesson/)</p>
+<p>本倉庫收錄 Quant Grill Lab 中由 <strong>Claude、Gemini、OpenAI Codex、OX</strong> 整理的台股工程量化知識，並預留 <strong>GLM-5.3</strong> 獨立審查入口。證據強度不一；請以每篇有效 <code>status</code> 與 <code>verified_by</code> 判讀，不以目錄或 AI 名稱當真實性保證。</p>
 <p>線上文件入口：<a href="https://wegoliao.github.io/Quant/lesson/">https://wegoliao.github.io/Quant/lesson/</a></p>
 <hr>
 <h2>目錄結構導引</h2>
-<ul><li><a href="INDEX.md"><code>INDEX.md</code></a>：全站完整目錄與導引。</li><li><a href="_shared/"><code>_shared/</code></a>：跨 AI 通用規範、全域系統地圖與術語字典。</li><li><a href="_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL.md</code></a>：跨 AI 交互學習標準。</li><li><a href="_shared/SYSTEM_MAP.md"><code>_shared/SYSTEM_MAP.md</code></a>：全系統五層架構地圖。</li><li><a href="_shared/GLOSSARY.md"><code>_shared/GLOSSARY.md</code></a>：量化名詞與指標定義。</li><li><a href="gemini/"><code>gemini/</code></a>：<strong>Gemini (Google DeepMind / Antigravity)</strong> 貢獻之全套課程（G00~G06）與 10 大已驗證黑盒子積木（GB01~GB10）。</li><li><a href="claude/"><code>claude/</code></a>：<strong>Claude (Anthropic)</strong> 貢獻之實績觀察與成交簿對帳課程。</li></ul>
+<ul><li><a href="INDEX.md"><code>INDEX.md</code></a>：全站完整目錄與導引。</li><li><a href="_shared/"><code>_shared/</code></a>：跨 AI 通用規範、全域系統地圖與術語字典。</li><li><a href="_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL.md</code></a>：跨 AI 交互學習標準。</li><li><a href="_shared/SYSTEM_MAP.md"><code>_shared/SYSTEM_MAP.md</code></a>：全系統五層架構地圖。</li><li><a href="_shared/GLOSSARY.md"><code>_shared/GLOSSARY.md</code></a>：量化名詞與指標定義。</li><li><a href="gemini/"><code>gemini/</code></a>：<strong>Gemini</strong> 貢獻之課程（G00~G06）與 10 個黑盒子積木（GB01~GB10）；原始 <code>verified</code> 宣告仍需 <code>verified_by</code> 才算有效。</li><li><a href="claude/"><code>claude/</code></a>：<strong>Claude (Anthropic)</strong> 貢獻之實績觀察與成交簿對帳課程。</li><li><a href="codex/"><code>codex/</code></a>：<strong>OpenAI Codex</strong> 的全系統脈絡、證據階層、雙主線與 owner-gated execution 積木。</li><li><a href="ox/"><code>ox/</code></a>：<strong>OX / ox-alpha</strong> 對 Codex 對抗性稽核成果的獨立整理。</li><li><a href="glm-5.3/"><code>glm-5.3/</code></a>：GLM-5.3 專屬軌；目前只有明確標示為 Codex 撰寫的 handoff。</li></ul>
 <hr>
 <h2>為什麼本教材適合 NotebookLM 與 AI 對話？</h2>
 <p>所有 Markdown 文件均遵循以下原則：</p>
-<ol><li><strong>結構化 Frontmatter</strong>：包含清晰的 <code>author_ai</code>、<code>track</code> 與 <code>notebooklm_tags</code>。</li><li><strong>TL;DR 與數學嚴謹性</strong>：每個模組開頭均有一句話摘要與精確公式。</li><li><strong>無黑盒子</strong>：所有演算法均提供無外部黑箱依賴的最小可運行純 Python 代碼與單元測試。</li><li><strong>內建 AI Prompt</strong>：每份文件末尾均提供現成提示詞，複製即可在對話中秒級總結。</li></ol>
+<ol><li><strong>結構化 Frontmatter</strong>：包含清晰的 <code>author_ai</code>、<code>track</code> 與 <code>notebooklm_tags</code>。</li><li><strong>單目錄合輯</strong>：每個 AI 都有 <code>ALL.md</code>，NotebookLM 不需逐頁爬站。</li><li><strong>證據降級</strong>：宣告 <code>verified</code> 卻沒有 <code>verified_by</code> 的文件，建置時自動標為 <code>unvalidated</code>。</li><li><strong>黑盒子 interface</strong>：積木盡量寫清輸入、輸出、不變量、失敗狀態與組裝位置；缺項視為待補，不假裝完整。</li></ol>
 <footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/README.md">README.md</a> · 作者 AI：—</footer>
 </div></body>
 </html>

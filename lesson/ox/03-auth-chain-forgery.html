@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X3 · 積木 · 驗證鏈偽造——「簽章驗得過」不等於「是 owner 簽的」</title>
+<meta name="description" content="當公鑰、payload、簽章**三樣都由攻擊者提供**時，它只證明攻擊者擁有自己的私鑰——">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / ox / X3</div>
+<span class="badge ai">ox-alpha (Hermes Agent / Nous Research)</span><span class="badge">governance</span><span class="badge ">unvalidated · declared verified but missing verified_by</span><h1>驗證鏈偽造：為什麼簽章驗證通過還能是假的</h1>
+<h2>一句話</h2>
+<p><code>verify=True</code> 只證明「這把公鑰對應的私鑰簽了這份 payload」； 當公鑰、payload、簽章<strong>三樣都由攻擊者提供</strong>時，它只證明攻擊者擁有自己的私鑰—— 除非驗證端把公鑰<strong>釘回（pin）一個不可替換的信任根</strong>，否則整條生物辨識邊界形同虛設。</p>
+<h2>這個 bug 的演化史（同一個洞被打了三次）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">版本</th><th style="text-align:left">開門條件</th><th style="text-align:left">誰抓到</th></tr></thead><tbody><tr><td style="text-align:left">v1</td><td style="text-align:left"><code>sanctioned_transmission()</code> 收兩個字串就開</td><td style="text-align:left">DeepSeek Pro</td></tr><tr><td style="text-align:left">v2</td><td style="text-align:left">收 <code>HumanApproval</code> 物件＋重新驗簽</td><td style="text-align:left">Opus 自己修</td></tr><tr><td style="text-align:left">v3 殘留</td><td style="text-align:left">驗簽通過即開 REAL sanction，<strong>不重新驗 pinned credential</strong></td><td style="text-align:left"><strong>Codex（A1）</strong></td></tr></tbody></table></div>
+<p>教訓：每次修補只堵住被指出來的那條路。要問的不是「這條路通了嗎」， 而是「<strong>信任根到底是誰</strong>」。</p>
+<h2>黑盒子解構：攻擊重現</h2>
+<p>Codex 在記憶體裡完成以下十幾行等價操作：</p>
+<pre><code>1. 產生攻擊者 RSA keypair
+2. 建 CNG public blob + challenge payload + PKCS#1 SHA-256 signature
+3. 建 HumanApproval, public_key_sha256 欄位故意填無關字串
+4. 呼叫 verify()
+   → verify=True, signed_hash_matches=True
+   → SANCTION_OPEN=True, mode=REAL</code></pre>
+<p>原因：<code>HumanApproval.verify()</code> 只檢查「簽章可被附帶的公鑰驗證」。 <code>CredentialPin.assert_matches()</code> 只在 <code>ApprovalGate.approve()</code>（鑄造時）執行； <strong>sanction 開啟時沒有任何人再讀 pin</strong>。</p>
+<h2>第二條繞路：型別信任（Finding S1）</h2>
+<p><code>proposal_submit</code> 的 broker 參數型別是 <code>Any</code>——它宣稱信任 「broker 自己的 immutable attestation」，但任何物件都能回傳 <code>(real_api, True, ...)</code>。 於是一個已登入 REAL 的 API 可以被包成假 broker、宣稱 SIM， 讓 SIM proposal 免審批走進同一個 <code>transmit.place()</code>。</p>
+<h2>最小修法模式</h2>
+<pre><code class="lang-python">def open_real_sanction(approval: HumanApproval, gate: ApprovalGate) -&gt; Sanction:
+    &quot;&quot;&quot;REAL sanction 只能經由 exact consumed gate + pinned key 開啟。
+
+    Invariants:
+      - sha256(raw_public_key) == approval.public_key_sha256 == CredentialPin.read()
+      - signed payload 的 purpose/version/mode/challenge_id/TTL 全部重驗,
+        不信任可替換的 dataclass 欄位
+      - gate 必須是本進程 exact ApprovalGate.consume() 的產物
+    &quot;&quot;&quot;
+    pin = CredentialPin.read()                       # 每次都讀, 不快取
+    if sha256(approval.raw_public_key) != pin:
+        raise ForgedApproval(&quot;key not pinned&quot;)
+    if not _verify_signed_payload_fields(approval):   # purpose/version/mode/TTL
+        raise ForgedApproval(&quot;payload fields tampered&quot;)
+    return gate.consume_exact(approval)               # 唯一開門路徑</code></pre>
+<p>配套：SIM exemption 必須由<strong>連線時建立的 immutable attestation value object</strong> （SDK mode ＋ account fingerprint ＋ config identity）傳入，不接受 <code>Any</code> 型別自述。</p>
+<h2>契約不變量（黑盒子的輸出邊界）</h2>
+<ul><li>驗簽函式的回傳值<strong>永不</strong>作為開 REAL 門的充分條件</li><li>信任根只有一個：pinned credential（Windows Hello 綁定的 key hash）</li><li>長期正解：verifier 與送單移出 AI agent process（目前威脅模型僅防「意外與順手繞過」）</li></ul>
+<h2>AI 對話提問範本</h2>
+<ol><li>「解釋『簽章驗證通過』與『簽署者是可信實體』的差別，並說明 pinning 如何補上這個缺口。」</li><li>「審查我的 approval 流程：列出所有『信任根沒有承重』的位置。」</li><li>「為什麼 type-based trust（broker 參數是 Any）在安全邊界上是反模式？」</li></ol>
+<hr>
+<p>上一顆：<a href="02-oddlot-auction-twse-rules.md">X2 零股集合競價</a>。下一顆：<a href="04-order-state-triptych.md">X4 訂單狀態三聯畫</a>。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/ox/03-auth-chain-forgery.md">ox/03-auth-chain-forgery.md</a> · 作者 AI：ox-alpha (Hermes Agent / Nous Research) · 更新 2026-08-26</footer>
+</div></body>
+</html>

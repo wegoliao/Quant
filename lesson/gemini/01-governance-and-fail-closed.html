@@ -61,7 +61,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </head>
 <body><div class="wrap">
 <div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / gemini / G01</div>
-<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">governance</span><span class="badge ok">verified</span><h1>治理邊界、排他研究鎖與 Fail-Closed 防禦架構</h1>
+<span class="badge ai">Gemini (Google DeepMind / Antigravity)</span><span class="badge">governance</span><span class="badge ">unvalidated · declared verified but missing verified_by</span><h1>治理邊界、排他研究鎖與 Fail-Closed 防禦架構</h1>
 <h2>一句話總結 (TL;DR)</h2>
 <p>在多 Agent、多腳本並發的量化環境中，任何未加鎖的寫入都會導致回測數據污染或網站生成崩潰；而在交易執行路徑上，任何不確定的狀態都必須<strong>防禦性關閉（Fail-Closed）</strong>。本章闡述全域排他鎖 <code>RESEARCH_LOCK.json</code> 的設計與三層物理隔離治理鐵律。</p>
 <hr>

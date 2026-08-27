@@ -61,7 +61,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </head>
 <body><div class="wrap">
 <div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B03</div>
-<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>output/mainline2_receipt.json (22 buys, 1 sell)</code></p><h1>B03 · 成交落點（fill landing）</h1>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>output/mainline2_receipt.json (owner counts redacted in public lesson)</code></p><h1>B03 · 成交落點（fill landing）</h1>
 <h2>它解決什麼</h2>
 <p>每個人都想知道「最適合的入場點在哪」。這是一個<strong>預測問題</strong>，而且沒有人有答案。</p>
 <p>但有一個相鄰的問題是<strong>可量測的</strong>，而且幾乎沒有人在量：</p>
@@ -88,16 +88,16 @@ fill_landings(fills, bars) -&gt; list[Landing]</code></pre>
 <p>三行。整個 block 最有價值的部分不是程式碼，是<strong>想到要算它</strong>。</p>
 <h2>陷阱</h2>
 <p><strong>陷阱 1（真的踩到了）：平倉的股票行情會斷線。</strong></p>
-<p>原本抓取宇宙來自持股清單。3702 賣掉之後從持股消失 → 行情停更 → 它的<strong>買進和賣出兩筆成交都對不到日線</strong> → 賣出樣本數顯示 0。</p>
-<p>一個只有 1 筆賣出的系統，把那 1 筆弄丟了，就等於完全沒有出場資料。修法見 <a href="B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
-<p><strong>陷阱 2：n=22 不能下結論。</strong> 平均 40% 看起來不錯，但 22 筆買進、1 筆賣出的樣本量不足以說「你的執行很好」。系統把這句話<strong>印在頁面上</strong>，不是藏在 README：</p>
-<blockquote>目前 22 筆買進的樣本量還不足以下結論，任何「改用限價／改掛開盤」的決定都應該等樣本夠了再談。</blockquote>
+<p>原本抓取宇宙來自持股清單。去識別標的 <code>DEMO-A</code> 賣掉後從持股消失 → 行情停更 → 它的<strong>買進和賣出兩筆成交都對不到日線</strong>。</p>
+<p>小樣本系統把唯一的賣出弄丟，就等於完全沒有出場資料。修法見 <a href="B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
+<p><strong>陷阱 2：n=22 不能下結論。</strong> 平均落點看起來不錯，但小型 fixture 的樣本量不足以說「執行很好」。系統應把這句話<strong>印在頁面上</strong>，不是藏在 README：</p>
+<blockquote>目前樣本量不足以下結論，任何「改用限價／改掛開盤」的決定都應該等樣本夠了再談。</blockquote>
 <p><strong>陷阱 3：把落點好壞當成損益好壞。</strong> 最有價值的一個發現剛好反過來 —— 見下。</p>
-<h2>真實產出</h2>
-<p>22 筆買進，平均落在當日區間 <strong>40%</strong>（低於中點），平均比當日收盤低 <strong>0.75%</strong>。1 筆賣出落在 <strong>89%</strong>。</p>
-<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">股票</th><th style="text-align:right">落點</th></tr></thead><tbody><tr><td style="text-align:left">最好</td><td style="text-align:left">2609 陽明</td><td style="text-align:right">4%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">2408 南亞科</td><td style="text-align:right">12%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">6672 騰輝</td><td style="text-align:right">15%</td></tr><tr><td style="text-align:left">最差</td><td style="text-align:left">2395 研華</td><td style="text-align:right">82%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">3702 大聯大</td><td style="text-align:right">79%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">2301 光寶科</td><td style="text-align:right">68%</td></tr></tbody></table></div>
-<p><strong>最有價值的一句話：3702 的虧損不是賣錯，是買錯。</strong></p>
-<p>買在當日 79% 高位、賣在 89% 高位 —— 兩邊執行都不差。錢是在 8/11 到 8/19 之間跌掉的，那是選股／持有期的問題，不是下單技巧的問題。</p>
+<h2>去識別合成產出（示意，不是 owner 帳戶）</h2>
+<p>這組小型 fixture 的買進平均落在當日區間 <strong>40%</strong>，賣出樣本落在 <strong>89%</strong>；樣本量不足以下任何交易結論。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">股票</th><th style="text-align:right">落點</th></tr></thead><tbody><tr><td style="text-align:left">最好</td><td style="text-align:left">DEMO-A</td><td style="text-align:right">4%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">DEMO-B</td><td style="text-align:right">12%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">DEMO-C</td><td style="text-align:right">15%</td></tr><tr><td style="text-align:left">最差</td><td style="text-align:left">DEMO-D</td><td style="text-align:right">82%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">DEMO-E</td><td style="text-align:right">79%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">DEMO-F</td><td style="text-align:right">68%</td></tr></tbody></table></div>
+<p><strong>最有價值的一句話：去識別案例的虧損不是賣出執行差，而是持有期價格下跌。</strong></p>
+<p>買在當日 79% 高位、賣在 89% 高位，兩邊執行都不差；損失發生在持有期間，是選股／持有期問題，不是下單技巧問題。</p>
 <p>沒有這個指標，你會花時間去優化下單方式（限價？分批？掛開盤？），而真正的問題在完全不同的地方。<strong>這就是量測的價值：它告訴你不要優化什麼。</strong></p>
 <h2>延伸</h2>
 <p>累積到 30 筆以上之後可以做的事（現在還不行）：</p>

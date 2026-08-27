@@ -1,62 +1,61 @@
 ---
-id: X00
-title: 脈絡 · Codex 在這個專案裡做過什麼、為什麼重要
-author_ai: ox-alpha (Hermes Agent / Nous Research)
+id: CDX00
+title: OpenAI Codex 全景脈絡 · 從綠地實驗室到雙主線量化系統
+author_ai: OpenAI Codex
 track: context
 status: verified
-updated: 2026-08-26
-source_repo: D:\Quant_Grill_Lab（.planning/handoff/）
-web_url: https://wegoliao.github.io/Quant/lesson/codex/00-context.html
-notebooklm_tags: [codex, context, adversarial-review, multi-ai, execution-safety]
+verified_by: D:/Quant_Grill_Lab/README.md + AGENTS.md + .planning/GRILL_DECISIONS.md + current source tree
+updated: 2026-08-27
+source_repo: D:/Quant_Grill_Lab
+notebooklm_tags: [codex, system-map, research, execution, governance, evidence]
 ---
 
-# 脈絡 · Codex 在這個專案裡做過什麼
+# OpenAI Codex 在 Quant Grill Lab 做了什麼
 
 ## 一句話
 
-Codex 在 Quant Grill Lab 的角色不是「寫功能的 AI」，而是**對抗性審查者**：
-別的 AI 寫的送單主幹，由它用可重現的反例實驗證明「測試全綠 ≠ 安全」，
-一次審查就抓出 4 個會讓 owner 真金白銀出事的 BLOCKER。
+Codex 把一個「想找到高 Sharpe 策略」的模糊願望，逐步變成一套會拒絕自欺的量化研發系統：研究與 broker 執行分離、每個數字要有證據、每個跨線輸出要有契約、任何不確定都用具名 `HOLD` 或 `WAITING_*` 停下來。
 
-## 它留下的足跡（全部有檔案可查）
+## 系統演化脈絡
 
-| 足跡 | 檔案 | 一句話結果 |
+| 階段 | 真正解決的問題 | 產出形態 |
 |---|---|---|
-| TASK-C1：獨立審查 Opus 寫的零股撮合＋REAL 送單邊界 | `.planning/handoff/REVIEW-005-codex-oddlot-audit.md` | **NO-GO**，4 個 BLOCKER（O1/S1/A1/E1）＋4 個 HIGH |
-| TASK-C2：審查股數拆分演算法（派工單，Codex 尚未執行） | `.planning/handoff/TASK-C2-codex-allocator-share-split.md` | 派工單本身就是教材：反例測試方法論 |
-| 夜間車道規範 | `.planning/nightshift/LANE-CODEX.md` | 「每一條 finding 必須附一個會失敗的具體輸入」 |
-| agent bakeoff 實驗 | `docs/AGENT_BAKEOFF.md` + `scripts/agent_bakeoff.py` | 同一題丟多個 AI：任務類型決定該派誰 |
-| OWNER_LOG 引用 | `OWNER_LOG.md` | 「Codex 找到的 3 個未修 BLOCKER」成為已知問題表頭條 |
+| 綠地隔離 | 不再依賴舊 repo 的髒工作樹與隱性選擇 | 獨立 Git、獨立 `.venv`、獨立治理決策 |
+| 研究骨架 | 策略不能只有一張漂亮回測圖 | deterministic runner、成本、容量、IS/OOS、receipt |
+| 研究治理 | 大量搜尋會把雜訊誤認成 alpha | 預註冊、trial count、DSR/PBO、PWF、plateau、HOLD/KILL |
+| 雙主線 | 研究目標與真實部位不能混成一個物件 | Mainline 1 / Mainline 2 + `TargetPortfolioSnapshot` seam |
+| Owner 執行 | AI 可以準備，但不能授權真實送單 | `OrderProposal -> HumanApproval -> requote -> callbacks -> reconciliation` |
+| 可觀察性 | 舊 receipt、舊 HTML、局部測試不能冒充現況 | code/hash/data_asof/run_at/status 的證據階層 |
 
-## 為什麼這份審查是整個專案最值錢的文件之一
+## 兩條主線不是兩套重複系統
 
-Opus 寫完零股撮合後，129 個既有測試全綠。但 Codex 用真實的五檔書
-（2408 這檔股票）跑記憶體內 fixture，發現：
-
+```text
+Mainline 1：資料 -> 假說 -> position -> backtest -> 驗證 -> Champion/目標快照
+                                            |
+                                            v
+                              TargetPortfolioSnapshot
+                                            |
+                                            v
+Mainline 2：intake -> 真實部位差額 -> sizing -> OrderProposal -> owner gate -> 對帳
 ```
-BUY 5,000 @ 484.00   → 程式說成交 0 股；依可見書應成交 4,105 股
-BUY 10,000 @ 486.50  → 程式說全數成交；但可見賣量總共只有 8,765 股
-```
 
-兩個錯誤方向相反：一個讓你以為買不到而不補單（漏單），
-一個宣稱不可能的成交量（錯估成本）。**測試把錯誤行為寫成了預期值。**
+Mainline 1 不知道帳戶、股數、五檔或 broker；Mainline 2 不可以偷偷重選策略。兩邊只透過一個去 broker 化、可雜湊、可檢查 freshness 的快照交接。
 
-它還在記憶體裡產生一把攻擊者 RSA key 自簽 challenge，
-成功讓 `SANCTION_OPEN=True, mode=REAL`——生物辨識邊界被十幾行程式繞過。
+## Codex 的主要角色
 
-## 這條線教出的核心觀念（後面每個積木都在講其中一個）
+1. **治理翻譯器**：把 owner 的自然語言目標轉成可驗收決策與具名失敗狀態。
+2. **實作工程師**：建立研究 runner、策略生命週期、SIM、notebook、owner console 與執行安全模組。
+3. **對抗性稽核者**：不信「測試全綠」或 AI 自報完成，回到 source、fixture、receipt 與重跑結果。
+4. **系統整合者**：把資料、研究、組合、執行、觀察與對帳接成單向證據鏈。
+5. **止損守門員**：證據不足時輸出 `HOLD`、`NO-GO`、`WAITING_*`、`UNVALIDATED`，不拿真錢填補未知。
 
-1. **測試綠燈不算安全證據** —— 測試可能把 bug 寫成預期（見 [X1](01-adversarial-audit-method.md)）
-2. **撮合規則要照交易所法條寫，不能猜** —— tie-break 是 TWSE §58-3 規定的順序（見 [X2](02-oddlot-auction-twse-rules.md)）
-3. **身份驗證鏈每一環都要承重** —— 驗簽通過只證明「攻擊者有自己的私鑰」（見 [X3](03-auth-chain-forgery.md)）
-4. **一張委託有三種狀態，壓成一個 enum 會出人命** —— 送單嘗試／訂單生命週期／命令結果必須正交（見 [X4](04-order-state-triptych.md)）
-5. **派 AI 審查的正確姿勢** —— 只讀不改、唯一產出是 md 或一條會紅的測試、空手而回是合法結果（見 [X5](05-agent-review-workflow.md)）
+## 怎麼讀這個目錄
 
-## 怎麼用這批 lesson
+- 想理解「為什麼不能信一張回測圖」：讀 `01-evidence-hierarchy` 與 `03-validation-gates`。
+- 想理解「研究如何接到執行」：讀 `02-research-mainline`、`04-target-snapshot-handoff`。
+- 想理解「AI 為什麼不能送單」：讀 `05-execution-safety-chain`。
+- 想把黑盒子變成積木：直接讀 `blocks/`，每篇都有 interface、輸入、輸出、不變量與失敗狀態。
 
-每篇都是一個已確認的黑盒子積木：輸入 → 不變量 → 反例 → 最小修法。
-你可以單獨抽走任何一篇放進自己的專案。建議順序：X00 → X1 → X2 → X3 → X4 → X5。
+## 目前誠實狀態
 
----
-**本目錄作者：ox-alpha (Hermes Agent / Nous Research)。**
-其他 AI 請寫在自己的 `lesson/<名字>/` 下。交互規則見 [`_shared/CROSS_AI_PROTOCOL`](../_shared/CROSS_AI_PROTOCOL.md)。
+這套系統有大量可用模組，但不等於有可真錢運行的完整系統。最後一次完整盤點仍是：研究 Champion 證據口徑衝突，主線一 `HOLD_RESEARCH_ONLY_NO_PROMOTION`；主線二部分能力存在，但整合仍 `NO-GO REAL`。任何新報告都必須重新以當前 source、tests、hash 與 receipt 驗證，不能沿用這句話當永久現況。

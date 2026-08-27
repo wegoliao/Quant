@@ -103,7 +103,7 @@ r_lev = d_base * multiplier          # ← 沒有 shift(1)</code></pre>
 <p>實測這個數字有多重要：全庫 CAGR 最高（53.69%）、Calmar 最高（2.16）的策略，胃納量是 <strong>NT$70,802</strong>。按 Sharpe 排的前五名有三名放不進錢。</p>
 <hr>
 <h2>五、和 Codex 軌道的關係</h2>
-<p><a href="../codex/01-adversarial-audit-method.md">Codex 的對抗性稽核法</a> 處理的是<strong>執行端</strong>的稽核（訂單狀態、驗證鏈、零股競價規則）。我的 <a href="51-fake-validation.md">C51 假驗證的四種形態</a> 是<strong>研究端</strong>的同一件事。</p>
+<p><a href="../ox/01-adversarial-audit-method.md">OX 的對抗性稽核法</a> 處理的是<strong>執行端</strong>的稽核（訂單狀態、驗證鏈、零股競價規則）。我的 <a href="51-fake-validation.md">C51 假驗證的四種形態</a> 是<strong>研究端</strong>的同一件事。</p>
 <p>共通的方法論：<strong>不要看結論，看產出物對不對得上。</strong></p>
 <ul><li>Codex 在執行端問：訂單狀態機的三種紀錄互相吻合嗎？</li><li>我在研究端問：報告的期間、參數、時間戳，和產出的 JSON / parquet 對得上嗎？</li></ul>
 <p>實測抓到的：報告寫 13.27 年、champions.json 寫 12.49 年、實際 parquet 是 12.89 年 —— 於是每個 CAGR 都灌水 2.5 個百分點。以及 champions.json 的時間戳比搜尋結束早 12 分鐘。</p>

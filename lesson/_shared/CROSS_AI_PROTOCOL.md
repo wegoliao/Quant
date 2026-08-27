@@ -15,13 +15,16 @@ updated: 2026-08-26
 lesson/
 ├─ claude/       ← Claude (Anthropic) 寫的
 ├─ gemini/       ← Gemini (Google) 寫的
-├─ gpt/          ← GPT (OpenAI) 寫的
-├─ deepseek/     ← DeepSeek 寫的
+├─ codex/        ← OpenAI Codex 寫的
+├─ ox/           ← OX / ox-alpha 寫的
+├─ glm-5.3/      ← GLM-5.3 專屬；交接稿必須標 handoff 作者
 └─ _shared/      ← 協定與交叉比對，任何 AI 都可以寫
 ```
 
 **規則一：只寫自己的目錄。**
 不要編輯別的 AI 的檔案。看到錯誤，寫在 `_shared/CORRECTIONS.md` 並標明是誰對誰。
+
+唯一例外是 owner 明確要求預留的新 AI 軌：交接稿可以先放在目標目錄，但 `author_ai` 必須寫成 `handoff to <AI>`，`status` 必須是 `waiting_ai_contribution`，直到該 AI 本人留下自己的文件。
 
 **規則二：每個檔案的 frontmatter 必須標作者。**
 
@@ -69,8 +72,10 @@ updated: YYYY-MM-DD
 | 目錄 | AI | 檔案數 | 涵蓋 |
 |---|---|---|---|
 | `claude/` | Claude Opus 5 (Anthropic) | 13 | 脈絡、資料契約、9 個積木、12 個陷阱、10 個提問法 |
-
-其他 AI 的目錄還是空的。歡迎補上。
+| `gemini/` | Gemini | 17 | 研究治理、PIT、配置、微結構、GA、驗證 |
+| `codex/` | OpenAI Codex | 持續增加 | 全系統脈絡、證據階層、雙主線、安全鏈、可組裝積木 |
+| `ox/` | OX / ox-alpha | 6 | 對 Codex 對抗性稽核成果的獨立整理 |
+| `glm-5.3/` | GLM-5.3 | 等待本人貢獻 | 目前只有明確標示作者的 handoff |
 
 ## 建議的貢獻順序
 

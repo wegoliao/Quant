@@ -67,10 +67,12 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <pre><code>lesson/
 ├─ claude/       ← Claude (Anthropic) 寫的
 ├─ gemini/       ← Gemini (Google) 寫的
-├─ gpt/          ← GPT (OpenAI) 寫的
-├─ deepseek/     ← DeepSeek 寫的
+├─ codex/        ← OpenAI Codex 寫的
+├─ ox/           ← OX / ox-alpha 寫的
+├─ glm-5.3/      ← GLM-5.3 專屬；交接稿必須標 handoff 作者
 └─ _shared/      ← 協定與交叉比對，任何 AI 都可以寫</code></pre>
 <p><strong>規則一：只寫自己的目錄。</strong> 不要編輯別的 AI 的檔案。看到錯誤，寫在 <code>_shared/CORRECTIONS.md</code> 並標明是誰對誰。</p>
+<p>唯一例外是 owner 明確要求預留的新 AI 軌：交接稿可以先放在目標目錄，但 <code>author_ai</code> 必須寫成 <code>handoff to &amp;lt;AI&amp;gt;</code>，<code>status</code> 必須是 <code>waiting_ai_contribution</code>，直到該 AI 本人留下自己的文件。</p>
 <p><strong>規則二：每個檔案的 frontmatter 必須標作者。</strong></p>
 <pre><code class="lang-yaml">---
 id: B01
@@ -93,8 +95,7 @@ updated: YYYY-MM-DD
 <blockquote>根據 <code>lesson/claude/blocks/B01</code>（Claude 版），已實現損益應該用 FIFO 對沖並且只認 cash_in/cash_out。</blockquote>
 <p>這樣使用者知道這是<strong>某一個 AI 的觀點</strong>，不是絕對真理。</p>
 <h2>目前的目錄狀態</h2>
-<div class="tw"><table><thead><tr><th style="text-align:left">目錄</th><th style="text-align:left">AI</th><th style="text-align:left">檔案數</th><th style="text-align:left">涵蓋</th></tr></thead><tbody><tr><td style="text-align:left"><code>claude/</code></td><td style="text-align:left">Claude Opus 5 (Anthropic)</td><td style="text-align:left">13</td><td style="text-align:left">脈絡、資料契約、9 個積木、12 個陷阱、10 個提問法</td></tr></tbody></table></div>
-<p>其他 AI 的目錄還是空的。歡迎補上。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">目錄</th><th style="text-align:left">AI</th><th style="text-align:left">檔案數</th><th style="text-align:left">涵蓋</th></tr></thead><tbody><tr><td style="text-align:left"><code>claude/</code></td><td style="text-align:left">Claude Opus 5 (Anthropic)</td><td style="text-align:left">13</td><td style="text-align:left">脈絡、資料契約、9 個積木、12 個陷阱、10 個提問法</td></tr><tr><td style="text-align:left"><code>gemini/</code></td><td style="text-align:left">Gemini</td><td style="text-align:left">17</td><td style="text-align:left">研究治理、PIT、配置、微結構、GA、驗證</td></tr><tr><td style="text-align:left"><code>codex/</code></td><td style="text-align:left">OpenAI Codex</td><td style="text-align:left">持續增加</td><td style="text-align:left">全系統脈絡、證據階層、雙主線、安全鏈、可組裝積木</td></tr><tr><td style="text-align:left"><code>ox/</code></td><td style="text-align:left">OX / ox-alpha</td><td style="text-align:left">6</td><td style="text-align:left">對 Codex 對抗性稽核成果的獨立整理</td></tr><tr><td style="text-align:left"><code>glm-5.3/</code></td><td style="text-align:left">GLM-5.3</td><td style="text-align:left">等待本人貢獻</td><td style="text-align:left">目前只有明確標示作者的 handoff</td></tr></tbody></table></div>
 <h2>建議的貢獻順序</h2>
 <p>如果你是第二個進來的 AI：</p>
 <ol><li>先讀 <code>claude/00-context.md</code> 建立脈絡</li><li>挑一個你<strong>不同意</strong>的地方，寫在 <code>_shared/CORRECTIONS.md</code></li><li>挑一個 Claude 沒寫的主題，開你自己的 block</li></ol>

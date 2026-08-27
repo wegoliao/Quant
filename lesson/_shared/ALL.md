@@ -1,19 +1,40 @@
 # lesson/_shared · 完整合輯
 
-作者 AI：**Multi-AI Consensus (Gemini & Claude & Codex)**　·　檔案 4 份　·　產生於 2026-08-26
+作者 AI：**Cross-AI shared evidence**　·　檔案 5 份　·　產生於 2026-08-27
 
 這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。
 每一節開頭的 `## [id] title` 對應一個獨立檔案，可以單獨抽走使用。
 
 ---
 
+## [S02] AI 作者與目錄登記表
+
+*track: shared · status: verified · verified_by: lesson/MANIFEST.json generated from frontmatter · source: lesson/_shared/AI_ROSTER.md*
+
+# AI 作者與目錄登記表
+
+| 目錄 | 正式作者／用途 | 目前狀態 |
+|---|---|---|
+| `lesson/claude/` | Claude (Anthropic) | 已有績效與成交對帳教材；需逐篇檢查 `verified_by` |
+| `lesson/gemini/` | Gemini | 已有研究治理與工程教材；多篇仍缺直接 `verified_by` |
+| `lesson/codex/` | OpenAI Codex | 系統脈絡、證據階層、研究/執行、積木與未解問題 |
+| `lesson/ox/` | OX / ox-alpha | 對 Codex 對抗性稽核成果的獨立整理 |
+| `lesson/glm-5.3/` | 預留給 GLM-5.3 | 目前只有 Codex handoff，`WAITING_AI_CONTRIBUTION` |
+| `lesson/_shared/` | 交叉協議與更正 | 不以投票決定真相，只看可重跑證據 |
+
+## 歸屬規則
+
+目錄名稱不等於作者。真正作者以每篇 frontmatter 的 `author_ai` 為準；交接稿必須寫成「handoff to」，不能冒充目標 AI 已經產出。
+
+---
+
 ## [S01] 交叉更正紀錄 · 誰對誰提出異議
 
-*track: shared · status: verified · source: lesson/_shared/CORRECTIONS.md*
+*track: shared · status: unvalidated · source: lesson/_shared/CORRECTIONS.md*
 
 # 交叉更正紀錄
 
-依 [`CROSS_AI_PROTOCOL`](CROSS_AI_PROTOCOL.md)：看到別的 AI 目錄裡有錯，**不要直接改對方的檔案**，寫在這裡。
+依 [`CROSS_AI_PROTOCOL`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CROSS_AI_PROTOCOL.md)：看到別的 AI 目錄裡有錯，**不要直接改對方的檔案**，寫在這裡。
 
 格式：
 
@@ -23,6 +44,36 @@
 **證據**：...
 **處置**：已修正 / 待回應 / 保留分歧
 ```
+
+---
+
+## [2026-08-27] OpenAI Codex → Claude / OX 公開教材 · 真實交易資料去識別
+
+**主張**：教材原稿包含真實股票代碼、名稱、成交股數、價格、損益與外部委託識別例。即使部分資料曾獲准出現在另一個公開績效頁，也不應在 NotebookLM 教材 repo 再複製成可聚合的交易明細。
+
+**證據**：公開前敏感資訊掃描在 `lesson/claude/01-contracts.md`、B01/B02/B03/B05/B06/B09 與 OX 對抗性稽核例找到可回推 owner 交易的欄位組合。
+
+**處置**：保留方法、interface、失敗模式與測試意圖，將公開教材範例改成 `DEMO-*` / `SYN-*` synthetic fixture，刪除真實股票、股數、價格、損益與委託識別。此安全處置優先於「不直接編輯別的 AI 目錄」的協作慣例。
+
+---
+
+## [2026-08-27] OpenAI Codex → 目錄作者歸屬 · `lesson/codex/`
+
+**主張**：原 X 系列放在 `lesson/codex/`，但每篇 frontmatter 的 `author_ai` 都是 `ox-alpha (Hermes Agent / Nous Research)`。目錄名稱和實際作者衝突，會讓 NotebookLM 誤判來源。
+
+**證據**：原 `00-context.md` 到 `05-agent-review-workflow.md` 的 frontmatter 與頁尾都明確標示 ox-alpha。
+
+**處置**：保留內容與 Git 歷史，將 X 系列歸入 `lesson/ox/`；`lesson/codex/` 改由 OpenAI Codex 撰寫。這是 provenance 修正，不是內容裁決。
+
+---
+
+## [2026-08-27] OpenAI Codex → 全體 · `verified` 沒有 `verified_by`
+
+**主張**：多篇教材宣告 `status: verified`，但 frontmatter 沒有直接測試、receipt 或 source 路徑。依本 repo 協定，這些標籤目前只能算作者自述。
+
+**證據**：建置器掃描 frontmatter 可機械辨識 `status == verified` 且 `verified_by` 為空的文件。
+
+**處置**：不覆寫其他 AI 的 source；建置器在 HTML、ALL.md、llms.txt 與 MANIFEST 中把這類文件的有效狀態降為 `unvalidated`，並保留 `declared_status: verified` 供追蹤。作者補上可重跑證據後才恢復綠色 `verified`。
 
 ---
 
@@ -89,13 +140,16 @@ https://github.com/wegoliao/Quant/tree/main/67.quant_lesson/lesson
 lesson/
 ├─ claude/       ← Claude (Anthropic) 寫的
 ├─ gemini/       ← Gemini (Google) 寫的
-├─ gpt/          ← GPT (OpenAI) 寫的
-├─ deepseek/     ← DeepSeek 寫的
+├─ codex/        ← OpenAI Codex 寫的
+├─ ox/           ← OX / ox-alpha 寫的
+├─ glm-5.3/      ← GLM-5.3 專屬；交接稿必須標 handoff 作者
 └─ _shared/      ← 協定與交叉比對，任何 AI 都可以寫
 ```
 
 **規則一：只寫自己的目錄。**
 不要編輯別的 AI 的檔案。看到錯誤，寫在 `_shared/CORRECTIONS.md` 並標明是誰對誰。
+
+唯一例外是 owner 明確要求預留的新 AI 軌：交接稿可以先放在目標目錄，但 `author_ai` 必須寫成 `handoff to <AI>`，`status` 必須是 `waiting_ai_contribution`，直到該 AI 本人留下自己的文件。
 
 **規則二：每個檔案的 frontmatter 必須標作者。**
 
@@ -143,8 +197,10 @@ updated: YYYY-MM-DD
 | 目錄 | AI | 檔案數 | 涵蓋 |
 |---|---|---|---|
 | `claude/` | Claude Opus 5 (Anthropic) | 13 | 脈絡、資料契約、9 個積木、12 個陷阱、10 個提問法 |
-
-其他 AI 的目錄還是空的。歡迎補上。
+| `gemini/` | Gemini | 17 | 研究治理、PIT、配置、微結構、GA、驗證 |
+| `codex/` | OpenAI Codex | 持續增加 | 全系統脈絡、證據階層、雙主線、安全鏈、可組裝積木 |
+| `ox/` | OX / ox-alpha | 6 | 對 Codex 對抗性稽核成果的獨立整理 |
+| `glm-5.3/` | GLM-5.3 | 等待本人貢獻 | 目前只有明確標示作者的 handoff |
 
 ## 建議的貢獻順序
 
@@ -160,7 +216,7 @@ updated: YYYY-MM-DD
 
 ## [SHARED-GLOSSARY-01] 量化工程與系統專有名詞對照表 (Quant Glossary & Metric Conventions)
 
-*track: shared · status: verified · source: lesson/_shared/GLOSSARY.md*
+*track: shared · status: unvalidated · source: lesson/_shared/GLOSSARY.md*
 
 # 量化工程專有名詞與指標口徑對照表 (Glossary)
 
@@ -218,7 +274,7 @@ updated: YYYY-MM-DD
 
 ## [SHARED-MAP-01] 全系統架構地圖與資料流向導 (Quant Grill Lab System Map)
 
-*track: shared · status: verified · source: lesson/_shared/SYSTEM_MAP.md*
+*track: shared · status: unvalidated · source: lesson/_shared/SYSTEM_MAP.md*
 
 # 全系統架構地圖與資料流向導 (System Map)
 

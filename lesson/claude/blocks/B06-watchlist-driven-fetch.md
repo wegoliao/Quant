@@ -24,7 +24,7 @@ updated: 2026-08-26
 
 而你**最需要它資料的時刻，正好是它剛賣掉的時候** —— 你要做出場分析、要算成交落點、要看賣掉之後它走去哪。
 
-實際發生的事：3702 大聯大平倉後，它的買進和賣出兩筆成交在成交落點分析（[B03](B03-fill-landing.md)）裡完全對不到日線。整個系統只有 1 筆賣出樣本，而那 1 筆是空的。
+去識別案例：`DEMO-A` 平倉後，它的買進和賣出在成交落點分析（[B03](B03-fill-landing.md)）裡對不到日線；小樣本因此失去全部出場觀察。
 
 ## 契約
 
@@ -44,8 +44,8 @@ def load_universe():
 
 ```csv
 stock_code,stock_name,strategy_id,track,market,note
-6213,聯茂,MARGIN,MAINLINE2,TWSE,融資卡成員；整戶零部位
-3702,大聯大,YOY,CLOSED,TWSE,已平倉；保留行情供成交落點對照
+DEMO-C,示例股票C,STRATEGY_A,MAINLINE2,TWSE,策略卡成員；整戶零部位
+DEMO-A,示例股票A,STRATEGY_A,CLOSED,TWSE,已平倉；保留行情供成交落點對照
 ```
 
 - `MAINLINE2` → 進主線二頁面 + 抓行情
@@ -64,7 +64,7 @@ stock_code,stock_name,strategy_id,track,market,note
 ## 陷阱
 
 **陷阱 1：市場別（上市／上櫃）用猜的。**
-`6570` 看起來像上櫃，但不一定。正確做法是**先試 TWSE，失敗再試 TPEx**，把 `market` 欄當成提示而不是事實：
+`DEMO-F` 的市場別若只有人工提示仍可能錯。正確做法是使用 authoritative market mapping，或以明確 fallback 記錄結果；不要把 `market` 欄的猜測當事實：
 
 ```python
 order = ["TPEX", "TWSE"] if market == "TPEX" else ["TWSE", "TPEX"]

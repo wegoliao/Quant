@@ -61,7 +61,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </head>
 <body><div class="wrap">
 <div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C01</div>
-<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">脈絡</span><span class="badge ok">verified</span><h1>資料契約 · 四個 CSV 就是全部</h1>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">脈絡</span><span class="badge ">unvalidated · declared verified but missing verified_by</span><h1>資料契約 · 四個 CSV 就是全部</h1>
 <p>積木之間不靠函式呼叫溝通，靠<strong>檔案格式</strong>。這是刻意的：CSV 可以被人眼檢查、被 git diff、被任何語言讀，而且不會因為你換了框架就壞掉。</p>
 <h2>契約設計的三條規則</h2>
 <p><strong>1. 一個檔案一個事實層級。</strong> 成交是成交、行情是行情、訊號是訊號。不要有一個「總表」把三種東西混在一起 —— 那個總表會變成沒有人敢改的東西。</p>
@@ -70,30 +70,30 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <hr>
 <h2><code>actual_fills.csv</code> · 成交簿（唯一不會騙人的檔案）</h2>
 <pre><code class="lang-csv">trade_id,strategy_id,stock_code,stock_name,side,fill_date,fill_time,fill_price,shares,consideration_twd,fee_twd,tax_twd,cash_out_twd,cash_in_twd,currency,source
-X-02HV,YOY,3702,大聯大,BUY,2026-08-11,,126.5,546,69069,98,0,69167,0,TWD,20260820庫存表.xlsx
-X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,20260820庫存表.xlsx</code></pre>
+SYN-001,STRATEGY_A,DEMO-A,示例股票A,BUY,2026-01-02,,100.0,100,10000,20,0,10020,0,TWD,synthetic_fixture.csv
+SYN-002,STRATEGY_A,DEMO-A,示例股票A,SELL,2026-01-10,,95.0,100,9500,20,29,0,9451,TWD,synthetic_fixture.csv</code></pre>
 <div class="tw"><table><thead><tr><th style="text-align:left">欄位</th><th style="text-align:left">契約</th></tr></thead><tbody><tr><td style="text-align:left"><code>trade_id</code></td><td style="text-align:left">券商委託單號。<strong>不保證唯一</strong> —— 不同日可能重複，需要時自己加日期後綴</td></tr><tr><td style="text-align:left"><code>strategy_id</code></td><td style="text-align:left"><code>TRUST</code> / <code>YOY</code> / <code>MARGIN</code> / <code>BREAKOUT</code>。歸屬是人工決定，同一檔可以拆給兩個策略</td></tr><tr><td style="text-align:left"><code>side</code></td><td style="text-align:left"><code>BUY</code> / <code>SELL</code></td></tr><tr><td style="text-align:left"><code>cash_out_twd</code></td><td style="text-align:left">買進實付＝價金＋手續費</td></tr><tr><td style="text-align:left"><code>cash_in_twd</code></td><td style="text-align:left">賣出實收＝價金−手續費−證交稅</td></tr></tbody></table></div>
 <p><strong>關鍵：<code>cash_out</code> / <code>cash_in</code> 才是真相，不是 <code>fill_price × shares</code>。</strong> 所有損益計算都必須從這兩欄出發。用價差算出來的損益永遠比實際好看。</p>
-<p><strong>同一檔可以掛在不同策略。</strong> 例如 1709 和益：3,644 股在 <code>BREAKOUT</code>、305 股在 <code>MARGIN</code>。所以持股要用 <code>(strategy_id, stock_code)</code> 當 key，不能只用 <code>stock_code</code>。</p>
+<p><strong>同一檔可以掛在不同策略。</strong> 合成例：<code>DEMO-B</code> 有 100 股在 <code>STRATEGY_A</code>、20 股在 <code>STRATEGY_B</code>。所以持股要用 <code>(strategy_id, stock_code)</code> 當 key，不能只用 <code>stock_code</code>。</p>
 <hr>
 <h2><code>price_history.csv</code> · 官方行情</h2>
 <pre><code class="lang-csv">asof_date,stock_code,open,high,low,close,volume,market,source
-2026-08-25,2637,95.9,99.5,94.7,95.5,12345678,TWSE,TWSE_STOCK_DAY</code></pre>
+2026-01-10,DEMO-A,94.0,97.0,93.0,95.0,1000000,TWSE,SYNTHETIC_FIXTURE</code></pre>
 <ul><li>來源：TWSE <code>STOCK_DAY</code>、TPEx <code>daily_close_quotes</code>，都是官方公開 API</li><li><strong>休市、資料未發布、日期不符 → 不寫入。</strong> 寧可缺一天，不可拿舊價冒充今天收盤</li><li>OHLC 四個都要。只存 close 的話，分價分布（B02）和成交落點（B03）都做不了 —— 這是很多人事後才發現的坑</li></ul>
 <hr>
 <h2><code>latest_strategy_signals.csv</code> · 每日策略卡</h2>
 <pre><code class="lang-csv">asof_date,effective_date,strategy_id,stock_code,stock_name,industry,entry_display,entry_price,close,magnitude_pct,direction,signed_return_pct,signal,source,quality_note
-2026-08-25,,MARGIN,6213,聯茂,電子零組件,424.0,424.0,530,24.8,+,24.8,抱,owner_strategy_card_2026-08-25,</code></pre>
+2026-01-10,,STRATEGY_A,DEMO-C,示例股票C,示例產業,90.0,90.0,95.0,5.6,+,5.6,抱,synthetic_strategy_card,</code></pre>
 <ul><li><code>magnitude_pct</code> 恆為正、<code>direction</code> 是 <code>+</code>/<code>-</code>、<code>signed_return_pct</code> 才是帶號的。這是為了如實保存卡面（卡面只印絕對值加符號）</li><li><code>quality_note</code> 記錄<strong>來源自相矛盾</strong>的地方，例如：</li></ul>
 <pre><code>PRINTED_PCT_VS_ENTRY_CLOSE_GAP:printed=37.8+,implied=+36.4</code></pre>
 <blockquote>卡面印 37.8%，但用它自己印的進場價和收盤價回推是 36.4%。 <strong>不改任何一格，只標註。</strong> 資料的矛盾是資訊，抹平它就是銷毀證據。</blockquote>
 <hr>
 <h2><code>watchlist.csv</code> · 誰的行情要繼續抓</h2>
 <pre><code class="lang-csv">stock_code,stock_name,strategy_id,track,market,note
-6213,聯茂,MARGIN,MAINLINE2,TWSE,融資卡成員；整戶零部位
-3702,大聯大,YOY,CLOSED,TWSE,已平倉；保留行情供成交落點對照</code></pre>
+DEMO-C,示例股票C,STRATEGY_A,MAINLINE2,TWSE,策略卡成員；整戶零部位
+DEMO-A,示例股票A,STRATEGY_A,CLOSED,TWSE,已平倉；保留行情供成交落點對照</code></pre>
 <p>這個檔案解決一個真實踩到的洞：<strong>持股清單驅動抓取時，一檔賣掉就等於資料斷線。</strong></p>
-<p>3702 平倉後從持股消失，行情停止更新，結果它的兩筆成交在成交落點分析裡完全對不到日線 —— 賣出樣本數是 0。加進 watchlist 後才補回來。</p>
+<p><code>DEMO-A</code> 平倉後從持股消失，行情停止更新，結果它的兩筆合成成交在成交落點分析裡完全對不到日線。加進 watchlist 後才補回來。</p>
 <p>詳見 <a href="blocks/B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
 <hr>
 <h2>為什麼是 CSV 不是資料庫</h2>

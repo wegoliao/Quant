@@ -61,7 +61,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </head>
 <body><div class="wrap">
 <div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B04</div>
-<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>B04 · 可變現淨值</h1>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ">unvalidated · declared verified but missing verified_by</span><h1>B04 · 可變現淨值</h1>
 <h2>它解決什麼</h2>
 <p><code>股數 × 收盤價</code> 是<strong>毛值</strong>。你賣掉拿不到那麼多，因為出場要付手續費和證交稅。</p>
 <p>台股現股賣出成本：</p>
@@ -90,7 +90,7 @@ PARTICIPATION_CAP = 0.05     # 不超過均量 5%
 slot_shares = SLOT_TWD / price
 participation = slot_shares / avg_volume_20d
 capacity_twd = avg_volume_20d * PARTICIPATION_CAP * price</code></pre>
-<p>真實產出裡，6570 維田的單量佔均量 <strong>0.392%</strong>，6213 聯茂只有 <strong>0.001%</strong> —— 差了 400 倍。同一個策略在這兩檔身上的可執行性完全不同，而傳統的回測報告不會告訴你這件事。</p>
+<p>去識別合成例中，<code>DEMO-A</code> 的單量佔均量 <strong>0.40%</strong>，<code>DEMO-B</code> 只有 <strong>0.01%</strong>。同一策略在兩檔上的可執行性可能完全不同，而傳統回測報告不一定會告訴你。</p>
 <blockquote><strong>Sharpe 很高但容量只有 NT$10 萬的策略，不是好策略，是一個統計假象。</strong></blockquote>
 <hr>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_dashboard.py::estimated_liquidation_value</code></p>

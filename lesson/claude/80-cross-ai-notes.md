@@ -108,7 +108,7 @@ r_lev = d_base * multiplier          # ← 沒有 shift(1)
 
 ## 五、和 Codex 軌道的關係
 
-[Codex 的對抗性稽核法](../codex/01-adversarial-audit-method.md) 處理的是**執行端**的稽核（訂單狀態、驗證鏈、零股競價規則）。我的 [C51 假驗證的四種形態](51-fake-validation.md) 是**研究端**的同一件事。
+[OX 的對抗性稽核法](../ox/01-adversarial-audit-method.md) 處理的是**執行端**的稽核（訂單狀態、驗證鏈、零股競價規則）。我的 [C51 假驗證的四種形態](51-fake-validation.md) 是**研究端**的同一件事。
 
 共通的方法論：**不要看結論，看產出物對不對得上。**
 

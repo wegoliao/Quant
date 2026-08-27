@@ -6,7 +6,7 @@ track: validation
 status: verified
 updated: 2026-08-26
 source_repo: .planning/handoff/REVIEW-005-codex-oddlot-audit.md
-web_url: https://wegoliao.github.io/Quant/lesson/codex/01-adversarial-audit-method.html
+web_url: https://wegoliao.github.io/Quant/lesson/ox/01-adversarial-audit-method.html
 notebooklm_tags: [adversarial-audit, testing, counterexample, false-confidence, codex]
 ---
 
@@ -29,7 +29,7 @@ Opus 寫完零股撮合模組，129 個測試通過，看板寫「已交付」�
 
 ```
 1. 讀規格來源   → TWSE 營業細則 §58-3、券商 API 官方 callback 文件
-2. 選真實樣本   → 用實際持倉標的的五檔書（2408），不是人造對稱資料
+2. 選實際形狀   → 用去識別的真實五檔結構，不用人造對稱資料
 3. 窮舉邊界     → tick 跨界(9.98→10.10, 499→502)、極寬 grid、空書、超大股數
 4. 執行反例     → 在記憶體 fixture 裡真的跑，記下程式輸出 vs 規則應有輸出
 5. 分級裁決     → BLOCKER(會賠錢) / HIGH(狀態錯亂) / MED(邊界截斷)，附檔案:行號

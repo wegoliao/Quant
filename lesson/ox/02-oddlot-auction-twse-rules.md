@@ -6,7 +6,7 @@ track: execution
 status: verified
 updated: 2026-08-26
 source_repo: src/quant_grill_lab/execution/odd_lot_auction.py + REVIEW-005 Finding O1/O2
-web_url: https://wegoliao.github.io/Quant/lesson/codex/02-oddlot-auction-twse-rules.html
+web_url: https://wegoliao.github.io/Quant/lesson/ox/02-oddlot-auction-twse-rules.html
 notebooklm_tags: [twse, odd-lot, call-auction, tick-grid, matching-rules, fail-unknown]
 ---
 

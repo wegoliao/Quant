@@ -61,14 +61,14 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </head>
 <body><div class="wrap">
 <div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / claude / C30</div>
-<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">提問法</span><span class="badge ok">verified</span><h1>問題寫法 · 怎麼問才會拿到真話</h1>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">提問法</span><span class="badge ">unvalidated · declared verified but missing verified_by</span><h1>問題寫法 · 怎麼問才會拿到真話</h1>
 <p>這一份不是「prompt 模板大全」。它記錄的是<strong>在這個專案裡實際產生高價值輸出的提問結構</strong>，以及它們為什麼有效。</p>
 <hr>
 <h2>P01 · 指名實例 + 陳述期望屬性</h2>
 <p><strong>實際的提問：</strong></p>
-<blockquote>有計算已經實現的虧損嗎？大聯大是已實現的虧損喔，你是不是漏算了？請再幫我精準呈現。</blockquote>
+<blockquote>有計算已實現的虧損嗎？我看到一筆已平倉虧損，畫面是否漏掉？請分開呈現 realized、unrealized 與 settled cash，並附對帳證據。</blockquote>
 <p><strong>為什麼這個提問很好：</strong></p>
-<ol><li><strong>指名了一個具體實例</strong>（大聯大），不是「損益好像怪怪的」</li><li><strong>陳述了期望屬性</strong>（它是已實現虧損），給了可驗證的斷言</li><li><strong>問的是「有沒有」，不是「請加上」</strong> —— 留了空間讓答案是「有，但你看不到」</li></ol>
+<ol><li><strong>指名了一個具體、但公開時已去識別的 round trip</strong>，不是只說「損益好像怪怪的」</li><li><strong>陳述了期望屬性</strong>（它是已實現虧損），給了可驗證的斷言</li><li><strong>問的是「有沒有」，不是「請加上」</strong> —— 留了空間讓答案是「有，但你看不到」</li></ol>
 <p><strong>結果</strong>：真相是「數學沒漏，但整個系統沒有『已實現』這個字」。如果提問寫成「請加上已實現損益計算」，就會直接進到寫程式，而錯過「原來問題在呈現不在計算」這個更重要的發現。</p>
 <p><strong>可複製的結構：</strong></p>
 <pre><code>[具體實例] 應該是 [屬性]。
@@ -78,7 +78,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <p><strong>反面</strong>：「這檔該在幾塊買？」</p>
 <p><strong>正面</strong>：「我要能追蹤買賣價到最適合的入場點。」</p>
 <p>第二種問法把問題從「給我一個價格」改成「給我一個追蹤機制」。前者要的是預測（沒有人有），後者要的是量測（可以做到）。</p>
-<p><strong>結果</strong>：做出了成交落點分析（<a href="blocks/B03-fill-landing.md">B03</a>），並且發現「3702 的虧損不是賣錯是買錯」—— 這個發現比任何一個建議價格都有用，因為它告訴你<strong>不要去優化下單方式</strong>。</p>
+<p><strong>結果</strong>：做出了成交落點分析（<a href="blocks/B03-fill-landing.md">B03</a>），並且在去識別案例發現「虧損不是賣錯，而是進場後持有期下跌」—— 這比任何建議價格都有用，因為它告訴你<strong>不要誤把選股問題當下單問題</strong>。</p>
 <p><strong>可複製的結構：</strong></p>
 <pre><code>我要能 [持續量測 X]，而不是 [一次性得到 Y 的答案]。</code></pre>
 <hr>
@@ -99,7 +99,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <p><strong>寫法：</strong></p>
 <blockquote>這些限制要寫在頁面上，不是只在 README。</blockquote>
 <p>差別很大。README 沒有人讀，頁面上的字每天都會被看到。</p>
-<p><strong>實例</strong>：「目前 22 筆買進的樣本量還不足以下結論」這句話印在主線二頁面上，所以三個月後回來看的人不會誤用那個 40%。</p>
+<p><strong>實例</strong>：「目前樣本量不足以下結論」應直接印在頁面上，避免日後讀者把描述統計誤用成交易規則。</p>
 <hr>
 <h2>P06 · 給 AI 明確的「不可協商」清單</h2>
 <p>這個專案的每個腳本開頭都有：</p>
@@ -114,7 +114,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <pre><code>哪個測試在擋哪一種錯誤？
 如果有人把 X 改回舊做法，哪個測試會失敗？</code></pre>
 <p>好的測試能回答第二個問題。<strong>不能回答的測試只是覆蓋率裝飾。</strong></p>
-<p>實例：<code>test_the_real_3702_round_trip_reconciles_to_the_fill_book</code> 的存在理由，就是「3702 這筆虧損被任何形式抹掉時會叫」。</p>
+<p>實例：<code>test_anonymized_losing_round_trip_reconciles_to_the_fill_book</code> 的存在理由，就是「去識別虧損被任何形式抹掉時會叫」。</p>
 <hr>
 <h2>P08 · 要求區分「數學錯」和「呈現錯」</h2>
 <pre><code>這個數字是算錯了，還是算對了但沒有顯示出來？</code></pre>

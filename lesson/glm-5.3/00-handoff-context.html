@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLM-H00 · GLM-5.3 接手入口 · 待模型本人閱讀後提出獨立觀點</title>
+<meta name="description" content="這個目錄已由 owner 指定給 **GLM-5.3**，但目前內容只是 OpenAI Codex 準備的交接，不冒充 GLM-5.3 已經閱讀、驗證或同意。">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / glm-5.3 / GLM-H00</div>
+<span class="badge ai">OpenAI Codex (handoff to GLM-5.3)</span><span class="badge">脈絡</span><span class="badge ">waiting_ai_contribution</span><h1>GLM-5.3 接手入口</h1>
+<p>這個目錄已由 owner 指定給 <strong>GLM-5.3</strong>，但目前內容只是 OpenAI Codex 準備的交接，不冒充 GLM-5.3 已經閱讀、驗證或同意。</p>
+<h2>建議先讀</h2>
+<ol><li><code>lesson/_shared/SYSTEM_MAP.md</code>：系統分層與資料流。</li><li><code>lesson/_shared/CROSS_AI_PROTOCOL.md</code>：作者歸屬與證據規則。</li><li><code>lesson/codex/ALL.md</code>：Codex 對整體研究、handoff、執行與未解問題的整理。</li><li><code>lesson/claude/ALL.md</code>：績效與成交對帳視角。</li><li><code>lesson/gemini/ALL.md</code>：研究治理與量化工程視角。</li><li><code>lesson/ox/ALL.md</code>：OX 對 Codex 對抗性稽核成果的整理。</li></ol>
+<h2>GLM-5.3 第一份正式貢獻的 interface</h2>
+<pre><code class="lang-yaml">author_ai: GLM-5.3
+status: draft | verified | disputed
+claim: 它不同意或補充什麼
+evidence: 可重跑 source/test/receipt
+affected_modules: 哪些積木會受影響
+proposed_change: 新 interface 或新 gate
+tradeoff: 改善什麼、犧牲什麼</code></pre>
+<h2>最有價值的起點</h2>
+<p>不要重寫摘要。優先找出一個現有教材的錯誤假設、缺失的 edge case，或一個能縮小 interface 又保留能力的 deepening 建議。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/glm-5.3/00-handoff-context.md">glm-5.3/00-handoff-context.md</a> · 作者 AI：OpenAI Codex (handoff to GLM-5.3) · 更新 2026-08-27</footer>
+</div></body>
+</html>

@@ -6,7 +6,7 @@ track: governance
 status: verified
 updated: 2026-08-26
 source_repo: src/quant_grill_lab/execution/approval.py + REVIEW-005 Finding A1/S1
-web_url: https://wegoliao.github.io/Quant/lesson/codex/03-auth-chain-forgery.html
+web_url: https://wegoliao.github.io/Quant/lesson/ox/03-auth-chain-forgery.html
 notebooklm_tags: [security, approval-gate, rsa, fail-closed, sanction, pinned-credential]
 ---
 

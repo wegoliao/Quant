@@ -1,6 +1,6 @@
 # lesson/gemini · 完整合輯
 
-作者 AI：**Gemini (Google DeepMind / Antigravity)**　·　檔案 17 份　·　產生於 2026-08-26
+作者 AI：**Gemini (Google DeepMind / Antigravity)**　·　檔案 17 份　·　產生於 2026-08-27
 
 這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。
 每一節開頭的 `## [id] title` 對應一個獨立檔案，可以單獨抽走使用。
@@ -9,7 +9,7 @@
 
 ## [G00] Gemini 全景脈絡 · 拆解黑盒子與工程級量化哲學
 
-*track: context · status: verified · source: lesson/gemini/00-gemini-master-context.md*
+*track: context · status: unvalidated · source: lesson/gemini/00-gemini-master-context.md*
 
 # Gemini 全景脈絡 · 拆解黑盒子與工程級量化哲學
 
@@ -58,29 +58,29 @@ graph TD
 
 ### 1. 基礎設施與治理 (Governance & Research Lock)
 - **問題**：多個 AI 或批次回測同時執行時，爭奪資料庫與網站生成資源，造成回測中斷與狀態污染。
-- **解決方案**：實作全域 OS-backed `RESEARCH_LOCK.json`，提供 `OFFICIAL_SIM`、`REGISTRY_WRITE`、`SITE_BUILD` 三種互斥鎖與逾時自動回收機制（見 [G01](01-governance-and-fail-closed.md) 及 [GB01](blocks/GB01-research-lock.md)）。
+- **解決方案**：實作全域 OS-backed `RESEARCH_LOCK.json`，提供 `OFFICIAL_SIM`、`REGISTRY_WRITE`、`SITE_BUILD` 三種互斥鎖與逾時自動回收機制（見 [G01](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/01-governance-and-fail-closed.md) 及 [GB01](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB01-research-lock.md)）。
 
 ### 2. 資料管線與防偷看防禦 (Data & PIT Safe)
 - **問題**：月營收與季報的「時間標籤」容易被誤當作「發布日」（Lookahead Bias），且 `data.set_universe()` 會污染全域進程。
-- **解決方案**：建立嚴格的 PIT 對齊器與 Lag 守衛，強制所有財報與營收訊號遞延至法定公告日次日（見 [G02](02-data-pit-and-leakage-defense.md) 及 [GB02](blocks/GB02-pit-lag-aligner.md)）。
+- **解決方案**：建立嚴格的 PIT 對齊器與 Lag 守衛，強制所有財報與營收訊號遞延至法定公告日次日（見 [G02](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/02-data-pit-and-leakage-defense.md) 及 [GB02](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB02-pit-lag-aligner.md)）。
 
 ### 3. 進出場戰術與整數部位分配 (Tactics & Integer Sizing)
 - **問題**：策略產出連續權重（如 3.2%），但在真實帳戶只有 NT$50 萬時，高價股買不起整張，隨便四捨五入會完全摧毀策略原本的多因子結構。
-- **解決方案**：提出**凸性 L1 追蹤誤差整數規劃演算法（Pareto Frontier Sweep）**，在現金預算與單檔上限約束下，求解出最貼近策略理想權重的整數張數與零股配置（見 [G03](03-tactics-and-integer-sizing.md) 及 [GB03](blocks/GB03-integer-basket-allocator.md)）。
+- **解決方案**：提出**凸性 L1 追蹤誤差整數規劃演算法（Pareto Frontier Sweep）**，在現金預算與單檔上限約束下，求解出最貼近策略理想權重的整數張數與零股配置（見 [G03](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/03-tactics-and-integer-sizing.md) 及 [GB03](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB03-integer-basket-allocator.md)）。
 
 ### 4. 微結構與執行工程 (Microstructure & Capacity)
 - **問題**：高 Sharpe 策略常偷偷買入無成交量的「殭屍股」，實盤根本無法承載百萬資金。
-- **解決方案**：建立 **ADV20 容量守門員（單檔限制 ≤ 2%~5% ADV）**、**手續費低消地板（NT$20 門檻檢查）**、**五檔盤口衝擊評級** 與 **限價智慧追價狀態機**（見 [G04](04-microstructure-and-execution.md) 及 [GB04](blocks/GB04-adv-capacity-guard.md)~[GB07](blocks/GB07-smart-requote-engine.md)）。
+- **解決方案**：建立 **ADV20 容量守門員（單檔限制 ≤ 2%~5% ADV）**、**手續費低消地板（NT$20 門檻檢查）**、**五檔盤口衝擊評級** 與 **限價智慧追價狀態機**（見 [G04](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/04-microstructure-and-execution.md) 及 [GB04](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md)~[GB07](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB07-smart-requote-engine.md)）。
 
 ### 5. 核心策略演化與 GA 藍圖 (Alpha Strategies & Radical GA)
 - **問題**：等權重與單一月調倉使策略受限於 CAGR 25% 的均值回歸天花板。
 - **解決方案**：
   - 開發 **Gemini 001~007 策略家族（S138~S141）**：導入反向波動度加權（Inverse Volatility Sizing）、波動度目標控管與多方法論集成。
-  - 提出 **次世代 50% CAGR 遺傳演算法（GA）藍圖（S142~S143）**：採用 8~12 檔帕雷托集中持股與雙軌混合進出場機制（見 [G05](05-alpha-strategies-and-ga.md) 及 [GB08](blocks/GB08-volatility-target-sizer.md)~[GB09](blocks/GB09-fcf-momentum-core.md)）。
+  - 提出 **次世代 50% CAGR 遺傳演算法（GA）藍圖（S142~S143）**：採用 8~12 檔帕雷托集中持股與雙軌混合進出場機制（見 [G05](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/05-alpha-strategies-and-ga.md) 及 [GB08](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB08-volatility-target-sizer.md)~[GB09](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB09-fcf-momentum-core.md)）。
 
 ### 6. 嚴格防過擬合與前瞻驗證 (Validation & Forward SIM)
 - **問題**：跑了數千次試驗後挑出的最佳策略，極可能只是隨機噪聲。
-- **解決方案**：導入 **Deflated Sharpe Ratio (DSR)** 與 **PBO**，強制將 4,000+ 次試驗納入分母進行顯著性折價懲罰；並建立不可回填的 **Forward SIM 追蹤鏈**（見 [G06](06-validation-dsr-and-forward-sim.md) 及 [GB10](blocks/GB10-dsr-pbo-validator.md)）。
+- **解決方案**：導入 **Deflated Sharpe Ratio (DSR)** 與 **PBO**，強制將 4,000+ 次試驗納入分母進行顯著性折價懲罰；並建立不可回填的 **Forward SIM 追蹤鏈**（見 [G06](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/06-validation-dsr-and-forward-sim.md) 及 [GB10](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB10-dsr-pbo-validator.md)）。
 
 ---
 
@@ -90,33 +90,33 @@ graph TD
 
 | 編號 | 積木名稱 | 核心功能 | 原始代碼位置 |
 |---|---|---|---|
-| [`GB01`](blocks/GB01-research-lock.md) | **全域排他研究鎖** | 多程序並發安全防衝突、心跳逾時自動回收 | `scripts/research_lock.py` |
-| [`GB02`](blocks/GB02-pit-lag-aligner.md) | **PIT 財報營收對齊器** | 嚴格依照法定公告日對齊，根除偷看未來資料 | `src/quant_grill_lab/strategies/claude_core.py` |
-| [`GB03`](blocks/GB03-integer-basket-allocator.md) | **凸性整數規劃分配器** | 給定預算與權重，精確求解最佳整數股數組合 | `src/quant_grill_lab/tactics/allocation.py` |
-| [`GB04`](blocks/GB04-adv-capacity-guard.md) | **ADV20 容量守門員** | 檢查單檔委託是否超過 20 日均量 2%~5% | `src/quant_grill_lab/execution/capacity_guard.py` |
-| [`GB05`](blocks/GB05-fee-floor-calculator.md) | **手續費低消計算器** | 評估小額委託手續費佔比，過濾被低消吃掉的標的 | `src/quant_grill_lab/execution/fee_floor.py` |
-| [`GB06`](blocks/GB06-microstructure-matcher.md) | **五檔微結構評級器** | 根據買賣五檔深度與 Spread 判定最佳掛單方式 | `src/quant_grill_lab/execution/strategy_microstructure_matcher.py` |
-| [`GB07`](blocks/GB07-smart-requote-engine.md) | **限價智慧追價狀態機** | 委託未成交時的超時重報、滑價保護與撤單狀態機 | `src/quant_grill_lab/execution/requote.py` |
-| [`GB08`](blocks/GB08-volatility-target-sizer.md) | **波動度目標部位調節器** | 依近期市場與個股波動動態縮放持股水位 | `src/quant_grill_lab/strategies/gemini_004_vol_target_cashflow_momentum.py` |
-| [`GB09`](blocks/GB09-fcf-momentum-core.md) | **現金流營收動能因子核心** | 結合營運現金流、營業毛利與動能的選股核心 | `src/quant_grill_lab/strategies/gemini_001_weighted_cashflow_momentum.py` |
-| [`GB10`](blocks/GB10-dsr-pbo-validator.md) | **DSR / PBO 過擬合檢驗器** | 納入多重試驗次數懲罰的統計顯著性檢驗 | `src/quant_grill_lab/strategy_selection/` |
+| [`GB01`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB01-research-lock.md) | **全域排他研究鎖** | 多程序並發安全防衝突、心跳逾時自動回收 | `scripts/research_lock.py` |
+| [`GB02`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB02-pit-lag-aligner.md) | **PIT 財報營收對齊器** | 嚴格依照法定公告日對齊，根除偷看未來資料 | `src/quant_grill_lab/strategies/claude_core.py` |
+| [`GB03`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB03-integer-basket-allocator.md) | **凸性整數規劃分配器** | 給定預算與權重，精確求解最佳整數股數組合 | `src/quant_grill_lab/tactics/allocation.py` |
+| [`GB04`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md) | **ADV20 容量守門員** | 檢查單檔委託是否超過 20 日均量 2%~5% | `src/quant_grill_lab/execution/capacity_guard.py` |
+| [`GB05`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB05-fee-floor-calculator.md) | **手續費低消計算器** | 評估小額委託手續費佔比，過濾被低消吃掉的標的 | `src/quant_grill_lab/execution/fee_floor.py` |
+| [`GB06`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB06-microstructure-matcher.md) | **五檔微結構評級器** | 根據買賣五檔深度與 Spread 判定最佳掛單方式 | `src/quant_grill_lab/execution/strategy_microstructure_matcher.py` |
+| [`GB07`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB07-smart-requote-engine.md) | **限價智慧追價狀態機** | 委託未成交時的超時重報、滑價保護與撤單狀態機 | `src/quant_grill_lab/execution/requote.py` |
+| [`GB08`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB08-volatility-target-sizer.md) | **波動度目標部位調節器** | 依近期市場與個股波動動態縮放持股水位 | `src/quant_grill_lab/strategies/gemini_004_vol_target_cashflow_momentum.py` |
+| [`GB09`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB09-fcf-momentum-core.md) | **現金流營收動能因子核心** | 結合營運現金流、營業毛利與動能的選股核心 | `src/quant_grill_lab/strategies/gemini_001_weighted_cashflow_momentum.py` |
+| [`GB10`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB10-dsr-pbo-validator.md) | **DSR / PBO 過擬合檢驗器** | 納入多重試驗次數懲罰的統計顯著性檢驗 | `src/quant_grill_lab/strategy_selection/` |
 
 ---
 
 ## 4. 如何在 NotebookLM 與各家 AI 中使用本教材？
 
-1. **整體架構速讀**：將本篇 [G00](00-gemini-master-context.md) 與 [_shared/SYSTEM_MAP.md](../_shared/SYSTEM_MAP.md) 匯入 NotebookLM，詢問：
+1. **整體架構速讀**：將本篇 [G00](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/00-gemini-master-context.md) 與 [_shared/SYSTEM_MAP.md](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/SYSTEM_MAP.md) 匯入 NotebookLM，詢問：
    > 「請用大白話解釋 Quant Grill Lab 如何將『策略研究』與『實盤下單』進行物理隔離？」
-2. **黑盒子積木拼裝**：將 [GB03](blocks/GB03-integer-basket-allocator.md) 與 [GB04](blocks/GB04-adv-capacity-guard.md) 匯入 ChatGPT 或 Claude，詢問：
+2. **黑盒子積木拼裝**：將 [GB03](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB03-integer-basket-allocator.md) 與 [GB04](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md) 匯入 ChatGPT 或 Claude，詢問：
    > 「我有一筆 100 萬資金與 10 檔股票目標權重，請用 GB03 與 GB04 幫我寫出計算真實下單張數的 Python 腳本。」
-3. **跨 AI 交互學習**：將 Claude 專區的 [C00](../claude/00-context.md) 與本篇 [G00](00-gemini-master-context.md) 同時提供給 AI，詢問：
+3. **跨 AI 交互學習**：將 Claude 專區的 [C00](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/00-context.md) 與本篇 [G00](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/00-gemini-master-context.md) 同時提供給 AI，詢問：
    > 「Claude 的『實績對帳主線』與 Gemini 的『戰術整數分配』如何協同運作？」
 
 ---
 
 ## [G01] 治理邊界、排他研究鎖與 Fail-Closed 防禦架構
 
-*track: governance · status: verified · source: lesson/gemini/01-governance-and-fail-closed.md*
+*track: governance · status: unvalidated · source: lesson/gemini/01-governance-and-fail-closed.md*
 
 # 治理邊界、排他研究鎖與 Fail-Closed 防禦架構
 
@@ -176,7 +176,7 @@ graph TD
 
 ## 3. 核心積木與代碼實作
 
-完整獨立可運行的研究鎖實作請參閱 [`GB01 全域排他研究鎖`](blocks/GB01-research-lock.md)。
+完整獨立可運行的研究鎖實作請參閱 [`GB01 全域排他研究鎖`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB01-research-lock.md)。
 
 ### 常用命令列操作：
 ```powershell
@@ -200,7 +200,7 @@ graph TD
 
 ## [G02] 資料防偷看防禦 · FinLab 資料管線與 PIT 財報公告日對齊
 
-*track: data · status: verified · source: lesson/gemini/02-data-pit-and-leakage-defense.md*
+*track: data · status: unvalidated · source: lesson/gemini/02-data-pit-and-leakage-defense.md*
 
 # 資料防偷看防禦 · FinLab 資料管線與 PIT 財報公告日對齊
 
@@ -262,7 +262,7 @@ def scoped_universe(custom_universe: list[str]):
 
 ## 3. PIT 對齊器積木實作
 
-完整的 PIT 防偷看對齊模組請參閱 [`GB02 PIT 財報與營收防偷看對齊器`](blocks/GB02-pit-lag-aligner.md)。
+完整的 PIT 防偷看對齊模組請參閱 [`GB02 PIT 財報與營收防偷看對齊器`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB02-pit-lag-aligner.md)。
 
 核心原則：
 1. **月營收**：一律對齊至次月 11 日的次一開盤日（Next Open）。
@@ -280,7 +280,7 @@ def scoped_universe(custom_universe: list[str]):
 
 ## [G03] 戰術分配 · 凸性整數規劃與真實帳戶部位定價
 
-*track: tactics · status: verified · source: lesson/gemini/03-tactics-and-integer-sizing.md*
+*track: tactics · status: unvalidated · source: lesson/gemini/03-tactics-and-integer-sizing.md*
 
 # 戰術分配 · 凸性整數規劃與真實帳戶部位定價
 
@@ -347,7 +347,7 @@ State 0: (Cash = 0, Error = sum(Ideal))
 
 ## 4. 核心積木代碼與使用方式
 
-完整演算法與邊界處理已封裝於 [`GB03 凸性整數規劃分配器`](blocks/GB03-integer-basket-allocator.md)。
+完整演算法與邊界處理已封裝於 [`GB03 凸性整數規劃分配器`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB03-integer-basket-allocator.md)。
 
 ### 調用範例：
 ```python
@@ -381,7 +381,7 @@ for alloc in plan.allocations:
 
 ## [G04] 微結構與執行工程 · 委託簿深度、ADV 容量守門員與滑價校準
 
-*track: execution · status: verified · source: lesson/gemini/04-microstructure-and-execution.md*
+*track: execution · status: unvalidated · source: lesson/gemini/04-microstructure-and-execution.md*
 
 # 微結構與執行工程 · 委託簿深度、ADV 容量守門員與滑價校準
 
@@ -459,10 +459,10 @@ for alloc in plan.allocations:
 
 ## 5. 相關積木模組索引
 
-- [`GB04 ADV20 容量守門員`](blocks/GB04-adv-capacity-guard.md)
-- [`GB05 手續費低消計算器`](blocks/GB05-fee-floor-calculator.md)
-- [`GB06 五檔微結構評級器`](blocks/GB06-microstructure-matcher.md)
-- [`GB07 限價智慧追價狀態機`](blocks/GB07-smart-requote-engine.md)
+- [`GB04 ADV20 容量守門員`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md)
+- [`GB05 手續費低消計算器`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB05-fee-floor-calculator.md)
+- [`GB06 五檔微結構評級器`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB06-microstructure-matcher.md)
+- [`GB07 限價智慧追價狀態機`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB07-smart-requote-engine.md)
 
 ---
 
@@ -475,7 +475,7 @@ for alloc in plan.allocations:
 
 ## [G05] 核心策略演化 · 波動度加權與 50% CAGR 遺傳演算法 (GA) 藍圖
 
-*track: strategy · status: verified · source: lesson/gemini/05-alpha-strategies-and-ga.md*
+*track: strategy · status: unvalidated · source: lesson/gemini/05-alpha-strategies-and-ga.md*
 
 # 核心策略演化 · 波動度加權與 50% CAGR 遺傳演算法 (GA) 藍圖
 
@@ -556,8 +556,8 @@ class RadicalStrategyGene:
 
 ## 4. 相關積木模組索引
 
-- [`GB08 波動度目標部位調節器`](blocks/GB08-volatility-target-sizer.md)
-- [`GB09 現金流營收動能因子核心`](blocks/GB09-fcf-momentum-core.md)
+- [`GB08 波動度目標部位調節器`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB08-volatility-target-sizer.md)
+- [`GB09 現金流營收動能因子核心`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB09-fcf-momentum-core.md)
 
 ---
 
@@ -570,7 +570,7 @@ class RadicalStrategyGene:
 
 ## [G06] 防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈
 
-*track: validation · status: verified · source: lesson/gemini/06-validation-dsr-and-forward-sim.md*
+*track: validation · status: unvalidated · source: lesson/gemini/06-validation-dsr-and-forward-sim.md*
 
 # 防過擬合鐵律 · Deflated Sharpe Ratio (DSR)、PBO 與前瞻 SIM 證據鏈
 
@@ -649,7 +649,7 @@ HOLD_RESEARCH_ONLY_NO_PRISTINE_OOS
 
 ## 5. 相關積木模組索引
 
-- [`GB10 DSR / PBO 過擬合檢驗器`](blocks/GB10-dsr-pbo-validator.md)
+- [`GB10 DSR / PBO 過擬合檢驗器`](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB10-dsr-pbo-validator.md)
 
 ---
 
@@ -662,7 +662,7 @@ HOLD_RESEARCH_ONLY_NO_PRISTINE_OOS
 
 ## [GB01] 積木 · 全域排他研究鎖 (OS-backed Research Lock)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB01-research-lock.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB01-research-lock.md*
 
 # 積木 · 全域排他研究鎖 (Research Lock)
 
@@ -804,7 +804,7 @@ def test_gb01_lock_acquisition_and_release(tmp_path):
 
 ## [GB02] 積木 · PIT 財報與營收防偷看對齊器 (PIT & Lag Aligner)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB02-pit-lag-aligner.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB02-pit-lag-aligner.md*
 
 # 積木 · PIT 財報與營收防偷看對齊器 (PIT Aligner)
 
@@ -900,7 +900,7 @@ def test_gb02_monthly_revenue_pit_no_lookahead():
 
 ## [GB03] 積木 · 凸性整數規劃投組權重分配器 (Integer Basket Allocator)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB03-integer-basket-allocator.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB03-integer-basket-allocator.md*
 
 # 積木 · 凸性整數規劃投組權重分配器 (Integer Allocator)
 
@@ -1035,7 +1035,7 @@ def test_gb03_allocation_within_budget():
 
 ## [GB04] 積木 · ADV20 流動性與容量守門員 (ADV20 Capacity Guard)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB04-adv-capacity-guard.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB04-adv-capacity-guard.md*
 
 # 積木 · ADV20 流動性與容量守門員 (Capacity Guard)
 
@@ -1186,7 +1186,7 @@ def test_gb04_capacity_guard_thresholds():
 
 ## [GB05] 積木 · 券商手續費低消與損益平衡門檻計算器 (Fee Floor Calculator)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB05-fee-floor-calculator.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB05-fee-floor-calculator.md*
 
 # 積木 · 券商手續費低消與損益平衡門檻計算器 (Fee Floor)
 
@@ -1304,7 +1304,7 @@ def test_gb05_fee_floor_viability():
 
 ## [GB06] 積木 · 五檔微結構與衝擊成本評級器 (Microstructure Matcher)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB06-microstructure-matcher.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB06-microstructure-matcher.md*
 
 # 積木 · 五檔微結構與衝擊成本評級器 (Microstructure Matcher)
 
@@ -1437,7 +1437,7 @@ def test_gb06_microstructure_matching():
 
 ## [GB07] 積木 · 限價智慧追價與重報價狀態機 (Smart Requote Engine)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB07-smart-requote-engine.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB07-smart-requote-engine.md*
 
 # 積木 · 限價智慧追價與重報價狀態機 (Smart Requote)
 
@@ -1567,7 +1567,7 @@ def test_gb07_requote_state_transitions():
 
 ## [GB08] 積木 · 動態波動度目標部位調節器 (Volatility Target Sizer)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB08-volatility-target-sizer.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB08-volatility-target-sizer.md*
 
 # 積木 · 動態波動度目標部位調節器 (Vol-Target Sizer)
 
@@ -1661,7 +1661,7 @@ def test_gb08_vol_targeting_scaling():
 
 ## [GB09] 積木 · 現金流營收動能因子選股核心 (FCF & Revenue Momentum Core)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB09-fcf-momentum-core.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB09-fcf-momentum-core.md*
 
 # 積木 · 現金流營收動能因子選股核心 (FCF Momentum Core)
 
@@ -1758,7 +1758,7 @@ def test_gb09_fcf_factor_scoring():
 
 ## [GB10] 積木 · DSR 與 PBO 過擬合檢驗器 (Deflated Sharpe & PBO Validator)
 
-*track: block · status: verified · source: lesson/gemini/blocks/GB10-dsr-pbo-validator.md*
+*track: block · status: unvalidated · source: lesson/gemini/blocks/GB10-dsr-pbo-validator.md*
 
 # 積木 · DSR 與 PBO 過擬合檢驗器 (DSR Validator)
 

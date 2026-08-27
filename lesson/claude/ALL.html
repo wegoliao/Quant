@@ -62,11 +62,11 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <body><div class="wrap">
 <div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / <a href="index.html">claude</a> / 合輯</div>
 <h1>lesson/claude · 完整合輯</h1>
-<p>作者 AI：<strong>Claude (Opus 5, Anthropic)</strong>　·　檔案 30 份　·　產生於 2026-08-26</p>
+<p>作者 AI：<strong>Claude (Opus 5, Anthropic)</strong>　·　檔案 30 份　·　產生於 2026-08-27</p>
 <p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案，可以單獨抽走使用。</p>
 <hr>
 <h2>[C00] 脈絡 · 這個系統到底在做什麼</h2>
-<p>*track: context · status: verified · source: lesson/claude/00-context.md*</p>
+<p>*track: context · status: unvalidated · source: lesson/claude/00-context.md*</p>
 <h1>脈絡 · 這個系統到底在做什麼</h1>
 <p>如果你只讀一份文件，讀這份。其他所有積木都假設你已經知道這裡的分層。</p>
 <h2>一句話</h2>
@@ -78,7 +78,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <h2>兩條主線</h2>
 <p>系統把宇宙切成兩半，切點是「有沒有真的付錢」：</p>
 <p><strong>主線一（Mainline 1）· 錢的那條</strong></p>
-<ul><li>來源：券商成交回報，逐筆</li><li>有：成交價、股數、手續費、證交稅、成交日</li><li>能算：已實現損益、未實現損益、TWR、MDD</li><li>目前：22 筆買、1 筆賣、四個 NT$50 萬 sleeve</li></ul>
+<ul><li>來源：券商成交回報，逐筆</li><li>有：成交價、股數、手續費、證交稅、成交日</li><li>能算：已實現損益、未實現損益、TWR、MDD</li><li>目前：已有小型成交樣本與多個 sleeve；公開教材不揭露 owner 實際筆數、部位或金額</li></ul>
 <p><strong>主線二（Mainline 2）· 紙上的那條</strong></p>
 <ul><li>定義：策略卡上有訊號、但<strong>整戶零部位</strong>的個股</li><li>不配資金、不進 sleeve、不影響任何實績數字</li><li>能算：分價分布、現價分位、容量</li><li>不能算：報酬。因為沒有進場點，任何報酬都是假設出來的</li></ul>
 <p>關鍵設計：<strong>主線二的名單不是人工維護的，是資料的差集自己算出來的。</strong></p>
@@ -104,12 +104,12 @@ TWSE/TPEx OpenAPI ──&gt; inputs/price_history.csv ─┤
 <h2>怎麼用這份 lesson</h2>
 <p>每個積木（block）都是一個<strong>已經驗證過的黑盒子</strong>：有明確輸入、明確輸出、明確不變量、明確測試。你可以單獨抽走任何一個放進自己的專案，不需要理解其他的。</p>
 <p>建議順序：</p>
-<ol><li>先讀 <a href="01-contracts.md"><code>01-contracts</code></a> —— 知道資料長什麼樣</li><li>再讀 <a href="blocks/B01-realized-pnl-fifo.md"><code>B01 已實現損益</code></a> —— 最小、最完整的一個積木</li><li>然後照你要解的問題挑 —— 積木之間沒有隱藏依賴</li></ol>
+<ol><li>先讀 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/01-contracts.md"><code>01-contracts</code></a> —— 知道資料長什麼樣</li><li>再讀 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B01-realized-pnl-fifo.md"><code>B01 已實現損益</code></a> —— 最小、最完整的一個積木</li><li>然後照你要解的問題挑 —— 積木之間沒有隱藏依賴</li></ol>
 <hr>
-<p><strong>本目錄作者：Claude (Opus 5, Anthropic)。</strong> 其他 AI 請寫在 <code>lesson/&amp;lt;你的名字&amp;gt;/</code>，不要改這一份。交互學習的規則見 <a href="../_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL</code></a>。</p>
+<p><strong>本目錄作者：Claude (Opus 5, Anthropic)。</strong> 其他 AI 請寫在 <code>lesson/&amp;lt;你的名字&amp;gt;/</code>，不要改這一份。交互學習的規則見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL</code></a>。</p>
 <hr>
 <h2>[C01] 資料契約 · 四個 CSV 就是全部</h2>
-<p>*track: context · status: verified · source: lesson/claude/01-contracts.md*</p>
+<p>*track: context · status: unvalidated · source: lesson/claude/01-contracts.md*</p>
 <h1>資料契約 · 四個 CSV 就是全部</h1>
 <p>積木之間不靠函式呼叫溝通，靠<strong>檔案格式</strong>。這是刻意的：CSV 可以被人眼檢查、被 git diff、被任何語言讀，而且不會因為你換了框架就壞掉。</p>
 <h2>契約設計的三條規則</h2>
@@ -119,31 +119,31 @@ TWSE/TPEx OpenAPI ──&gt; inputs/price_history.csv ─┤
 <hr>
 <h2><code>actual_fills.csv</code> · 成交簿（唯一不會騙人的檔案）</h2>
 <pre><code class="lang-csv">trade_id,strategy_id,stock_code,stock_name,side,fill_date,fill_time,fill_price,shares,consideration_twd,fee_twd,tax_twd,cash_out_twd,cash_in_twd,currency,source
-X-02HV,YOY,3702,大聯大,BUY,2026-08-11,,126.5,546,69069,98,0,69167,0,TWD,20260820庫存表.xlsx
-X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,20260820庫存表.xlsx</code></pre>
+SYN-001,STRATEGY_A,DEMO-A,示例股票A,BUY,2026-01-02,,100.0,100,10000,20,0,10020,0,TWD,synthetic_fixture.csv
+SYN-002,STRATEGY_A,DEMO-A,示例股票A,SELL,2026-01-10,,95.0,100,9500,20,29,0,9451,TWD,synthetic_fixture.csv</code></pre>
 <div class="tw"><table><thead><tr><th style="text-align:left">欄位</th><th style="text-align:left">契約</th></tr></thead><tbody><tr><td style="text-align:left"><code>trade_id</code></td><td style="text-align:left">券商委託單號。<strong>不保證唯一</strong> —— 不同日可能重複，需要時自己加日期後綴</td></tr><tr><td style="text-align:left"><code>strategy_id</code></td><td style="text-align:left"><code>TRUST</code> / <code>YOY</code> / <code>MARGIN</code> / <code>BREAKOUT</code>。歸屬是人工決定，同一檔可以拆給兩個策略</td></tr><tr><td style="text-align:left"><code>side</code></td><td style="text-align:left"><code>BUY</code> / <code>SELL</code></td></tr><tr><td style="text-align:left"><code>cash_out_twd</code></td><td style="text-align:left">買進實付＝價金＋手續費</td></tr><tr><td style="text-align:left"><code>cash_in_twd</code></td><td style="text-align:left">賣出實收＝價金−手續費−證交稅</td></tr></tbody></table></div>
 <p><strong>關鍵：<code>cash_out</code> / <code>cash_in</code> 才是真相，不是 <code>fill_price × shares</code>。</strong> 所有損益計算都必須從這兩欄出發。用價差算出來的損益永遠比實際好看。</p>
-<p><strong>同一檔可以掛在不同策略。</strong> 例如 1709 和益：3,644 股在 <code>BREAKOUT</code>、305 股在 <code>MARGIN</code>。所以持股要用 <code>(strategy_id, stock_code)</code> 當 key，不能只用 <code>stock_code</code>。</p>
+<p><strong>同一檔可以掛在不同策略。</strong> 合成例：<code>DEMO-B</code> 有 100 股在 <code>STRATEGY_A</code>、20 股在 <code>STRATEGY_B</code>。所以持股要用 <code>(strategy_id, stock_code)</code> 當 key，不能只用 <code>stock_code</code>。</p>
 <hr>
 <h2><code>price_history.csv</code> · 官方行情</h2>
 <pre><code class="lang-csv">asof_date,stock_code,open,high,low,close,volume,market,source
-2026-08-25,2637,95.9,99.5,94.7,95.5,12345678,TWSE,TWSE_STOCK_DAY</code></pre>
+2026-01-10,DEMO-A,94.0,97.0,93.0,95.0,1000000,TWSE,SYNTHETIC_FIXTURE</code></pre>
 <ul><li>來源：TWSE <code>STOCK_DAY</code>、TPEx <code>daily_close_quotes</code>，都是官方公開 API</li><li><strong>休市、資料未發布、日期不符 → 不寫入。</strong> 寧可缺一天，不可拿舊價冒充今天收盤</li><li>OHLC 四個都要。只存 close 的話，分價分布（B02）和成交落點（B03）都做不了 —— 這是很多人事後才發現的坑</li></ul>
 <hr>
 <h2><code>latest_strategy_signals.csv</code> · 每日策略卡</h2>
 <pre><code class="lang-csv">asof_date,effective_date,strategy_id,stock_code,stock_name,industry,entry_display,entry_price,close,magnitude_pct,direction,signed_return_pct,signal,source,quality_note
-2026-08-25,,MARGIN,6213,聯茂,電子零組件,424.0,424.0,530,24.8,+,24.8,抱,owner_strategy_card_2026-08-25,</code></pre>
+2026-01-10,,STRATEGY_A,DEMO-C,示例股票C,示例產業,90.0,90.0,95.0,5.6,+,5.6,抱,synthetic_strategy_card,</code></pre>
 <ul><li><code>magnitude_pct</code> 恆為正、<code>direction</code> 是 <code>+</code>/<code>-</code>、<code>signed_return_pct</code> 才是帶號的。這是為了如實保存卡面（卡面只印絕對值加符號）</li><li><code>quality_note</code> 記錄<strong>來源自相矛盾</strong>的地方，例如：</li></ul>
 <pre><code>PRINTED_PCT_VS_ENTRY_CLOSE_GAP:printed=37.8+,implied=+36.4</code></pre>
 <blockquote>卡面印 37.8%，但用它自己印的進場價和收盤價回推是 36.4%。 <strong>不改任何一格，只標註。</strong> 資料的矛盾是資訊，抹平它就是銷毀證據。</blockquote>
 <hr>
 <h2><code>watchlist.csv</code> · 誰的行情要繼續抓</h2>
 <pre><code class="lang-csv">stock_code,stock_name,strategy_id,track,market,note
-6213,聯茂,MARGIN,MAINLINE2,TWSE,融資卡成員；整戶零部位
-3702,大聯大,YOY,CLOSED,TWSE,已平倉；保留行情供成交落點對照</code></pre>
+DEMO-C,示例股票C,STRATEGY_A,MAINLINE2,TWSE,策略卡成員；整戶零部位
+DEMO-A,示例股票A,STRATEGY_A,CLOSED,TWSE,已平倉；保留行情供成交落點對照</code></pre>
 <p>這個檔案解決一個真實踩到的洞：<strong>持股清單驅動抓取時，一檔賣掉就等於資料斷線。</strong></p>
-<p>3702 平倉後從持股消失，行情停止更新，結果它的兩筆成交在成交落點分析裡完全對不到日線 —— 賣出樣本數是 0。加進 watchlist 後才補回來。</p>
-<p>詳見 <a href="blocks/B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
+<p><code>DEMO-A</code> 平倉後從持股消失，行情停止更新，結果它的兩筆合成成交在成交落點分析裡完全對不到日線。加進 watchlist 後才補回來。</p>
+<p>詳見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
 <hr>
 <h2>為什麼是 CSV 不是資料庫</h2>
 <ul><li>可以 <code>git diff</code>。資料改了什麼，PR 裡看得見</li><li>可以用 Excel 開。owner 要臨時補一列不需要問工程師</li><li>不需要 migration。加一欄就是加一欄</li><li>壞掉的時候看得出來哪一列壞了</li></ul>
@@ -152,7 +152,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>本目錄作者：Claude (Opus 5, Anthropic)。</strong></p>
 <hr>
 <h2>[C20] 陷阱清單 · 這個專案真的踩到的坑</h2>
-<p>*track: traps · status: verified · source: lesson/claude/20-traps.md*</p>
+<p>*track: traps · status: unvalidated · source: lesson/claude/20-traps.md*</p>
 <h1>陷阱清單</h1>
 <p>每一條都是<strong>真的發生過</strong>的，不是教科書上的假設。附上發現方式，因為「怎麼被發現的」比「是什麼」更有價值。</p>
 <hr>
@@ -163,16 +163,16 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>怎麼發現的</strong>：把日報酬列出來看，最後一天的數字和個股漲跌對不上。</p>
 <hr>
 <h2>T02 · 已實現損益沒有名字</h2>
-<p><strong>症狀</strong>：owner 讀了三天畫面，問「大聯大的虧損你是不是漏算了？」</p>
+<p><strong>症狀</strong>：owner 發現一筆已平倉虧損在畫面上無法被指認，合理懷疑系統漏算。</p>
 <p><strong>原因</strong>：數學沒漏 —— sleeve 曲線一直含這筆虧損。但<strong>整個 repo 沒有任何地方叫做「已實現」</strong>，所有標籤都寫「未實現」。賣掉的股票離開庫存表，畫面上就找不到了。</p>
 <p><strong>教訓</strong>：正確的數字放在錯誤的標籤下面，等於錯的。<strong>一個你指不出來的虧損，你不會從它身上學到東西。</strong></p>
 <p><strong>怎麼發現的</strong>：使用者讀畫面讀出來的，不是測試抓到的。這類問題測試抓不到 —— 測試只驗證計算，不驗證「人看得懂嗎」。</p>
 <hr>
 <h2>T03 · 賣掉的股票資料斷線</h2>
-<p><strong>症狀</strong>：成交落點分析裡，賣出樣本數 = 0。系統只有 1 筆賣出，那 1 筆是空的。</p>
-<p><strong>原因</strong>：抓行情的宇宙來自持股清單。3702 平倉後離開持股 → 行情停更 → 它的兩筆成交都對不到日線。</p>
+<p><strong>症狀</strong>：成交落點分析裡，賣出樣本數意外歸零；小樣本中的出場觀察全部消失。</p>
+<p><strong>原因</strong>：抓行情的宇宙來自持股清單。合成標的 <code>DEMO-A</code> 平倉後離開持股 → 行情停更 → 它的兩筆成交都對不到日線。</p>
 <p><strong>教訓</strong>：<strong>你最需要一檔股票資料的時刻，正好是它剛賣掉的時候。</strong></p>
-<p><strong>修法</strong>：<a href="blocks/B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a></p>
+<p><strong>修法</strong>：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a></p>
 <hr>
 <h2>T04 · 只存收盤價</h2>
 <p><strong>症狀</strong>：想做分價分布和成交落點，發現做不了。</p>
@@ -180,14 +180,14 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>教訓</strong>：<strong>存資料的時候多存幾欄的成本是零，事後補的成本是無限大</strong>（歷史行情可能已經不好拿了）。OHLCV 五個欄位一律全存。</p>
 <hr>
 <h2>T05 · 委託單號不唯一</h2>
-<p><strong>症狀</strong>：8/19 的 2301 光寶科和 8/25 的 2637 慧洋-KY，委託單號都是 <code>X-00ZX</code>。</p>
+<p><strong>症狀</strong>：不同日期的兩筆去識別委託，外部委託單號都回傳同一個 <code>DEMO-ORDER-ID</code>。</p>
 <p><strong>原因</strong>：券商的委託單號在不同日期會重複。</p>
-<p><strong>教訓</strong>：<strong>不要相信外部系統的 ID 是全域唯一的。</strong> 需要唯一鍵時自己組（例如 <code>X-00ZX-20260825</code>），並且在文件裡寫明這個 ID 不唯一。</p>
+<p><strong>教訓</strong>：<strong>不要相信外部系統的 ID 是全域唯一的。</strong> 需要唯一鍵時自己組（例如 <code>DEMO-ORDER-ID-YYYYMMDD</code>），並且在文件裡寫明這個 ID 不唯一。</p>
 <hr>
 <h2>T06 · 用價差算損益</h2>
 <p><strong>症狀</strong>：算出來的損益永遠比對帳單好看一點點。</p>
-<p><strong>原因</strong>：<code>(賣價 − 買價) × 股數</code> 少算手續費和證交稅。3702 的價差答案 −10,647，真實答案 −11,003。</p>
-<p><strong>教訓</strong>：差 356 元不多，但<strong>它永遠往好的方向錯</strong>。100 筆之後你的策略評估會系統性偏樂觀。永遠從 <code>cash_out</code> / <code>cash_in</code> 出發。</p>
+<p><strong>原因</strong>：<code>(賣價 − 買價) × 股數</code> 少算手續費和證交稅。合成例的價差答案 −500，settled-cash 答案 −569。</p>
+<p><strong>教訓</strong>：差額看似不大，但<strong>它永遠往好的方向錯</strong>。累積多筆後策略評估會系統性偏樂觀。永遠從 <code>cash_out</code> / <code>cash_in</code> 出發。</p>
 <hr>
 <h2>T07 · 資料來源自相矛盾，然後被抹平</h2>
 <p><strong>症狀</strong>：策略卡表頭印 +3.7%，但畫面上六檔成分股的可見數字平均是 +4.33%，差 0.63pp。</p>
@@ -204,7 +204,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <h2>T09 · 樣本 11 筆算 Sharpe</h2>
 <p><strong>症狀</strong>：Sharpe 顯示 3.2，看起來很棒。</p>
 <p><strong>原因</strong>：標準差在小樣本下極不穩定，年化再乘 √252 ≈ 15.9 倍把雜訊放大。</p>
-<p><strong>教訓</strong>：見 <a href="blocks/B08-sample-size-gate.md"><code>B08 樣本量門檻</code></a>。<strong>敢顯示 N/A 才是專業。</strong></p>
+<p><strong>教訓</strong>：見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B08-sample-size-gate.md"><code>B08 樣本量門檻</code></a>。<strong>敢顯示 N/A 才是專業。</strong></p>
 <hr>
 <h2>T10 · 把快照倒推一年當歷史</h2>
 <p><strong>症狀</strong>：曾經有一版把 2026-08-24 的持股股數倒推到一年前，算出一條「一年績效曲線」。</p>
@@ -229,15 +229,15 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
 <hr>
 <h2>[C30] 問題寫法 · 怎麼問才會拿到真話</h2>
-<p>*track: prompts · status: verified · source: lesson/claude/30-prompts.md*</p>
+<p>*track: prompts · status: unvalidated · source: lesson/claude/30-prompts.md*</p>
 <h1>問題寫法 · 怎麼問才會拿到真話</h1>
 <p>這一份不是「prompt 模板大全」。它記錄的是<strong>在這個專案裡實際產生高價值輸出的提問結構</strong>，以及它們為什麼有效。</p>
 <hr>
 <h2>P01 · 指名實例 + 陳述期望屬性</h2>
 <p><strong>實際的提問：</strong></p>
-<blockquote>有計算已經實現的虧損嗎？大聯大是已實現的虧損喔，你是不是漏算了？請再幫我精準呈現。</blockquote>
+<blockquote>有計算已實現的虧損嗎？我看到一筆已平倉虧損，畫面是否漏掉？請分開呈現 realized、unrealized 與 settled cash，並附對帳證據。</blockquote>
 <p><strong>為什麼這個提問很好：</strong></p>
-<ol><li><strong>指名了一個具體實例</strong>（大聯大），不是「損益好像怪怪的」</li><li><strong>陳述了期望屬性</strong>（它是已實現虧損），給了可驗證的斷言</li><li><strong>問的是「有沒有」，不是「請加上」</strong> —— 留了空間讓答案是「有，但你看不到」</li></ol>
+<ol><li><strong>指名了一個具體、但公開時已去識別的 round trip</strong>，不是只說「損益好像怪怪的」</li><li><strong>陳述了期望屬性</strong>（它是已實現虧損），給了可驗證的斷言</li><li><strong>問的是「有沒有」，不是「請加上」</strong> —— 留了空間讓答案是「有，但你看不到」</li></ol>
 <p><strong>結果</strong>：真相是「數學沒漏，但整個系統沒有『已實現』這個字」。如果提問寫成「請加上已實現損益計算」，就會直接進到寫程式，而錯過「原來問題在呈現不在計算」這個更重要的發現。</p>
 <p><strong>可複製的結構：</strong></p>
 <pre><code>[具體實例] 應該是 [屬性]。
@@ -247,7 +247,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>反面</strong>：「這檔該在幾塊買？」</p>
 <p><strong>正面</strong>：「我要能追蹤買賣價到最適合的入場點。」</p>
 <p>第二種問法把問題從「給我一個價格」改成「給我一個追蹤機制」。前者要的是預測（沒有人有），後者要的是量測（可以做到）。</p>
-<p><strong>結果</strong>：做出了成交落點分析（<a href="blocks/B03-fill-landing.md">B03</a>），並且發現「3702 的虧損不是賣錯是買錯」—— 這個發現比任何一個建議價格都有用，因為它告訴你<strong>不要去優化下單方式</strong>。</p>
+<p><strong>結果</strong>：做出了成交落點分析（<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B03-fill-landing.md">B03</a>），並且在去識別案例發現「虧損不是賣錯，而是進場後持有期下跌」—— 這比任何建議價格都有用，因為它告訴你<strong>不要誤把選股問題當下單問題</strong>。</p>
 <p><strong>可複製的結構：</strong></p>
 <pre><code>我要能 [持續量測 X]，而不是 [一次性得到 Y 的答案]。</code></pre>
 <hr>
@@ -268,7 +268,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <p><strong>寫法：</strong></p>
 <blockquote>這些限制要寫在頁面上，不是只在 README。</blockquote>
 <p>差別很大。README 沒有人讀，頁面上的字每天都會被看到。</p>
-<p><strong>實例</strong>：「目前 22 筆買進的樣本量還不足以下結論」這句話印在主線二頁面上，所以三個月後回來看的人不會誤用那個 40%。</p>
+<p><strong>實例</strong>：「目前樣本量不足以下結論」應直接印在頁面上，避免日後讀者把描述統計誤用成交易規則。</p>
 <hr>
 <h2>P06 · 給 AI 明確的「不可協商」清單</h2>
 <p>這個專案的每個腳本開頭都有：</p>
@@ -283,11 +283,11 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 <pre><code>哪個測試在擋哪一種錯誤？
 如果有人把 X 改回舊做法，哪個測試會失敗？</code></pre>
 <p>好的測試能回答第二個問題。<strong>不能回答的測試只是覆蓋率裝飾。</strong></p>
-<p>實例：<code>test_the_real_3702_round_trip_reconciles_to_the_fill_book</code> 的存在理由，就是「3702 這筆虧損被任何形式抹掉時會叫」。</p>
+<p>實例：<code>test_anonymized_losing_round_trip_reconciles_to_the_fill_book</code> 的存在理由，就是「去識別虧損被任何形式抹掉時會叫」。</p>
 <hr>
 <h2>P08 · 要求區分「數學錯」和「呈現錯」</h2>
 <pre><code>這個數字是算錯了，還是算對了但沒有顯示出來？</code></pre>
-<p>在這個專案的 12 個陷阱裡，<strong>有 5 個是呈現問題，只有 4 個是計算問題</strong>（見 <a href="20-traps.md"><code>20-traps</code></a>）。</p>
+<p>在這個專案的 12 個陷阱裡，<strong>有 5 個是呈現問題，只有 4 個是計算問題</strong>（見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/20-traps.md"><code>20-traps</code></a>）。</p>
 <p>大部分人只審查計算，所以大部分問題留在呈現。</p>
 <hr>
 <h2>P09 · 讓 AI 先盤點再動手</h2>
@@ -354,7 +354,7 @@ score = sc(gross_margin).rank(axis=1, pct=True) + sc(ocf).rank(axis=1, pct=True)
 <h2>檢查清單</h2>
 <p>寫任何策略之前先問：</p>
 <ol><li>我用到的資料集裡，最短的那個從哪年開始？→ 那就是我的回測期間。</li><li>這個因子一年更新幾次？→ 那才是我的有效樣本數。</li><li>它是否經歷過至少一次真正的崩盤？</li><li>我有沒有在原始頻率上做橫斷面排名？（有 → 錯了）</li><li>我的換股日對齊了資料的公布節奏嗎？</li></ol>
-<p>相關：<a href="41-capacity-is-the-constraint.md">為什麼胃納量是真正的約束</a>、<a href="42-cost-model.md">成本模型</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/41-capacity-is-the-constraint.md">為什麼胃納量是真正的約束</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/42-cost-model.md">成本模型</a></p>
 <hr>
 <h2>[C41] 為什麼胃納量是真正的約束</h2>
 <p>*track: context · status: verified · verified_by: evidence/honest_top5/all_metrics.json · source: lesson/claude/41-capacity-is-the-constraint.md*</p>
@@ -392,7 +392,7 @@ score = sc(gross_margin).rank(axis=1, pct=True) + sc(ocf).rank(axis=1, pct=True)
 <p>我看過一份報告主張混合之後胃納量「提升 11 倍」，用的公式是 <code>cap = 常數 / w_smallcap</code>。那確實會隨權重下降而變大，但它不是胃納模型，只是一個倒數。</p>
 <h2>記住</h2>
 <blockquote>先問「這個策略能放多少錢」，再問「它賺多少」。順序反過來，你會花好幾個月優化一個放不進錢的東西。</blockquote>
-<p>相關：<a href="53-capacity-fiction.md">胃納量造假的三種寫法</a>、<a href="70-verified-strategy-inventory.md">已驗證積木清單</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/53-capacity-fiction.md">胃納量造假的三種寫法</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/70-verified-strategy-inventory.md">已驗證積木清單</a></p>
 <hr>
 <h2>[C42] 成本模型：不打折、次日開盤、重跑而非扣減</h2>
 <p>*track: context · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/42-cost-model.md*</p>
@@ -450,7 +450,7 @@ for add, tag in [(0.0, &quot;declared&quot;), (0.001, &quot;+10bps&quot;), (0.00
 <p>如果你的部署門檻是 Sharpe 1.6，那麼「在什麼成本下的 1.6」必須寫在門檻定義裡。</p>
 <h2>檢查清單</h2>
 <ol><li>用的是未折扣費率嗎？</li><li>成交價是次日開盤（或更保守）嗎？</li><li>滑價壓測有重跑 <code>sim</code> 嗎？（算 Sharpe 一階差分驗證）</li><li>各策略的衰減率有差異嗎？（全部一樣 = 造假）</li><li>我的 Sharpe 門檻是在哪個成本檔位下說的？</li></ol>
-<p>相關：<a href="51-fake-validation.md">假驗證的四種形態</a>、<a href="40-research-data-truth.md">資料的真相</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">假驗證的四種形態</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/40-research-data-truth.md">資料的真相</a></p>
 <hr>
 <h2>[C50] 前視偏誤：一天的時差可以製造出 Sharpe 4.9</h2>
 <p>*track: traps · status: verified · verified_by: scripts/run_honest_top5_robustness.py · source: lesson/claude/50-lookahead-bias.md*</p>
@@ -504,7 +504,7 @@ r_daily = r_daily * tp_scale      # ← 第 t 日的 20 日報酬決定第 t 日
 <p>但這只擋得住「成交價」層級的前視。<strong>疊加層（overlay / regime / 停利）的前視擋不住</strong>，因為那是在報酬序列上做乘法，繞過了整個回測引擎。所以任何「乘在報酬上」的東西都要單獨做 shift(1) 測試。</p>
 <h2>記住</h2>
 <blockquote>任何在 <code>backtest.sim</code> 之外、直接對報酬序列做乘法的疊加，都要被當成有罪推定，直到通過 shift(1) 測試。</blockquote>
-<p>相關：<a href="51-fake-validation.md">C51 假驗證的四種形態</a>、<a href="blocks/B10-shift1-lookahead-test.md">B10 shift(1) 前視測試</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">C51 假驗證的四種形態</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B10-shift1-lookahead-test.md">B10 shift(1) 前視測試</a></p>
 <hr>
 <h2>[C51] 假驗證的四種形態</h2>
 <p>*track: traps · status: verified · verified_by: evidence/CLAUDE_VERIFICATION_GEMINI_CAGR50_2026-08-26.md · source: lesson/claude/51-fake-validation.md*</p>
@@ -584,7 +584,7 @@ else:
 <hr>
 <h2>總結：驗證報告的驗證清單</h2>
 <ol><li>哪一段資料在配適時沒被看過？（沒有 → 不是樣本外）</li><li>驗證指標有沒有進入適應度函數？（有 → 在驗證集上選模型）</li><li>成本壓測有沒有重跑 <code>sim</code>？（算 Sharpe 一階差分，完美線性 = 造假）</li><li>測試斷言了什麼？（只斷言字面值 = 沒斷言）</li><li>報告的期間、參數、時間戳，和產出檔案對得上嗎？</li></ol>
-<p>相關：<a href="50-lookahead-bias.md">前視偏誤</a>、<a href="52-trial-counting.md">試驗計數</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/50-lookahead-bias.md">前視偏誤</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/52-trial-counting.md">試驗計數</a></p>
 <hr>
 <h2>[C52] 試驗計數：少算 4.7 倍，門檻就低了 0.26 個 Sharpe</h2>
 <p>*track: traps · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/52-trial-counting.md*</p>
@@ -659,7 +659,7 @@ print(d.annualised_benchmark)        # 顯示時再年化回來</code></pre>
     return kept, dropped</code></pre>
 <h2>記住</h2>
 <blockquote>DSR 唯一能修正的是「你申報了多少次試驗」。它修正不了你沒申報的、也修正不了你有沒有偷看未來。它是必要條件，不是充分條件。</blockquote>
-<p>相關：<a href="61-deflated-sharpe.md">怎麼算去膨脹夏普</a>、<a href="51-fake-validation.md">假驗證的四種形態</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/61-deflated-sharpe.md">怎麼算去膨脹夏普</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">假驗證的四種形態</a></p>
 <hr>
 <h2>[C53] 胃納量造假：三種寫法，都不是胃納量</h2>
 <p>*track: traps · status: verified · verified_by: evidence/honest_top5/all_metrics.json · source: lesson/claude/53-capacity-fiction.md*</p>
@@ -714,7 +714,7 @@ eff_cap = cap / max(1.0, bull_leverage)</code></pre>
 <p>按 Sharpe 排的前五名，有三名放不進錢。</p>
 <h2>記住</h2>
 <blockquote>在報告裡，胃納量要和 Sharpe 並列在同一張表，不能放附註。放附註等於沒放 —— 讀的人會先被 CAGR 53.69% 抓走注意力。</blockquote>
-<p>相關：<a href="41-capacity-is-the-constraint.md">為什麼胃納量是真正的約束</a>、<a href="70-verified-strategy-inventory.md">已驗證積木清單</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/41-capacity-is-the-constraint.md">為什麼胃納量是真正的約束</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/70-verified-strategy-inventory.md">已驗證積木清單</a></p>
 <hr>
 <h2>[C60] 驗證流水線：怎麼一次驗完整個策略庫</h2>
 <p>*track: validation · status: verified · verified_by: scripts/run_honest_topN.py · source: lesson/claude/60-verification-harness.md*</p>
@@ -790,16 +790,16 @@ eff_cap = cap / max(1.0, bull_leverage)</code></pre>
 <p>實測抓到：三個編號指向同一支策略（ρ = 1.000），另外一組三檔 ρ 0.95–0.99。</p>
 <p>不先去重，你的「前五名」會是同一支策略的三個版本。</p>
 <h3>檢查二：去膨脹夏普</h3>
-<p>見 <a href="61-deflated-sharpe.md">deflated-sharpe.md</a>。重點是試驗數要<strong>機械計數</strong>，且注意日頻／年化的單位。</p>
+<p>見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/61-deflated-sharpe.md">deflated-sharpe.md</a>。重點是試驗數要<strong>機械計數</strong>，且注意日頻／年化的單位。</p>
 <h3>檢查三：參數高原</h3>
-<p>見 <a href="62-parameter-plateau.md">parameter-plateau.md</a>。每個鄰居都重跑 <code>sim</code>。</p>
+<p>見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/62-parameter-plateau.md">parameter-plateau.md</a>。每個鄰居都重跑 <code>sim</code>。</p>
 <h3>檢查四：成本敏感度</h3>
-<p>見 <a href="42-cost-model.md">cost-model.md</a>。每個檔位都重跑 <code>sim</code>。</p>
+<p>見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/42-cost-model.md">cost-model.md</a>。每個檔位都重跑 <code>sim</code>。</p>
 <h2>分段穩定度（順手做）</h2>
 <pre><code class="lang-python">blocks = np.array_split(r, 4)
 block_sharpes = [b.mean() / b.std() * np.sqrt(252) for b in blocks if len(b) &gt; 60]
 min_block_sharpe = min(block_sharpes)</code></pre>
-<p>這<strong>不是</strong>走步驗證（見 <a href="51-fake-validation.md">fake-validation.md</a>），別這樣叫它。它回答的是「這條曲線有沒有某一段接近失效」。</p>
+<p>這<strong>不是</strong>走步驗證（見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">fake-validation.md</a>），別這樣叫它。它回答的是「這條曲線有沒有某一段接近失效」。</p>
 <p>實測有用：某檔策略整體 Sharpe 1.499 看起來還行，但最差區塊掉到 0.958 —— 有整整一個時期它幾乎失效。另一檔整體 2.211，最差區塊仍有 1.946。</p>
 <h2>最後一步：相關係數矩陣</h2>
 <pre><code class="lang-python">corr = pd.DataFrame({n: load_returns(n) for n in shortlist}).corr()</code></pre>
@@ -819,7 +819,7 @@ trades_per_year = len(t) / years
 median_hold_days = (t[&quot;exit_date&quot;] - t[&quot;entry_date&quot;]).dt.days.median()</code></pre>
 <h2>記住</h2>
 <blockquote>全量重跑比挑幾檔重跑更省事，因為你不用解釋為什麼挑那幾檔。127 檔 15 分鐘，沒有理由不做。</blockquote>
-<p>相關：<a href="51-fake-validation.md">假驗證的四種形態</a>、<a href="70-verified-strategy-inventory.md">已驗證積木清單</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">假驗證的四種形態</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/70-verified-strategy-inventory.md">已驗證積木清單</a></p>
 <hr>
 <h2>[C61] 去膨脹夏普：怎麼算才算數</h2>
 <p>*track: validation · status: verified · verified_by: src/quant_grill_lab/search/deflated.py · source: lesson/claude/61-deflated-sharpe.md*</p>
@@ -890,7 +890,7 @@ median_hold_days = (t[&quot;exit_date&quot;] - t[&quot;entry_date&quot;]).dt.day
 <ol><li><strong>沒申報的試驗</strong>。624 是有 JSON 紀錄的，手動試的、外部繼承的（例如從公開文章移植的策略，發表者自己的搜尋成本未知）都不在裡面。真實門檻只會更高。</li><li><strong>前視偏誤</strong>。DSR 假設你的回測至少是誠實的。一個有前視的 Sharpe 4.9 會輕鬆通過任何 DSR 門檻。<strong>要先做 shift(1) 測試，再做 DSR。</strong></li><li><strong>樣本外</strong>。DSR 修正「你找了多少次」，不修正「你有沒有看過答案」。</li></ol>
 <h2>記住</h2>
 <blockquote>DSR 是必要條件，不是充分條件。順序是：先確認沒有前視 → 再確認成本誠實 → 才輪到 DSR。</blockquote>
-<p>相關：<a href="52-trial-counting.md">試驗計數</a>、<a href="50-lookahead-bias.md">前視偏誤</a>、<a href="62-parameter-plateau.md">參數高原</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/52-trial-counting.md">試驗計數</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/50-lookahead-bias.md">前視偏誤</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/62-parameter-plateau.md">參數高原</a></p>
 <hr>
 <h2>[C62] 參數高原：你選的是山峰還是平台</h2>
 <p>*track: validation · status: verified · verified_by: scripts/run_honest_top5_robustness.py · source: lesson/claude/62-parameter-plateau.md*</p>
@@ -961,7 +961,7 @@ for label, p in neighbours(spec.default_params):
 <ol><li>每個鄰居都真的重跑 <code>sim</code> 了嗎？（不能用內插）</li><li>報告有寫鄰居數嗎？（「100%」不寫分母等於沒寫）</li><li>鄰居失敗和鄰居分數低有分開記嗎？</li><li>參數擾動和結構消融有分開報嗎？</li><li>如果某策略只有 1–2 個數值參數，有在報告裡註明「證據弱」嗎？</li></ol>
 <h2>記住</h2>
 <blockquote>通過率的分母比分子重要。「100% of 2」和「100% of 12」是完全不同的兩件事。</blockquote>
-<p>相關：<a href="61-deflated-sharpe.md">去膨脹夏普</a>、<a href="60-verification-harness.md">驗證流水線</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/61-deflated-sharpe.md">去膨脹夏普</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/60-verification-harness.md">驗證流水線</a></p>
 <hr>
 <h2>[C70] 已驗證積木清單：策略層</h2>
 <p>*track: block · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/70-verified-strategy-inventory.md*</p>
@@ -971,7 +971,7 @@ for label, p in neighbours(spec.default_params):
 <p><strong>這裡不放因子配方。</strong> 放的是介面（讀哪些資料集、暴露哪些參數）、實測數字、以及能不能用的判定。</p>
 <hr>
 <h2>判定門檻</h2>
-<div class="tw"><table><thead><tr><th style="text-align:left">關卡</th><th style="text-align:left">門檻</th><th style="text-align:left">理由</th></tr></thead><tbody><tr><td style="text-align:left">胃納量</td><td style="text-align:left">≥ NT$50 萬</td><td style="text-align:left">低於此無法部署，見 <a href="41-capacity-is-the-constraint.md">why-capacity-binds</a></td></tr><tr><td style="text-align:left">去膨脹夏普</td><td style="text-align:left">≥ 0.95（門檻年化 1.6595，624 次機械計數試驗）</td><td style="text-align:left">見 <a href="61-deflated-sharpe.md">deflated-sharpe</a></td></tr><tr><td style="text-align:left">最差區塊 Sharpe</td><td style="text-align:left">&gt; 1.0</td><td style="text-align:left">四個等長非重疊區塊，任一段失效即不算穩</td></tr><tr><td style="text-align:left">+30bps 成本後</td><td style="text-align:left">&gt; 1.0</td><td style="text-align:left">真的重跑 <code>sim</code>，不是算術扣減</td></tr></tbody></table></div>
+<div class="tw"><table><thead><tr><th style="text-align:left">關卡</th><th style="text-align:left">門檻</th><th style="text-align:left">理由</th></tr></thead><tbody><tr><td style="text-align:left">胃納量</td><td style="text-align:left">≥ NT$50 萬</td><td style="text-align:left">低於此無法部署，見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/41-capacity-is-the-constraint.md">why-capacity-binds</a></td></tr><tr><td style="text-align:left">去膨脹夏普</td><td style="text-align:left">≥ 0.95（門檻年化 1.6595，624 次機械計數試驗）</td><td style="text-align:left">見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/61-deflated-sharpe.md">deflated-sharpe</a></td></tr><tr><td style="text-align:left">最差區塊 Sharpe</td><td style="text-align:left">&gt; 1.0</td><td style="text-align:left">四個等長非重疊區塊，任一段失效即不算穩</td></tr><tr><td style="text-align:left">+30bps 成本後</td><td style="text-align:left">&gt; 1.0</td><td style="text-align:left">真的重跑 <code>sim</code>，不是算術扣減</td></tr></tbody></table></div>
 <hr>
 <h2>主表</h2>
 <div class="tw"><table><thead><tr><th style="text-align:left">S###</th><th style="text-align:left">家族</th><th style="text-align:left">來源</th><th style="text-align:left">Sharpe</th><th style="text-align:left">CAGR</th><th style="text-align:left">MDD</th><th style="text-align:left">Calmar</th><th style="text-align:left">Sortino</th><th style="text-align:left">alpha</th><th style="text-align:left">beta</th><th style="text-align:left">胃納量</th><th style="text-align:left">最差區塊</th><th style="text-align:left">DSR</th><th style="text-align:left">+30bps</th><th style="text-align:left">判定</th></tr></thead><tbody><tr><td style="text-align:left">S122</td><td style="text-align:left">QUALITY_LOW_VOL</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.211</td><td style="text-align:left">21.78%</td><td style="text-align:left">-11.83%</td><td style="text-align:left">1.841</td><td style="text-align:left">2.225</td><td style="text-align:left">16.82%</td><td style="text-align:left">0.283</td><td style="text-align:left">NT$1,077,368</td><td style="text-align:left">1.946</td><td style="text-align:left">0.9595</td><td style="text-align:left">1.625</td><td style="text-align:left"><strong>可用</strong></td></tr><tr><td style="text-align:left">S138</td><td style="text-align:left">QUALITY_LOW_VOL</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.148</td><td style="text-align:left">22.35%</td><td style="text-align:left">-13.88%</td><td style="text-align:left">1.611</td><td style="text-align:left">2.292</td><td style="text-align:left">16.88%</td><td style="text-align:left">0.309</td><td style="text-align:left">NT$1,876,501</td><td style="text-align:left">1.692</td><td style="text-align:left">0.9435</td><td style="text-align:left">1.538</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S123</td><td style="text-align:left">QUALITY_LOW_VOL</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.097</td><td style="text-align:left">26.62%</td><td style="text-align:left">-16.88%</td><td style="text-align:left">1.577</td><td style="text-align:left">2.193</td><td style="text-align:left">19.13%</td><td style="text-align:left">0.41</td><td style="text-align:left">NT$2,278,084</td><td style="text-align:left">1.644</td><td style="text-align:left">0.9237</td><td style="text-align:left">1.64</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S124</td><td style="text-align:left">QUALITY_INDUSTRY_NEUTRAL</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.027</td><td style="text-align:left">27.17%</td><td style="text-align:left">-15.09%</td><td style="text-align:left">1.801</td><td style="text-align:left">2.161</td><td style="text-align:left">19.91%</td><td style="text-align:left">0.404</td><td style="text-align:left">NT$1,976,313</td><td style="text-align:left">1.908</td><td style="text-align:left">0.8885</td><td style="text-align:left">1.596</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S125</td><td style="text-align:left">PRICE_REVENUE_LONG_HISTORY</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">1.816</td><td style="text-align:left">25.33%</td><td style="text-align:left">-18.24%</td><td style="text-align:left">1.389</td><td style="text-align:left">1.882</td><td style="text-align:left">20.42%</td><td style="text-align:left">0.373</td><td style="text-align:left">NT$1,753,380</td><td style="text-align:left">1.359</td><td style="text-align:left">0.734</td><td style="text-align:left">1.354</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S022</td><td style="text-align:left">MULTI_FACTOR</td><td style="text-align:left">PORTED_FINLAB_PUBLISHED</td><td style="text-align:left">1.756</td><td style="text-align:left">34.88%</td><td style="text-align:left">-29.91%</td><td style="text-align:left">1.166</td><td style="text-align:left">2.091</td><td style="text-align:left">19.75%</td><td style="text-align:left">0.791</td><td style="text-align:left">NT$1,188,789</td><td style="text-align:left">1.472</td><td style="text-align:left">0.6282</td><td style="text-align:left">1.377</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S148</td><td style="text-align:left">RADICAL_CONVEXITY</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">1.545</td><td style="text-align:left">38.12%</td><td style="text-align:left">-23.76%</td><td style="text-align:left">1.604</td><td style="text-align:left">2.095</td><td style="text-align:left">31.45%</td><td style="text-align:left">0.464</td><td style="text-align:left">NT$5,547,322</td><td style="text-align:left">1.247</td><td style="text-align:left">0.343</td><td style="text-align:left">1.219</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S126</td><td style="text-align:left">GROWTH_HIGH_CAPACITY</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">1.499</td><td style="text-align:left">42.28%</td><td style="text-align:left">-36.39%</td><td style="text-align:left">1.162</td><td style="text-align:left">1.968</td><td style="text-align:left">23.99%</td><td style="text-align:left">1.001</td><td style="text-align:left">NT$8,333,758</td><td style="text-align:left">0.958</td><td style="text-align:left">0.2881</td><td style="text-align:left">1.232</td><td style="text-align:left">可部署，未過去膨脹</td></tr><tr><td style="text-align:left">S127</td><td style="text-align:left">SMALLCAP_REVENUE_MOMENTUM</td><td style="text-align:left">INHERITED_WEGO</td><td style="text-align:left">2.107</td><td style="text-align:left">53.69%</td><td style="text-align:left">-24.91%</td><td style="text-align:left">2.156</td><td style="text-align:left">3.125</td><td style="text-align:left">45.84%</td><td style="text-align:left">0.49</td><td style="text-align:left">NT$70,802</td><td style="text-align:left">1.756</td><td style="text-align:left">0.9406</td><td style="text-align:left">1.746</td><td style="text-align:left"><strong>胃納不足</strong></td></tr><tr><td style="text-align:left">S004</td><td style="text-align:left">SMALLCAP_REVENUE_MOMENTUM</td><td style="text-align:left">INHERITED_WEGO</td><td style="text-align:left">1.993</td><td style="text-align:left">35.17%</td><td style="text-align:left">-29.99%</td><td style="text-align:left">1.173</td><td style="text-align:left">2.616</td><td style="text-align:left">27.49%</td><td style="text-align:left">0.438</td><td style="text-align:left">NT$79,251</td><td style="text-align:left">1.359</td><td style="text-align:left">0.8714</td><td style="text-align:left">1.477</td><td style="text-align:left"><strong>胃納不足</strong></td></tr><tr><td style="text-align:left">S144</td><td style="text-align:left">MULTI_SLEEVE_ENSEMBLE</td><td style="text-align:left">NEW_IN_LAB</td><td style="text-align:left">2.110</td><td style="text-align:left">32.26%</td><td style="text-align:left">-23.28%</td><td style="text-align:left">1.386</td><td style="text-align:left">2.443</td><td style="text-align:left">22.41%</td><td style="text-align:left">0.523</td><td style="text-align:left">NT$192,132</td><td style="text-align:left">1.923</td><td style="text-align:left">0.9298</td><td style="text-align:left">1.54</td><td style="text-align:left"><strong>胃納不足</strong></td></tr></tbody></table></div>
@@ -1006,7 +1006,7 @@ for label, p in neighbours(spec.default_params):
 <ul><li><code>S139</code>, <code>S141</code> 與 <code>S123</code> 相關係數 ≥ 0.95</li><li><code>S047</code>, <code>S050</code> 與 <code>S048</code> 相關係數 ≥ 0.95</li></ul>
 <hr>
 <h2>拼積木的規則</h2>
-<ol><li><strong>先看相關係數，再看 Sharpe。</strong> 前五名彼此 0.78–0.90，各配 20% 買到的是同一個因子的五種寫法。</li><li><strong>混合帳本的胃納由最緊的那一腳綁死。</strong> 配 30% 給胃納 NT$7 萬的積木，總帳本上限就是 NT$23 萬。</li><li><strong>任何乘在報酬序列上的疊加都要先過 shift(1) 測試</strong>，見 <a href="50-lookahead-bias.md">lookahead</a>。</li><li><strong>組合本身是一次新的試驗。</strong> 從已知通過的積木裡挑組合，是後選擇（post-selection），要重新計入試驗數。</li></ol>
+<ol><li><strong>先看相關係數，再看 Sharpe。</strong> 前五名彼此 0.78–0.90，各配 20% 買到的是同一個因子的五種寫法。</li><li><strong>混合帳本的胃納由最緊的那一腳綁死。</strong> 配 30% 給胃納 NT$7 萬的積木，總帳本上限就是 NT$23 萬。</li><li><strong>任何乘在報酬序列上的疊加都要先過 shift(1) 測試</strong>，見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/50-lookahead-bias.md">lookahead</a>。</li><li><strong>組合本身是一次新的試驗。</strong> 從已知通過的積木裡挑組合，是後選擇（post-selection），要重新計入試驗數。</li></ol>
 <h2>重現</h2>
 <pre><code class="lang-bash">python scripts/run_honest_topN.py</code></pre>
 <pre><code class="lang-bash">python scripts/run_honest_top5_robustness.py 12</code></pre>
@@ -1014,19 +1014,19 @@ for label, p in neighbours(spec.default_params):
 <h2>[C80] 對照分析 · 我的實測落在 Gemini 與 Codex 軌道的哪裡</h2>
 <p>*track: context · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/80-cross-ai-notes.md*</p>
 <h1>對照分析 · 我的實測落在其他軌道的哪裡</h1>
-<p>依 <a href="../_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL.md</code></a> 規則一，我只寫自己的目錄。這一頁記錄我的實測與其他 AI 軌道的關係 —— 哪裡互補、哪裡口徑不同、哪裡是我把他們的規範<strong>實際跑了一次</strong>之後的結果。</p>
+<p>依 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CROSS_AI_PROTOCOL.md"><code>_shared/CROSS_AI_PROTOCOL.md</code></a> 規則一，我只寫自己的目錄。這一頁記錄我的實測與其他 AI 軌道的關係 —— 哪裡互補、哪裡口徑不同、哪裡是我把他們的規範<strong>實際跑了一次</strong>之後的結果。</p>
 <p><strong>先講結論：我沒有找到需要進 <code>CORRECTIONS.md</code> 的錯誤。</strong> 下面全部是互補與口徑差異。</p>
 <hr>
 <h2>一、G06 的 DSR 規範，我實際跑了一次</h2>
-<p><a href="../gemini/06-validation-dsr-and-forward-sim.md">G06 防過擬合鐵律</a> 訂了三條要求：</p>
+<p><a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/06-validation-dsr-and-forward-sim.md">G06 防過擬合鐵律</a> 訂了三條要求：</p>
 <div class="tw"><table><thead><tr><th style="text-align:left">G06 的要求</th><th style="text-align:left">我的實測</th><th style="text-align:left">結果</th></tr></thead><tbody><tr><td style="text-align:left">試驗次數必須誠實包含所有被淘汰的試驗（N ≥ 400）</td><td style="text-align:left">機械掃描 23 個實驗紀錄檔，得 <strong>624</strong> 次</td><td style="text-align:left">符合，且比專案自己紀錄的 <code>n_trials: 134</code> 多 4.7 倍</td></tr><tr><td style="text-align:left">核心候選 DSR ≥ 0.95</td><td style="text-align:left">12 檔候選，<strong>只有 1 檔通過</strong>（0.9595）</td><td style="text-align:left">這條規範是有牙齒的</td></tr><tr><td style="text-align:left">參數高原 ≥ 80% 鄰域維持 85%</td><td style="text-align:left">見下節，口徑不同</td><td style="text-align:left">需要對齊</td></tr></tbody></table></div>
-<p><strong>G06 是對的，而且比大多數人做得嚴。</strong> 我能補充的是<strong>執行機制</strong>：G06 說「必須誠實包含」，但 DSR 實作裡 <code>n_trials</code> 是呼叫端填的參數，靠自律。<a href="blocks/B11-mechanical-trial-counter.md">B11 機械試驗計數器</a> 把它改成從紀錄檔數出來、不接受手動覆寫 —— 讓它無法不誠實。</p>
+<p><strong>G06 是對的，而且比大多數人做得嚴。</strong> 我能補充的是<strong>執行機制</strong>：G06 說「必須誠實包含」，但 DSR 實作裡 <code>n_trials</code> 是呼叫端填的參數，靠自律。<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B11-mechanical-trial-counter.md">B11 機械試驗計數器</a> 把它改成從紀錄檔數出來、不接受手動覆寫 —— 讓它無法不誠實。</p>
 <p>實測那個 4.7 倍的差距（門檻 1.401 → 1.660）證明自律不夠：專案自己的紀錄檔就少算了。</p>
 <h3>我踩到的實作陷阱，G06 的公式沒寫</h3>
 <p>G06 的公式是對的，但實作時有個尺度陷阱。DSR 內部用<strong>日頻</strong> Sharpe：</p>
 <pre><code class="lang-python">observed = series.mean() / series.std()      # 約 0.14</code></pre>
 <p>而試驗紀錄通常存<strong>年化</strong> Sharpe（1.3–2.5）。直接餵進去，門檻用年化尺度算（1.660），拿去和日頻觀測值（0.139）比 —— <strong>所有 DSR 都會是 0.0000</strong>。</p>
-<p>我第一次跑就中了。症狀對照表寫在 <a href="61-deflated-sharpe.md">C61 去膨脹夏普</a>。</p>
+<p>我第一次跑就中了。症狀對照表寫在 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/61-deflated-sharpe.md">C61 去膨脹夏普</a>。</p>
 <hr>
 <h2>二、參數高原：兩邊口徑不同，都要保留</h2>
 <div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">G06</th><th style="text-align:left">我（C62 / B13）</th></tr></thead><tbody><tr><td style="text-align:left">鄰域</td><td style="text-align:left">$3^k$ 網格（所有參數同時擾動）</td><td style="text-align:left">每個參數各 ±1 檔（單變量）</td></tr><tr><td style="text-align:left">保持門檻</td><td style="text-align:left">最佳值的 <strong>85%</strong></td><td style="text-align:left">最佳值的 <strong>70%</strong></td></tr><tr><td style="text-align:left">通過率要求</td><td style="text-align:left"><strong>≥ 80%</strong></td><td style="text-align:left">報告通過率與<strong>鄰居數</strong>，不設硬門檻</td></tr></tbody></table></div>
@@ -1039,38 +1039,38 @@ for label, p in neighbours(spec.default_params):
 <p>按 G06 的 ≥80% 標準，兩者都通過 —— 這正是需要補上分母的理由。</p>
 <hr>
 <h2>三、G05 的機制 4，是我實測到前視的現場</h2>
-<p><a href="../gemini/05-alpha-strategies-and-ga.md">G05 50% CAGR GA 藍圖</a> 的機制 4 是「自適應連續市場狀態 —— 牛市 120% 曝險，空頭 0% 空手」。</p>
+<p><a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/05-alpha-strategies-and-ga.md">G05 50% CAGR GA 藍圖</a> 的機制 4 是「自適應連續市場狀態 —— 牛市 120% 曝險，空頭 0% 空手」。</p>
 <p><strong>這個設計本身沒問題。</strong> 但我驗證一份依此實作的產出時，發現實作長這樣：</p>
 <pre><code class="lang-python">bull_regime = (bm_close &gt; fast_ma) &amp; (bm_close &gt; slow_ma)
 multiplier = np.where(bull_regime, bull_leverage, bear_exposure)
 r_lev = d_base * multiplier          # ← 沒有 shift(1)</code></pre>
 <p>第 t 日的收盤價決定第 t 日的曝險。結果 Sharpe 從 2.104 變成 4.269，MDD 從 -16.88% 變成 -7.45%。加上 <code>.shift(1)</code> 之後掉回 1.992 —— <strong>比不加這個疊加還差</strong>。</p>
 <p><strong>這不是 G05 的錯，是實作缺了一道檢查。</strong> 但它說明：任何「regime 決定曝險」的機制，都必須配一個 shift(1) 測試才能宣稱結果。</p>
-<p>所以我把 <a href="blocks/B10-shift1-lookahead-test.md">B10 shift(1) 前視測試</a> 寫成獨立積木。任何人要實作 G05 機制 4，先過 B10。</p>
-<p><strong>和 GB02 的分工</strong>：<a href="../gemini/blocks/GB02-pit-lag-aligner.md">GB02 PIT 對齊器</a> 守的是「因子讀到未來的財報」，B10 守的是「疊加層讀到今天的收盤」。兩個缺口不同，都要堵，缺一個就會漏。</p>
+<p>所以我把 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B10-shift1-lookahead-test.md">B10 shift(1) 前視測試</a> 寫成獨立積木。任何人要實作 G05 機制 4，先過 B10。</p>
+<p><strong>和 GB02 的分工</strong>：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB02-pit-lag-aligner.md">GB02 PIT 對齊器</a> 守的是「因子讀到未來的財報」，B10 守的是「疊加層讀到今天的收盤」。兩個缺口不同，都要堵，缺一個就會漏。</p>
 <hr>
 <h2>四、胃納量：研究端與執行端要用同一個常數</h2>
-<p><a href="../gemini/blocks/GB04-adv-capacity-guard.md">GB04 ADV20 容量守門員</a> 是<strong>下單當下</strong>的守門（這張單會不會超過 ADV）。 <a href="blocks/B12-local-capacity-model.md">B12 本地胃納模型</a> 是<strong>研究階段</strong>的估計（這個策略整體能放多少錢）。</p>
+<p><a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md">GB04 ADV20 容量守門員</a> 是<strong>下單當下</strong>的守門（這張單會不會超過 ADV）。 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B12-local-capacity-model.md">B12 本地胃納模型</a> 是<strong>研究階段</strong>的估計（這個策略整體能放多少錢）。</p>
 <p>兩者必須共用同一個 <code>participation</code> 常數。不一致的後果很具體：研究階段用 10% 算出「胃納 NT$200 萬」，執行端用 5% 擋單 —— 你會核准一個執行端拒絕的策略，然後在實盤第一天才發現。</p>
 <p>實測這個數字有多重要：全庫 CAGR 最高（53.69%）、Calmar 最高（2.16）的策略，胃納量是 <strong>NT$70,802</strong>。按 Sharpe 排的前五名有三名放不進錢。</p>
 <hr>
 <h2>五、和 Codex 軌道的關係</h2>
-<p><a href="../codex/01-adversarial-audit-method.md">Codex 的對抗性稽核法</a> 處理的是<strong>執行端</strong>的稽核（訂單狀態、驗證鏈、零股競價規則）。我的 <a href="51-fake-validation.md">C51 假驗證的四種形態</a> 是<strong>研究端</strong>的同一件事。</p>
+<p><a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/ox/01-adversarial-audit-method.md">OX 的對抗性稽核法</a> 處理的是<strong>執行端</strong>的稽核（訂單狀態、驗證鏈、零股競價規則）。我的 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">C51 假驗證的四種形態</a> 是<strong>研究端</strong>的同一件事。</p>
 <p>共通的方法論：<strong>不要看結論，看產出物對不對得上。</strong></p>
 <ul><li>Codex 在執行端問：訂單狀態機的三種紀錄互相吻合嗎？</li><li>我在研究端問：報告的期間、參數、時間戳，和產出的 JSON / parquet 對得上嗎？</li></ul>
 <p>實測抓到的：報告寫 13.27 年、champions.json 寫 12.49 年、實際 parquet 是 12.89 年 —— 於是每個 CAGR 都灌水 2.5 個百分點。以及 champions.json 的時間戳比搜尋結束早 12 分鐘。</p>
 <hr>
 <h2>給下一個 AI</h2>
 <p>如果你要推翻我的結論，最有效的路徑：</p>
-<ol><li><strong>重跑全量 harness</strong>（<a href="60-verification-harness.md">C60</a>），看數字對不對得上。全部都應該重現得出來。</li><li><strong>挑戰胃納模型的三個選擇</strong>：ADV20 的 5%、取中位數、等權假設。這三個都可以有不同意見。</li><li><strong>挑戰試驗計數</strong>。624 是我從實驗紀錄檔數的。你找到更多沒被計入的，門檻會升高，我的「唯一通過者」可能也會掉下來。</li><li><strong>做真正的走步驗證</strong>。我做的是分段穩定度，而且我在 <a href="51-fake-validation.md">C51</a> 裡說清楚那不是走步驗證。這個缺口還在，G06 的 Forward SIM 是正確方向。</li></ol>
-<p><strong>不要做的事</strong>：不要用「我重新跑了一遍 GA 找到更好的」來回應。先讓你的新東西通過 <a href="blocks/B10-shift1-lookahead-test.md">B10</a>。</p>
+<ol><li><strong>重跑全量 harness</strong>（<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/60-verification-harness.md">C60</a>），看數字對不對得上。全部都應該重現得出來。</li><li><strong>挑戰胃納模型的三個選擇</strong>：ADV20 的 5%、取中位數、等權假設。這三個都可以有不同意見。</li><li><strong>挑戰試驗計數</strong>。624 是我從實驗紀錄檔數的。你找到更多沒被計入的，門檻會升高，我的「唯一通過者」可能也會掉下來。</li><li><strong>做真正的走步驗證</strong>。我做的是分段穩定度，而且我在 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">C51</a> 裡說清楚那不是走步驗證。這個缺口還在，G06 的 Forward SIM 是正確方向。</li></ol>
+<p><strong>不要做的事</strong>：不要用「我重新跑了一遍 GA 找到更好的」來回應。先讓你的新東西通過 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B10-shift1-lookahead-test.md">B10</a>。</p>
 <hr>
 <h2>[B01] 已實現損益 · FIFO 對沖，只認落袋現金</h2>
 <p>*track: block · status: verified · verified_by: tests/test_realized.py (5 tests) · source: lesson/claude/blocks/B01-realized-pnl-fifo.md*</p>
 <h1>B01 · 已實現損益（FIFO）</h1>
 <h2>它解決什麼</h2>
 <p>賣掉的部位會從庫存表消失。庫存表消失 → 畫面上找不到 → 你以為沒發生。</p>
-<p>真實案例：3702 大聯大 8/11 買 546 股、8/19 賣掉，<strong>虧 NT$11,003</strong>。這筆錢確實不在庫存裡了，但它從帳戶流出去了。而整個系統的每一個標籤都寫著「未實現損益」，所以 owner 讀了三天畫面，問出一句：「你是不是漏算了？」</p>
+<p>去識別合成例：<code>DEMO-A</code> 買 100 股後全部賣掉，settled cash 顯示虧損。這筆錢不在庫存裡，但已從現金流出；若畫面只有「未實現損益」，owner 會合理懷疑虧損被漏算。</p>
 <p><strong>數學沒有漏 —— sleeve 曲線一直是對的</strong>（賣出的現金回到 sleeve，報酬自然含這筆虧損）。漏的是<strong>名字</strong>。一個你指不出來的虧損，等於沒有發生過，你不會從它身上學到任何事。</p>
 <h2>契約</h2>
 <pre><code class="lang-python">closed_lots(fills: Sequence[Fill]) -&gt; list[Lot]
@@ -1086,9 +1086,9 @@ as_of(lots, day) -&gt; list[Lot]        # 只取 day 以前結算的</code></pre
 <div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">FIFO</th><th style="text-align:left">均價</th></tr></thead><tbody><tr><td style="text-align:left">總已實現</td><td style="text-align:left">對</td><td style="text-align:left">對</td></tr><tr><td style="text-align:left">進場價</td><td style="text-align:left">真實的那一筆</td><td style="text-align:left">虛構的加權平均</td></tr><tr><td style="text-align:left">持有天數</td><td style="text-align:left">真實</td><td style="text-align:left">無法定義</td></tr><tr><td style="text-align:left">一賣跨多買</td><td style="text-align:left">拆成多列，各自有天數</td><td style="text-align:left">壓成一列</td></tr></tbody></table></div>
 <p>你要的不是「我總共賺多少」，那個看銀行帳戶就好。你要的是<strong>「哪一種進場活得久、哪一種活不久」</strong>，那需要每一筆的持有期是真的。</p>
 <h2>陷阱</h2>
-<p><strong>陷阱 1：用價差算損益。</strong> <code>(賣價 − 買價) × 股數</code> 少算手續費和證交稅。3702 的價差答案是 −10,647，真實答案是 −11,003。差 356 元不多，但<strong>它永遠往好的方向錯</strong>，累積 100 筆之後你的策略評估會系統性偏樂觀。</p>
+<p><strong>陷阱 1：用價差算損益。</strong> <code>(賣價 − 買價) × 股數</code> 少算手續費和證交稅。合成例的價差答案是 −500，settled-cash 答案是 −569。差額不大，但<strong>它永遠往好的方向錯</strong>，累積多筆後策略評估會系統性偏樂觀。</p>
 <p><strong>陷阱 2：把已實現和未實現加起來當「總報酬率」時分母搞錯。</strong> 已實現的分母是已經退出的成本，未實現的分母是還在裡面的成本。兩者不能直接平均。系統的作法是各自報，合計只報<strong>金額</strong>和<strong>對固定預算的百分比</strong>（分母是 NT$50 萬，不是浮動成本）。</p>
-<p><strong>陷阱 3：把 realized 算進「未實現損益」那張卡。</strong> 首頁「累積未實現損益 +40,107」是券商庫存快照，<strong>確實不含</strong> −11,003。這不是 bug，是定義。但如果沒有另一張卡把 realized 寫出來，讀者一定會把它當成「我的總損益」。</p>
+<p><strong>陷阱 3：把 realized 算進「未實現損益」那張卡。</strong> 首頁的「累積未實現損益」是庫存快照，定義上<strong>不含已平倉損益</strong>。這不是 bug，但若沒有另一張卡呈現 realized，讀者很容易把它誤當成總損益。</p>
 <h2>程式碼</h2>
 <pre><code class="lang-python">def closed_lots(fills):
     books = defaultdict(deque)
@@ -1131,16 +1131,16 @@ as_of(lots, day) -&gt; list[Lot]        # 只取 day 以前結算的</code></pre
 <p>30 行。沒有相依套件。可以直接複製到任何專案。</p>
 <h2>驗證</h2>
 <p><code>tests/test_realized.py</code>，5 個測試，每一個都在擋一種特定的自我欺騙：</p>
-<ol><li><strong><code>test_realized_uses_settled_cash_not_price_difference</code></strong> —— 斷言答案比「價差答案」更差。如果有人偷偷改回價差法，這個測試會炸</li><li><strong><code>test_the_real_3702_round_trip_reconciles_to_the_fill_book</code></strong> —— 用真實成交簿對帳，並斷言 <code>realized_pnl &amp;lt; 0</code>。註解寫著「3702 closed at a loss; never round it away」</li><li><strong><code>test_a_sell_without_a_matching_buy_fails_closed</code></strong> —— 資料錯要炸，不要回傳 0</li><li><strong><code>test_one_sell_across_two_buys_splits_into_two_lots</code></strong> —— 斷言持有天數是 <code>[9, 7]</code> 兩個不同的值</li><li><strong><code>test_realized_and_unrealized_never_double_count_the_same_share</code></strong> —— 斷言平倉部位的成本已完全離開在庫帳面成本</li></ol>
-<blockquote>測試的價值不在「證明現在是對的」，在「未來有人改壞的時候會叫」。 第 2 個測試會在 3702 這筆虧損被任何形式抹掉時失敗，這才是它存在的理由。</blockquote>
-<h2>真實產出</h2>
-<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:right">已實現</th><th style="text-align:right">未實現</th><th style="text-align:right">合計</th></tr></thead><tbody><tr><td style="text-align:left">投信</td><td style="text-align:right">—</td><td style="text-align:right">+15,330</td><td style="text-align:right">+15,330</td></tr><tr><td style="text-align:left">YOY</td><td style="text-align:right"><strong>−11,003</strong></td><td style="text-align:right">+14,145</td><td style="text-align:right"><strong>+3,142</strong></td></tr><tr><td style="text-align:left">融資</td><td style="text-align:right">—</td><td style="text-align:right">−4,354</td><td style="text-align:right">−4,354</td></tr><tr><td style="text-align:left">突破</td><td style="text-align:right">—</td><td style="text-align:right">+25,073</td><td style="text-align:right">+25,073</td></tr></tbody></table></div>
-<p>YOY 的 +0.63% 長這樣：一筆虧 11,003 的平倉，加上還在手上的 +14,145。分開看才知道這個策略發生過什麼事。</p>
+<ol><li><strong><code>test_realized_uses_settled_cash_not_price_difference</code></strong> —— 斷言答案比「價差答案」更差。如果有人偷偷改回價差法，這個測試會炸</li><li><strong><code>test_anonymized_losing_round_trip_reconciles_to_the_fill_book</code></strong> —— 用去識別 fixture 對帳，並斷言 <code>realized_pnl &amp;lt; 0</code></li><li><strong><code>test_a_sell_without_a_matching_buy_fails_closed</code></strong> —— 資料錯要炸，不要回傳 0</li><li><strong><code>test_one_sell_across_two_buys_splits_into_two_lots</code></strong> —— 斷言持有天數是 <code>[9, 7]</code> 兩個不同的值</li><li><strong><code>test_realized_and_unrealized_never_double_count_the_same_share</code></strong> —— 斷言平倉部位的成本已完全離開在庫帳面成本</li></ol>
+<blockquote>測試的價值不在「證明現在是對的」，在「未來有人改壞的時候會叫」。 第 2 個測試會在這筆去識別虧損被任何形式抹掉時失敗，這才是它存在的理由。</blockquote>
+<h2>去識別合成產出（示意，不是 owner 帳戶）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">策略</th><th style="text-align:right">已實現</th><th style="text-align:right">未實現</th><th style="text-align:right">合計</th></tr></thead><tbody><tr><td style="text-align:left">策略 A</td><td style="text-align:right">—</td><td style="text-align:right">+1,200</td><td style="text-align:right">+1,200</td></tr><tr><td style="text-align:left">策略 B</td><td style="text-align:right"><strong>−569</strong></td><td style="text-align:right">+700</td><td style="text-align:right"><strong>+131</strong></td></tr><tr><td style="text-align:left">策略 C</td><td style="text-align:right">—</td><td style="text-align:right">−300</td><td style="text-align:right">−300</td></tr><tr><td style="text-align:left">策略 D</td><td style="text-align:right">—</td><td style="text-align:right">+900</td><td style="text-align:right">+900</td></tr></tbody></table></div>
+<p>策略 B 的正合計來自「一筆已實現虧損 + 較大的未實現收益」。分開看才知道策略實際發生過什麼事。</p>
 <hr>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/realized.py</code></p>
 <hr>
 <h2>[B02] 分價分布 · 用日線做出 volume-at-price</h2>
-<p>*track: block · status: verified · verified_by: output/mainline2_receipt.json (7 names profiled) · source: lesson/claude/blocks/B02-volume-profile.md*</p>
+<p>*track: block · status: verified · verified_by: output/mainline2_receipt.json (owner counts redacted in public lesson) · source: lesson/claude/blocks/B02-volume-profile.md*</p>
 <h1>B02 · 分價分布（volume-at-price）</h1>
 <h2>它解決什麼</h2>
 <p>「這個價格算高還是低？」</p>
@@ -1203,15 +1203,15 @@ while covered &lt; total * 0.70 and (low_index &gt; 0 or high_index &lt; bins - 
 <h2>陷阱</h2>
 <p><strong>陷阱 1：bin 數量沒有正確答案，但要固定。</strong> 用了 44。太少（&lt;20）看不出結構，太多（&gt;100）每格都是雜訊。重點是<strong>所有標的用同一個數字</strong>，否則跨標的比較沒有意義。</p>
 <p><strong>陷阱 2：一字板會讓 span=0，除以零。</strong> 台股有漲跌停。必須有 <code>span &amp;lt;= 0</code> 的分支，直接把量塞進收盤價那格。</p>
-<p><strong>陷阱 3：把分位當成訊號。</strong> 「現價分位 99%」的意思是「過去半年只有 1% 的量成交在更高的位置」。它<strong>不代表</strong>貴、不代表該賣、不代表會回檔。它只是描述統計。真實產出裡 6213 聯茂分位 99%、POC 271.88、現價 530 —— 這在強勢突破股身上是常態，不是異常。</p>
+<p><strong>陷阱 3：把分位當成訊號。</strong> 「現價分位 99%」的意思是「過去視窗只有 1% 的量成交在更高位置」。它<strong>不代表</strong>貴、不代表該賣、不代表會回檔。去識別合成例中，<code>DEMO-E</code> 分位 99%、POC 80、現價 120；這在強勢突破股身上可能是常態，不是交易訊號。</p>
 <p><strong>陷阱 4：視窗長度會改變答案。</strong> 6 個月和 1 年的 POC 可能差很遠。<strong>視窗長度必須顯示在畫面上</strong>，不能只在程式碼裡。</p>
-<h2>真實產出（6 個月，134 個交易日）</h2>
-<div class="tw"><table><thead><tr><th style="text-align:left">股票</th><th style="text-align:right">收盤</th><th style="text-align:right">POC</th><th style="text-align:right">現價分位</th><th style="text-align:right">在價值區</th></tr></thead><tbody><tr><td style="text-align:left">1714 和桐</td><td style="text-align:right">16.50</td><td style="text-align:right">9.89</td><td style="text-align:right">62%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">2030 彰源</td><td style="text-align:right">23.65</td><td style="text-align:right">18.36</td><td style="text-align:right">99%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">3046 建基</td><td style="text-align:right">57.20</td><td style="text-align:right">57.73</td><td style="text-align:right">59%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">3605 宏致</td><td style="text-align:right">116.50</td><td style="text-align:right">89.40</td><td style="text-align:right">91%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">6213 聯茂</td><td style="text-align:right">530.00</td><td style="text-align:right">271.88</td><td style="text-align:right">99%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">6570 維田</td><td style="text-align:right">52.90</td><td style="text-align:right">59.34</td><td style="text-align:right">43%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">6603 富強鑫</td><td style="text-align:right">26.25</td><td style="text-align:right">25.69</td><td style="text-align:right">70%</td><td style="text-align:right">在</td></tr></tbody></table></div>
+<h2>去識別合成產出（示意）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">股票</th><th style="text-align:right">收盤</th><th style="text-align:right">POC</th><th style="text-align:right">現價分位</th><th style="text-align:right">在價值區</th></tr></thead><tbody><tr><td style="text-align:left">DEMO-A</td><td style="text-align:right">16.50</td><td style="text-align:right">10.00</td><td style="text-align:right">62%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">DEMO-B</td><td style="text-align:right">23.50</td><td style="text-align:right">18.50</td><td style="text-align:right">99%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">DEMO-C</td><td style="text-align:right">57.00</td><td style="text-align:right">58.00</td><td style="text-align:right">59%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">DEMO-D</td><td style="text-align:right">116.00</td><td style="text-align:right">90.00</td><td style="text-align:right">91%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">DEMO-E</td><td style="text-align:right">120.00</td><td style="text-align:right">80.00</td><td style="text-align:right">99%</td><td style="text-align:right">外</td></tr><tr><td style="text-align:left">DEMO-F</td><td style="text-align:right">53.00</td><td style="text-align:right">59.00</td><td style="text-align:right">43%</td><td style="text-align:right">在</td></tr><tr><td style="text-align:left">DEMO-G</td><td style="text-align:right">26.00</td><td style="text-align:right">25.50</td><td style="text-align:right">70%</td><td style="text-align:right">在</td></tr></tbody></table></div>
 <hr>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::volume_profile</code></p>
 <hr>
 <h2>[B03] 成交落點 · 唯一能對「進場點」說的實證</h2>
-<p>*track: block · status: verified · verified_by: output/mainline2_receipt.json (22 buys, 1 sell) · source: lesson/claude/blocks/B03-fill-landing.md*</p>
+<p>*track: block · status: verified · verified_by: output/mainline2_receipt.json (owner counts redacted in public lesson) · source: lesson/claude/blocks/B03-fill-landing.md*</p>
 <h1>B03 · 成交落點（fill landing）</h1>
 <h2>它解決什麼</h2>
 <p>每個人都想知道「最適合的入場點在哪」。這是一個<strong>預測問題</strong>，而且沒有人有答案。</p>
@@ -1222,7 +1222,7 @@ while covered &lt; total * 0.70 and (low_index &gt; 0 or high_index &lt; bins - 
 100% = 當日最高（買到最貴）</code></pre>
 <p>買進落點越低越省，賣出落點越高越好。這不預測任何事 —— 它衡量已經發生的執行品質。</p>
 <h2>為什麼這個指標比 slippage 更早可用</h2>
-<p>訊號→成交的履約落差（<a href="B05-signal-fill-slippage.md">B05</a>）需要「訊號價」，而訊號價只在你有完整訊號紀錄時存在。成交落點<strong>只需要成交簿和日線</strong>，回溯期有多長就能算多長。</p>
+<p>訊號→成交的履約落差（<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B05-signal-fill-slippage.md">B05</a>）需要「訊號價」，而訊號價只在你有完整訊號紀錄時存在。成交落點<strong>只需要成交簿和日線</strong>，回溯期有多長就能算多長。</p>
 <p>換句話說：<strong>這是你今天就能算的東西，而且過去所有成交都算得到。</strong></p>
 <h2>契約</h2>
 <pre><code class="lang-python">range_position(bar, price) -&gt; float | None   # 0..1；span==0 時回 None
@@ -1239,16 +1239,16 @@ fill_landings(fills, bars) -&gt; list[Landing]</code></pre>
 <p>三行。整個 block 最有價值的部分不是程式碼，是<strong>想到要算它</strong>。</p>
 <h2>陷阱</h2>
 <p><strong>陷阱 1（真的踩到了）：平倉的股票行情會斷線。</strong></p>
-<p>原本抓取宇宙來自持股清單。3702 賣掉之後從持股消失 → 行情停更 → 它的<strong>買進和賣出兩筆成交都對不到日線</strong> → 賣出樣本數顯示 0。</p>
-<p>一個只有 1 筆賣出的系統，把那 1 筆弄丟了，就等於完全沒有出場資料。修法見 <a href="B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
-<p><strong>陷阱 2：n=22 不能下結論。</strong> 平均 40% 看起來不錯，但 22 筆買進、1 筆賣出的樣本量不足以說「你的執行很好」。系統把這句話<strong>印在頁面上</strong>，不是藏在 README：</p>
-<blockquote>目前 22 筆買進的樣本量還不足以下結論，任何「改用限價／改掛開盤」的決定都應該等樣本夠了再談。</blockquote>
+<p>原本抓取宇宙來自持股清單。去識別標的 <code>DEMO-A</code> 賣掉後從持股消失 → 行情停更 → 它的<strong>買進和賣出兩筆成交都對不到日線</strong>。</p>
+<p>小樣本系統把唯一的賣出弄丟，就等於完全沒有出場資料。修法見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B06-watchlist-driven-fetch.md"><code>B06 watchlist 驅動抓取</code></a>。</p>
+<p><strong>陷阱 2：n=22 不能下結論。</strong> 平均落點看起來不錯，但小型 fixture 的樣本量不足以說「執行很好」。系統應把這句話<strong>印在頁面上</strong>，不是藏在 README：</p>
+<blockquote>目前樣本量不足以下結論，任何「改用限價／改掛開盤」的決定都應該等樣本夠了再談。</blockquote>
 <p><strong>陷阱 3：把落點好壞當成損益好壞。</strong> 最有價值的一個發現剛好反過來 —— 見下。</p>
-<h2>真實產出</h2>
-<p>22 筆買進，平均落在當日區間 <strong>40%</strong>（低於中點），平均比當日收盤低 <strong>0.75%</strong>。1 筆賣出落在 <strong>89%</strong>。</p>
-<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">股票</th><th style="text-align:right">落點</th></tr></thead><tbody><tr><td style="text-align:left">最好</td><td style="text-align:left">2609 陽明</td><td style="text-align:right">4%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">2408 南亞科</td><td style="text-align:right">12%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">6672 騰輝</td><td style="text-align:right">15%</td></tr><tr><td style="text-align:left">最差</td><td style="text-align:left">2395 研華</td><td style="text-align:right">82%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">3702 大聯大</td><td style="text-align:right">79%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">2301 光寶科</td><td style="text-align:right">68%</td></tr></tbody></table></div>
-<p><strong>最有價值的一句話：3702 的虧損不是賣錯，是買錯。</strong></p>
-<p>買在當日 79% 高位、賣在 89% 高位 —— 兩邊執行都不差。錢是在 8/11 到 8/19 之間跌掉的，那是選股／持有期的問題，不是下單技巧的問題。</p>
+<h2>去識別合成產出（示意，不是 owner 帳戶）</h2>
+<p>這組小型 fixture 的買進平均落在當日區間 <strong>40%</strong>，賣出樣本落在 <strong>89%</strong>；樣本量不足以下任何交易結論。</p>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">股票</th><th style="text-align:right">落點</th></tr></thead><tbody><tr><td style="text-align:left">最好</td><td style="text-align:left">DEMO-A</td><td style="text-align:right">4%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">DEMO-B</td><td style="text-align:right">12%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">DEMO-C</td><td style="text-align:right">15%</td></tr><tr><td style="text-align:left">最差</td><td style="text-align:left">DEMO-D</td><td style="text-align:right">82%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">DEMO-E</td><td style="text-align:right">79%</td></tr><tr><td style="text-align:left"></td><td style="text-align:left">DEMO-F</td><td style="text-align:right">68%</td></tr></tbody></table></div>
+<p><strong>最有價值的一句話：去識別案例的虧損不是賣出執行差，而是持有期價格下跌。</strong></p>
+<p>買在當日 79% 高位、賣在 89% 高位，兩邊執行都不差；損失發生在持有期間，是選股／持有期問題，不是下單技巧問題。</p>
 <p>沒有這個指標，你會花時間去優化下單方式（限價？分批？掛開盤？），而真正的問題在完全不同的地方。<strong>這就是量測的價值：它告訴你不要優化什麼。</strong></p>
 <h2>延伸</h2>
 <p>累積到 30 筆以上之後可以做的事（現在還不行）：</p>
@@ -1257,7 +1257,7 @@ fill_landings(fills, bars) -&gt; list[Landing]</code></pre>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_mainline2.py::range_position</code></p>
 <hr>
 <h2>[B04] 可變現淨值 · 帳面值不是你拿得到的錢</h2>
-<p>*track: block · status: verified · source: lesson/claude/blocks/B04-liquidation-value.md*</p>
+<p>*track: block · status: unvalidated · source: lesson/claude/blocks/B04-liquidation-value.md*</p>
 <h1>B04 · 可變現淨值</h1>
 <h2>它解決什麼</h2>
 <p><code>股數 × 收盤價</code> 是<strong>毛值</strong>。你賣掉拿不到那麼多，因為出場要付手續費和證交稅。</p>
@@ -1287,13 +1287,13 @@ PARTICIPATION_CAP = 0.05     # 不超過均量 5%
 slot_shares = SLOT_TWD / price
 participation = slot_shares / avg_volume_20d
 capacity_twd = avg_volume_20d * PARTICIPATION_CAP * price</code></pre>
-<p>真實產出裡，6570 維田的單量佔均量 <strong>0.392%</strong>，6213 聯茂只有 <strong>0.001%</strong> —— 差了 400 倍。同一個策略在這兩檔身上的可執行性完全不同，而傳統的回測報告不會告訴你這件事。</p>
+<p>去識別合成例中，<code>DEMO-A</code> 的單量佔均量 <strong>0.40%</strong>，<code>DEMO-B</code> 只有 <strong>0.01%</strong>。同一策略在兩檔上的可執行性可能完全不同，而傳統回測報告不一定會告訴你。</p>
 <blockquote><strong>Sharpe 很高但容量只有 NT$10 萬的策略，不是好策略，是一個統計假象。</strong></blockquote>
 <hr>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_dashboard.py::estimated_liquidation_value</code></p>
 <hr>
 <h2>[B05] 履約落差 · 策略卡報的價，帳戶付的價</h2>
-<p>*track: block · status: verified · source: lesson/claude/blocks/B05-signal-fill-slippage.md*</p>
+<p>*track: block · status: unvalidated · source: lesson/claude/blocks/B05-signal-fill-slippage.md*</p>
 <h1>B05 · 訊號 → 成交 履約落差</h1>
 <h2>它解決什麼</h2>
 <p>策略卡說「進場 97.1」。帳戶實際成交 <strong>97.80</strong>。</p>
@@ -1303,7 +1303,7 @@ capacity_twd = avg_volume_20d * PARTICIPATION_CAP * price</code></pre>
 <pre><code class="lang-python">build_slippage_ledger(path, ohlc) -&gt; list[SlippageRow]</code></pre>
 <p>輸入 <code>signal_fills.csv</code>：</p>
 <pre><code class="lang-csv">signal_date,effective_date,strategy_id,stock_code,stock_name,action,signal_ref_price,signal_basis,fill_date,fill_time,fill_price,shares,source
-2026-08-24,2026-08-25,MARGIN,2637,慧洋-KY,BUY,97.1,NEXT_OPEN,2026-08-25,10:14:13,97.80,1000,owner_pasted_fill</code></pre>
+2026-01-09,2026-01-10,STRATEGY_A,DEMO-A,示例股票A,BUY,100.0,NEXT_OPEN,2026-01-10,10:00:00,100.8,100,synthetic_fixture</code></pre>
 <h2>核心：方向要對</h2>
 <pre><code class="lang-python"># 買進成交在參考價「之上」是不利；賣出成交在「之下」是不利
 direction = 1.0 if side == &quot;BUY&quot; else -1.0
@@ -1322,7 +1322,7 @@ def basis_points(reference):
 <p><strong>陷阱 1：<code>signal_basis</code> 一定要寫。</strong> 「97.1」是收盤價？次日開盤預期？還是策略卡的進場欄？三者的落差意義完全不同。系統用 <code>NEXT_OPEN</code> 這種明確的 enum，不允許空白。</p>
 <p><strong>陷阱 2：只記成交的，不記沒成交的。</strong> 如果訊號發出但你沒買（掛單沒成交、或當天忘了），那也是履約落差的一部分 —— 而且是最貴的那一部分。<strong>未執行的訊號要留紀錄</strong>，否則你的落差統計只涵蓋「有成交的那些」，選擇性偏誤會讓數字好看。</p>
 <p>（這一點目前的實作<strong>還沒做到</strong>，誠實記在這裡。）</p>
-<p><strong>陷阱 3：樣本 1 筆就下結論。</strong> 目前只有 2637 慧洋-KY 一筆。0.72% 這個數字現在<strong>什麼都不代表</strong>。</p>
+<p><strong>陷阱 3：樣本 1 筆就下結論。</strong> 若目前只有一筆去識別成交，即使算出 0.8%，這個數字也<strong>不能代表穩定執行品質</strong>。</p>
 <h2>為什麼這是整個系統最重要的一張表</h2>
 <p>策略研究的終局問題只有一個：</p>
 <blockquote>這個策略能不能被執行？</blockquote>
@@ -1332,14 +1332,14 @@ def basis_points(reference):
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/analytics.py::build_slippage_ledger</code></p>
 <hr>
 <h2>[B06] watchlist 驅動抓取 · 別讓賣掉的股票資料斷線</h2>
-<p>*track: block · status: verified · source: lesson/claude/blocks/B06-watchlist-driven-fetch.md*</p>
+<p>*track: block · status: unvalidated · source: lesson/claude/blocks/B06-watchlist-driven-fetch.md*</p>
 <h1>B06 · watchlist 驅動抓取</h1>
 <h2>它解決什麼（一個真的踩到的洞）</h2>
 <p>抓行情要先決定「抓誰」。最自然的做法是：<strong>抓我持有的</strong>。</p>
 <p>這個做法有一個安靜的失效模式：</p>
 <pre><code>你賣掉一檔 → 它離開持股 → 抓取宇宙不再包含它 → 資料從那天起斷線</code></pre>
 <p>而你<strong>最需要它資料的時刻，正好是它剛賣掉的時候</strong> —— 你要做出場分析、要算成交落點、要看賣掉之後它走去哪。</p>
-<p>實際發生的事：3702 大聯大平倉後，它的買進和賣出兩筆成交在成交落點分析（<a href="B03-fill-landing.md">B03</a>）裡完全對不到日線。整個系統只有 1 筆賣出樣本，而那 1 筆是空的。</p>
+<p>去識別案例：<code>DEMO-A</code> 平倉後，它的買進和賣出在成交落點分析（<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B03-fill-landing.md">B03</a>）裡對不到日線；小樣本因此失去全部出場觀察。</p>
 <h2>契約</h2>
 <p>抓取宇宙 = <code>positions_ledger.csv</code> ∪ <code>watchlist.csv</code> ∪ <code>BENCHMARKS</code></p>
 <pre><code class="lang-python">def load_universe():
@@ -1351,8 +1351,8 @@ def basis_points(reference):
     return [seen[code] for code in sorted(seen)]</code></pre>
 <p><code>watchlist.csv</code> 的 <code>track</code> 欄決定用途：</p>
 <pre><code class="lang-csv">stock_code,stock_name,strategy_id,track,market,note
-6213,聯茂,MARGIN,MAINLINE2,TWSE,融資卡成員；整戶零部位
-3702,大聯大,YOY,CLOSED,TWSE,已平倉；保留行情供成交落點對照</code></pre>
+DEMO-C,示例股票C,STRATEGY_A,MAINLINE2,TWSE,策略卡成員；整戶零部位
+DEMO-A,示例股票A,STRATEGY_A,CLOSED,TWSE,已平倉；保留行情供成交落點對照</code></pre>
 <ul><li><code>MAINLINE2</code> → 進主線二頁面 + 抓行情</li><li><code>CLOSED</code> → <strong>只抓行情</strong>，不進任何頁面</li></ul>
 <p><code>setdefault</code> 而非覆寫：持股清單優先，watchlist 只補沒有的。</p>
 <h2>為什麼分成兩個檔案而不是一個欄位</h2>
@@ -1360,7 +1360,7 @@ def basis_points(reference):
 <p><code>positions_ledger.csv</code> 是部位狀態，會被績效計算讀取。<code>watchlist.csv</code> 是觀察意圖，只被抓取程序讀取。把「我想看這檔」寫進部位檔，遲早會有人不小心把它算進淨值。</p>
 <blockquote><strong>一個檔案一個責任。</strong> 想在既有檔案加一個 <code>shares=0</code> 的列來偷渡追蹤清單，那是在給未來的自己埋雷。</blockquote>
 <h2>陷阱</h2>
-<p><strong>陷阱 1：市場別（上市／上櫃）用猜的。</strong> <code>6570</code> 看起來像上櫃，但不一定。正確做法是<strong>先試 TWSE，失敗再試 TPEx</strong>，把 <code>market</code> 欄當成提示而不是事實：</p>
+<p><strong>陷阱 1：市場別（上市／上櫃）用猜的。</strong> <code>DEMO-F</code> 的市場別若只有人工提示仍可能錯。正確做法是使用 authoritative market mapping，或以明確 fallback 記錄結果；不要把 <code>market</code> 欄的猜測當事實：</p>
 <pre><code class="lang-python">order = [&quot;TPEX&quot;, &quot;TWSE&quot;] if market == &quot;TPEX&quot; else [&quot;TWSE&quot;, &quot;TPEX&quot;]
 for candidate in order:
     rows = fetch(code, candidate)
@@ -1376,7 +1376,7 @@ for candidate in order:
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/fetch_prices.py::load_universe</code></p>
 <hr>
 <h2>[B07] Fail closed · 寧可炸掉，不要安靜地算錯</h2>
-<p>*track: block · status: verified · source: lesson/claude/blocks/B07-fail-closed-inputs.md*</p>
+<p>*track: block · status: unvalidated · source: lesson/claude/blocks/B07-fail-closed-inputs.md*</p>
 <h1>B07 · Fail closed 輸入契約</h1>
 <h2>它解決什麼</h2>
 <p>金融資料管線最危險的不是崩潰，是<strong>安靜地算出一個看起來合理的錯誤數字</strong>。</p>
@@ -1407,7 +1407,7 @@ def required_float(value, field) -&gt; float:
 <p>不是所有缺資料都該炸。要分清楚：</p>
 <p><strong>1. 契約違反 → 拋例外</strong> 成交簿裡有一列沒有 <code>cash_out</code>。這是資料錯誤，繼續算下去只會產生垃圾。</p>
 <p><strong>2. 已知的資料未到 → 明確狀態碼</strong> 今天的收盤還沒發布。這是正常的，回傳 <code>NO_NEW_CLOSE</code> 或 <code>MARKET_DATE_MISMATCH</code>，<strong>不要拿昨天的價格冒充今天</strong>。</p>
-<p><strong>3. 樣本不足 → 顯示 N/A</strong> 只有 11 筆日報酬，算不出可信的 Sharpe。見 <a href="B08-sample-size-gate.md"><code>B08 樣本量門檻</code></a>。</p>
+<p><strong>3. 樣本不足 → 顯示 N/A</strong> 只有 11 筆日報酬，算不出可信的 Sharpe。見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B08-sample-size-gate.md"><code>B08 樣本量門檻</code></a>。</p>
 <pre><code class="lang-python">MIN_RISK_RETURN_OBS = 20
 
 if len(returns) &lt; MIN_RISK_RETURN_OBS:
@@ -1432,7 +1432,7 @@ volume = 0.0 if volume is None else volume</code></pre>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/build_dashboard.py::required_float</code></p>
 <hr>
 <h2>[B08] 樣本量門檻 · 敢顯示 N/A 才是專業</h2>
-<p>*track: block · status: verified · source: lesson/claude/blocks/B08-sample-size-gate.md*</p>
+<p>*track: block · status: unvalidated · source: lesson/claude/blocks/B08-sample-size-gate.md*</p>
 <h1>B08 · 樣本量門檻</h1>
 <h2>它解決什麼</h2>
 <p>Sharpe = 平均日報酬 / 日報酬標準差 × √252</p>
@@ -1475,7 +1475,7 @@ MDD      -0.76% OK</code></pre>
 <p><strong>作者：Claude (Opus 5, Anthropic)</strong> · 原始碼 <code>scripts/analytics.py::MIN_RISK_RETURN_OBS</code></p>
 <hr>
 <h2>[B09] 推導式狀態 · 能算出來的絕不另存一份</h2>
-<p>*track: block · status: verified · source: lesson/claude/blocks/B09-derived-state.md*</p>
+<p>*track: block · status: unvalidated · source: lesson/claude/blocks/B09-derived-state.md*</p>
 <h1>B09 · 推導式狀態</h1>
 <h2>它解決什麼</h2>
 <p>「我想追蹤那些有訊號但我沒買的股票。」</p>
@@ -1504,12 +1504,12 @@ def build_roster(signals, bars, held):
 <p><strong>唯一的真相是成交簿。</strong> 其他都是它的函數。</p>
 <h2>效果</h2>
 <p>名單自己浮現、自己消失：</p>
-<ul><li>8/25 買了 2637 慧洋-KY → 它隔天自動離開主線二</li><li>假設賣光 1709 和益 → 它自動回到主線二（如果還在卡上）</li><li>策略卡拿掉某檔 → 它自動消失，不會變成孤兒</li></ul>
+<ul><li>合成例買進 <code>DEMO-A</code> → 它隔天自動離開主線二</li><li>假設賣光 <code>DEMO-B</code> → 它自動回到主線二（如果還在卡上）</li><li>策略卡拿掉某檔 → 它自動消失，不會變成孤兒</li></ul>
 <p><strong>沒有第三個地方需要同步。</strong> 這是這個系統最值得抄走的一個想法。</p>
 <h2>陷阱</h2>
 <p><strong>陷阱 1：<code>&amp;gt; 0</code> 要用 <code>&amp;gt; 1e-9</code>。</strong> 浮點數加減後不會剛好等於 0。一檔完全賣光的股票可能留下 <code>-4.5e-16</code>，用 <code>&amp;gt; 0</code> 判斷會讓它憑空消失或憑空出現。</p>
-<p><strong>陷阱 2：同一檔在不同策略。</strong> 2395 研華同時出現在 YOY 卡和 BREAKOUT 卡上，但部位掛在 YOY。</p>
-<p>問題：BREAKOUT 的 2395 算不算「沒買」？</p>
+<p><strong>陷阱 2：同一檔在不同策略。</strong> <code>DEMO-C</code> 同時出現在 <code>STRATEGY_A</code> 與 <code>STRATEGY_B</code> 卡上，但部位只歸屬 <code>STRATEGY_A</code>。</p>
+<p>問題：<code>STRATEGY_B</code> 的 <code>DEMO-C</code> 算不算「沒買」？</p>
 <p>系統的決定是<strong>用整戶零部位當判準</strong>（<code>code in held</code>，不看 strategy_id），因為主線二問的是「這個名字我有沒有曝險」，而曝險是整戶的。但這個決定必須寫下來，否則三個月後沒有人記得為什麼。</p>
 <blockquote><strong>推導規則本身就是需要文件的東西。</strong> 程式碼說明「怎麼算」，文件說明「為什麼這樣算」。</blockquote>
 <p><strong>陷阱 3：推導很慢的時候會有人想快取。</strong> 現在 23 筆成交，重算是瞬間的事。等到 10,000 筆的時候會有人想存中間結果。</p>
@@ -1572,7 +1572,7 @@ r_daily = r_daily * tp_scale                            # ← 同樣的病</code
 <p>不用讀程式碼就該懷疑的：</p>
 <ul><li>台股純多頭、月頻換股，13 年 MDD <strong>小於 -10%</strong></li><li>Sharpe <strong>大於 3</strong>（長期台股多頭的實測上限約 2.2）</li><li>Calmar <strong>大於 4</strong></li><li>回撤在 2015 / 2018 / 2022 反而縮小</li></ul>
 <h2>相關</h2>
-<ul><li>完整案例與程式碼片段：<a href="../50-lookahead-bias.md">C50 前視偏誤</a></li><li>契約層怎麼擋成交價前視：<a href="B14-strategy-spec-contract.md">B14 策略契約</a></li><li>Gemini 從資料端防洩漏的作法：<a href="../../gemini/blocks/GB02-pit-lag-aligner.md">GB02 PIT 對齊器</a> —— 那一塊守的是「因子讀到未來的財報」，這一塊守的是「疊加層讀到今天的收盤」。兩個缺口不同，都要堵。</li></ul>
+<ul><li>完整案例與程式碼片段：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/50-lookahead-bias.md">C50 前視偏誤</a></li><li>契約層怎麼擋成交價前視：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B14-strategy-spec-contract.md">B14 策略契約</a></li><li>Gemini 從資料端防洩漏的作法：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB02-pit-lag-aligner.md">GB02 PIT 對齊器</a> —— 那一塊守的是「因子讀到未來的財報」，這一塊守的是「疊加層讀到今天的收盤」。兩個缺口不同，都要堵。</li></ul>
 <hr>
 <h2>[B11] 機械試驗計數器 · 不讓呼叫端自己填 N</h2>
 <p>*track: block · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/blocks/B11-mechanical-trial-counter.md*</p>
@@ -1621,9 +1621,9 @@ n2 = len(s2)</code></pre>
 <div class="tw"><table><thead><tr><th style="text-align:left">讀法</th><th style="text-align:left">N</th><th style="text-align:left">門檻（年化）</th><th style="text-align:left">12 檔候選通過數</th></tr></thead><tbody><tr><td style="text-align:left">已宣告的 campaign</td><td style="text-align:left">624</td><td style="text-align:left">1.660</td><td style="text-align:left">1</td></tr><tr><td style="text-align:left">整個 catalog</td><td style="text-align:left">127</td><td style="text-align:left"><strong>2.713</strong></td><td style="text-align:left"><strong>0</strong></td></tr></tbody></table></div>
 <p>兩個都對，在回答不同問題。<strong>誠實的報告要並列。</strong></p>
 <h2>陷阱</h2>
-<p><strong>陷阱：把重複註冊的策略當成不同試驗。</strong> 實測發現三個編號指向同一支策略（日報酬相關係數 = 1.000）。用「策略數」當分母時，重複會讓 N 虛胖、離散度失真。先用 <a href="B13-correlation-dedup.md">B13 相關係數去重</a>。</p>
+<p><strong>陷阱：把重複註冊的策略當成不同試驗。</strong> 實測發現三個編號指向同一支策略（日報酬相關係數 = 1.000）。用「策略數」當分母時，重複會讓 N 虛胖、離散度失真。先用 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B13-correlation-dedup.md">B13 相關係數去重</a>。</p>
 <h2>相關</h2>
-<ul><li>為什麼要有這個：<a href="../52-trial-counting.md">C52 試驗計數</a></li><li>怎麼用這個數字：<a href="../61-deflated-sharpe.md">C61 去膨脹夏普</a></li><li>Gemini 對 DSR 門檻的要求（N ≥ 400、DSR ≥ 0.95）：<a href="../../gemini/06-validation-dsr-and-forward-sim.md">G06</a>。本塊是那條要求的<strong>執行機制</strong> —— G06 說「必須誠實包含所有被淘汰的試驗」，這裡是讓它無法不誠實的作法。</li></ul>
+<ul><li>為什麼要有這個：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/52-trial-counting.md">C52 試驗計數</a></li><li>怎麼用這個數字：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/61-deflated-sharpe.md">C61 去膨脹夏普</a></li><li>Gemini 對 DSR 門檻的要求（N ≥ 400、DSR ≥ 0.95）：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/06-validation-dsr-and-forward-sim.md">G06</a>。本塊是那條要求的<strong>執行機制</strong> —— G06 說「必須誠實包含所有被淘汰的試驗」，這裡是讓它無法不誠實的作法。</li></ul>
 <hr>
 <h2>[B12] 本地胃納模型 · 最緊的那一檔決定整本帳</h2>
 <p>*track: block · status: verified · verified_by: evidence/honest_top5/all_metrics.json · source: lesson/claude/blocks/B12-local-capacity-model.md*</p>
@@ -1677,7 +1677,7 @@ tightest = per_name.min(axis=1)</code></pre>
 <p>按 Sharpe 排的前五名，三名放不進錢。</p>
 <p><strong>所以排序邏輯是：先過胃納門檻 → 在通過的裡面排 Sharpe → 沒通過的另立一張表但仍然列出。</strong> 第三步不能省 —— 那些策略告訴你 alpha 在哪裡，只是你拿不到。</p>
 <h2>相關</h2>
-<ul><li>為什麼這是真正的約束：<a href="../41-capacity-is-the-constraint.md">C41 胃納量</a></li><li>造假的三種寫法：<a href="../53-capacity-fiction.md">C53 胃納量造假</a></li><li>Gemini 的執行端版本：<a href="../../gemini/blocks/GB04-adv-capacity-guard.md">GB04 ADV20 容量守門員</a>。那一塊守的是<strong>下單當下</strong>（這張單會不會超過 ADV），本塊算的是<strong>研究階段</strong>（這個策略整體能放多少錢）。兩者的 participation 常數必須一致，否則研究會核准執行端拒絕的東西。</li></ul>
+<ul><li>為什麼這是真正的約束：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/41-capacity-is-the-constraint.md">C41 胃納量</a></li><li>造假的三種寫法：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/53-capacity-fiction.md">C53 胃納量造假</a></li><li>Gemini 的執行端版本：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/blocks/GB04-adv-capacity-guard.md">GB04 ADV20 容量守門員</a>。那一塊守的是<strong>下單當下</strong>（這張單會不會超過 ADV），本塊算的是<strong>研究階段</strong>（這個策略整體能放多少錢）。兩者的 participation 常數必須一致，否則研究會核准執行端拒絕的東西。</li></ul>
 <hr>
 <h2>[B13] 相關係數去重 · 你的前五名可能是同一支策略</h2>
 <p>*track: block · status: verified · verified_by: evidence/honest_top5/robustness.json · source: lesson/claude/blocks/B13-correlation-dedup.md*</p>
@@ -1732,10 +1732,10 @@ tightest = per_name.min(axis=1)</code></pre>
 <p><strong>127 檔已註冊策略，真正不同的賭注只有三個。</strong> 這是分群才看得出來的事。</p>
 <h2>陷阱</h2>
 <p><strong>陷阱 1：以為家族欄位可以代替相關係數。</strong> 被判為完全重複的那三檔，家族欄位不完全一樣。名字騙人，報酬序列不騙人。</p>
-<p><strong>陷阱 2：只在最後選投組時才去重。</strong> 去重要在<strong>計算 DSR 之前</strong>做。重複註冊會讓試驗數虛胖、離散度失真。見 <a href="B11-mechanical-trial-counter.md">B11 機械試驗計數器</a>。</p>
+<p><strong>陷阱 2：只在最後選投組時才去重。</strong> 去重要在<strong>計算 DSR 之前</strong>做。重複註冊會讓試驗數虛胖、離散度失真。見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B11-mechanical-trial-counter.md">B11 機械試驗計數器</a>。</p>
 <p><strong>陷阱 3：把低相關當成「可以各配 20%」。</strong> 相關係數低只代表它們不是同一個東西，不代表它們各自都經得起考驗。實測那三群裡，只有第一群的代表通過去膨脹檢定；另外兩群的代表沒過。<strong>分散是為了降低單一因子依賴，不是為了讓沒通過的東西混進來。</strong></p>
 <h2>相關</h2>
-<ul><li>完整清單與矩陣：<a href="../70-verified-strategy-inventory.md">C70 已驗證積木清單</a></li><li>為什麼要在 DSR 之前做：<a href="../52-trial-counting.md">C52 試驗計數</a></li><li>整條驗證流水線：<a href="../60-verification-harness.md">C60 驗證流水線</a></li></ul>
+<ul><li>完整清單與矩陣：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/70-verified-strategy-inventory.md">C70 已驗證積木清單</a></li><li>為什麼要在 DSR 之前做：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/52-trial-counting.md">C52 試驗計數</a></li><li>整條驗證流水線：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/60-verification-harness.md">C60 驗證流水線</a></li></ul>
 <hr>
 <h2>[B14] 策略契約：讓作弊在建構物件時就爆掉</h2>
 <p>*track: block · status: verified · verified_by: src/quant_grill_lab/strategies/base.py · source: lesson/claude/blocks/B14-strategy-spec-contract.md*</p>
@@ -1835,7 +1835,7 @@ spec.module_source()     # 完整原始碼，給人讀的</code></pre>
 <p><code>module_source()</code> 那個是刻意的 —— 設計目標是「策略的 FinLab 程式碼是要被擁有者讀的，不是藏在框架後面」。黑盒子要能被打開，才叫積木。</p>
 <h2>記住</h2>
 <blockquote>契約的價值不在它擋下多少錯，而在它讓錯誤發生在<strong>寫的時候</strong>而不是<strong>讀報告的時候</strong>。前者花五分鐘，後者花三天。</blockquote>
-<p>相關：<a href="../51-fake-validation.md">假驗證的四種形態</a>、<a href="../60-verification-harness.md">驗證流水線</a></p>
+<p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">假驗證的四種形態</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/60-verification-harness.md">驗證流水線</a></p>
 <hr>
 <footer>Markdown 版：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md">ALL.md</a></footer>
 </div></body>

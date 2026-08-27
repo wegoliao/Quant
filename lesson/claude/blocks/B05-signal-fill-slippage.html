@@ -61,7 +61,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </head>
 <body><div class="wrap">
 <div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B05</div>
-<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>B05 · 訊號 → 成交 履約落差</h1>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ">unvalidated · declared verified but missing verified_by</span><h1>B05 · 訊號 → 成交 履約落差</h1>
 <h2>它解決什麼</h2>
 <p>策略卡說「進場 97.1」。帳戶實際成交 <strong>97.80</strong>。</p>
 <p>差 0.72%。聽起來沒事。但如果這個落差是<strong>系統性的</strong>，那麼一個年化 20% 的策略，一年進出 20 次，就會被吃掉 14 個百分點。</p>
@@ -70,7 +70,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <pre><code class="lang-python">build_slippage_ledger(path, ohlc) -&gt; list[SlippageRow]</code></pre>
 <p>輸入 <code>signal_fills.csv</code>：</p>
 <pre><code class="lang-csv">signal_date,effective_date,strategy_id,stock_code,stock_name,action,signal_ref_price,signal_basis,fill_date,fill_time,fill_price,shares,source
-2026-08-24,2026-08-25,MARGIN,2637,慧洋-KY,BUY,97.1,NEXT_OPEN,2026-08-25,10:14:13,97.80,1000,owner_pasted_fill</code></pre>
+2026-01-09,2026-01-10,STRATEGY_A,DEMO-A,示例股票A,BUY,100.0,NEXT_OPEN,2026-01-10,10:00:00,100.8,100,synthetic_fixture</code></pre>
 <h2>核心：方向要對</h2>
 <pre><code class="lang-python"># 買進成交在參考價「之上」是不利；賣出成交在「之下」是不利
 direction = 1.0 if side == &quot;BUY&quot; else -1.0
@@ -89,7 +89,7 @@ def basis_points(reference):
 <p><strong>陷阱 1：<code>signal_basis</code> 一定要寫。</strong> 「97.1」是收盤價？次日開盤預期？還是策略卡的進場欄？三者的落差意義完全不同。系統用 <code>NEXT_OPEN</code> 這種明確的 enum，不允許空白。</p>
 <p><strong>陷阱 2：只記成交的，不記沒成交的。</strong> 如果訊號發出但你沒買（掛單沒成交、或當天忘了），那也是履約落差的一部分 —— 而且是最貴的那一部分。<strong>未執行的訊號要留紀錄</strong>，否則你的落差統計只涵蓋「有成交的那些」，選擇性偏誤會讓數字好看。</p>
 <p>（這一點目前的實作<strong>還沒做到</strong>，誠實記在這裡。）</p>
-<p><strong>陷阱 3：樣本 1 筆就下結論。</strong> 目前只有 2637 慧洋-KY 一筆。0.72% 這個數字現在<strong>什麼都不代表</strong>。</p>
+<p><strong>陷阱 3：樣本 1 筆就下結論。</strong> 若目前只有一筆去識別成交，即使算出 0.8%，這個數字也<strong>不能代表穩定執行品質</strong>。</p>
 <h2>為什麼這是整個系統最重要的一張表</h2>
 <p>策略研究的終局問題只有一個：</p>
 <blockquote>這個策略能不能被執行？</blockquote>

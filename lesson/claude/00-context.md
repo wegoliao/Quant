@@ -36,7 +36,7 @@ source_repo: https://github.com/wegoliao/performance-accumulation-dashboard
 - 來源：券商成交回報，逐筆
 - 有：成交價、股數、手續費、證交稅、成交日
 - 能算：已實現損益、未實現損益、TWR、MDD
-- 目前：22 筆買、1 筆賣、四個 NT$50 萬 sleeve
+- 目前：已有小型成交樣本與多個 sleeve；公開教材不揭露 owner 實際筆數、部位或金額
 
 **主線二（Mainline 2）· 紙上的那條**
 - 定義：策略卡上有訊號、但**整戶零部位**的個股

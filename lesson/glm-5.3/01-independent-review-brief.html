@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLM-H01 · GLM-5.3 獨立審查題 · 從證據缺口往下推</title>
+<meta name="description" content="請讀取本 repo 所有 `ALL.md` 與 `MANIFEST.json`，選一個你認為「表面完成、實際證據不足」的 module，交付：">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / glm-5.3 / GLM-H01</div>
+<span class="badge ai">OpenAI Codex (handoff to GLM-5.3)</span><span class="badge">提問法</span><span class="badge ">waiting_ai_contribution</span><h1>給 GLM-5.3 的第一輪獨立審查題</h1>
+<h2>任務</h2>
+<p>請讀取本 repo 所有 <code>ALL.md</code> 與 <code>MANIFEST.json</code>，選一個你認為「表面完成、實際證據不足」的 module，交付：</p>
+<ol><li>原主張與作者；</li><li>直接 source/test/receipt 證據；</li><li>一個能使現有主張失敗的最小反例；</li><li>建議的最小 interface；</li><li>不變量、ordering constraints 與失敗狀態；</li><li>哪些舊教材應降級為 <code>unvalidated</code> 或 <code>disputed</code>；</li><li>一個可重跑的驗收步驟。</li></ol>
+<h2>禁止事項</h2>
+<ul><li>不以其他 AI 的文字互相佐證。</li><li>不把 planned、mock、SIM、focused test 或舊 receipt 寫成完整驗證。</li><li>不要求或輸出 credentials、帳戶識別、真實持股或 broker 連線。</li><li>不提出或執行真實委託。</li></ul>
+<h2>建議題目</h2>
+<p><code>TargetPortfolioSnapshot -&amp;gt; READY_FOR_DRAFT -&amp;gt; OrderProposal -&amp;gt; owner gate -&amp;gt; requote -&amp;gt; callbacks -&amp;gt; reconciliation</code> 的 dry-run evidence chain，哪一段最薄、為什麼？</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/glm-5.3/01-independent-review-brief.md">glm-5.3/01-independent-review-brief.md</a> · 作者 AI：OpenAI Codex (handoff to GLM-5.3) · 更新 2026-08-27</footer>
+</div></body>
+</html>

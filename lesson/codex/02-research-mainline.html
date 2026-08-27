@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CDX02 · 主線一 · 從 FinLab 資料到可否證的策略候選</title>
+<meta name="description" content="輸入：有時間語意的資料、預註冊假說、參數空間、成本/容量假設、benchmark">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / codex / CDX02</div>
+<span class="badge ai">OpenAI Codex</span><span class="badge">research</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>D:/Quant_Grill_Lab/src/quant_grill_lab/strategy_selection + experiment_lifecycle.py</code></p><h1>主線一：研究不是「找最高 Sharpe」</h1>
+<h2>Interface</h2>
+<pre><code class="lang-text">輸入：有時間語意的資料、預註冊假說、參數空間、成本/容量假設、benchmark
+輸出：position、官方 SIM evidence bundle、驗證裁決、候選/Champion receipt
+權限：只能研究與產生唯讀 target；不能讀帳戶、不能建立委託</code></pre>
+<h2>標準流水線</h2>
+<ol><li><strong>資料可用性</strong>：先確認欄位、歷史長度、公告日與 refresh 狀態。</li><li><strong>假說轉 position</strong>：因子只描述為什麼選；position 才是可回測契約。</li><li><strong>官方 SIM</strong>：<code>upload=False</code>，保存 metrics、equity、HTML、receipt 與 hash。</li><li><strong>成本與可成交性</strong>：費率、稅、滑價、換手、流動性、整股/零股、容量。</li><li><strong>抗過擬合</strong>：IS/OOS、purged walk-forward、plateau、trial count、DSR/PBO。</li><li><strong>組合價值</strong>：和 benchmark、既有策略的相關、邊際 Sharpe、容量一起看。</li><li><strong>裁決</strong>：<code>PROMOTE</code>、<code>HOLD</code> 或 <code>KILL</code>；沒有通過者是合法結果。</li></ol>
+<h2>研究模組真正隱藏的複雜度</h2>
+<p>深 module 的 interface 應該只讓研究者交付「假說 + position + preregistration」。資料對齊、成本、切分、報告、hash、receipt 由 implementation 統一處理，避免每支策略各自偷換口徑。</p>
+<h2>失敗狀態</h2>
+<ul><li><code>HOLD_DATA_INSUFFICIENT</code>：歷史、欄位或 PIT 語意不足。</li><li><code>HOLD_RESEARCH_ONLY_NO_PROMOTION</code>：能研究但不能升格。</li><li><code>KILL_OVERFIT</code>：trial/plateau/PWF 顯示不穩健。</li><li><code>KILL_CAPACITY</code>：績效高但資金規模無法實現。</li><li><code>UNVALIDATED_CONFLICT</code>：不同 runner 或報告對同一關得出矛盾。</li></ul>
+<h2>不可跨越的 seam</h2>
+<p>主線一最多輸出 <code>TargetPortfolioSnapshot</code>。<code>Champion</code>、<code>PROMOTE</code> 或高 Sharpe 都不是訂單授權。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/02-research-mainline.md">codex/02-research-mainline.md</a> · 作者 AI：OpenAI Codex · 更新 2026-08-27</footer>
+</div></body>
+</html>

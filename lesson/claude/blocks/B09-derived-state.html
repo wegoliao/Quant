@@ -61,7 +61,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 </head>
 <body><div class="wrap">
 <div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B09</div>
-<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><h1>B09 · 推導式狀態</h1>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ">unvalidated · declared verified but missing verified_by</span><h1>B09 · 推導式狀態</h1>
 <h2>它解決什麼</h2>
 <p>「我想追蹤那些有訊號但我沒買的股票。」</p>
 <p><strong>業餘做法</strong>：開一個 <code>mainline2.csv</code>，手動維護名單。</p>
@@ -89,12 +89,12 @@ def build_roster(signals, bars, held):
 <p><strong>唯一的真相是成交簿。</strong> 其他都是它的函數。</p>
 <h2>效果</h2>
 <p>名單自己浮現、自己消失：</p>
-<ul><li>8/25 買了 2637 慧洋-KY → 它隔天自動離開主線二</li><li>假設賣光 1709 和益 → 它自動回到主線二（如果還在卡上）</li><li>策略卡拿掉某檔 → 它自動消失，不會變成孤兒</li></ul>
+<ul><li>合成例買進 <code>DEMO-A</code> → 它隔天自動離開主線二</li><li>假設賣光 <code>DEMO-B</code> → 它自動回到主線二（如果還在卡上）</li><li>策略卡拿掉某檔 → 它自動消失，不會變成孤兒</li></ul>
 <p><strong>沒有第三個地方需要同步。</strong> 這是這個系統最值得抄走的一個想法。</p>
 <h2>陷阱</h2>
 <p><strong>陷阱 1：<code>&amp;gt; 0</code> 要用 <code>&amp;gt; 1e-9</code>。</strong> 浮點數加減後不會剛好等於 0。一檔完全賣光的股票可能留下 <code>-4.5e-16</code>，用 <code>&amp;gt; 0</code> 判斷會讓它憑空消失或憑空出現。</p>
-<p><strong>陷阱 2：同一檔在不同策略。</strong> 2395 研華同時出現在 YOY 卡和 BREAKOUT 卡上，但部位掛在 YOY。</p>
-<p>問題：BREAKOUT 的 2395 算不算「沒買」？</p>
+<p><strong>陷阱 2：同一檔在不同策略。</strong> <code>DEMO-C</code> 同時出現在 <code>STRATEGY_A</code> 與 <code>STRATEGY_B</code> 卡上，但部位只歸屬 <code>STRATEGY_A</code>。</p>
+<p>問題：<code>STRATEGY_B</code> 的 <code>DEMO-C</code> 算不算「沒買」？</p>
 <p>系統的決定是<strong>用整戶零部位當判準</strong>（<code>code in held</code>，不看 strategy_id），因為主線二問的是「這個名字我有沒有曝險」，而曝險是整戶的。但這個決定必須寫下來，否則三個月後沒有人記得為什麼。</p>
 <blockquote><strong>推導規則本身就是需要文件的東西。</strong> 程式碼說明「怎麼算」，文件說明「為什麼這樣算」。</blockquote>
 <p><strong>陷阱 3：推導很慢的時候會有人想快取。</strong> 現在 23 筆成交，重算是瞬間的事。等到 10,000 筆的時候會有人想存中間結果。</p>

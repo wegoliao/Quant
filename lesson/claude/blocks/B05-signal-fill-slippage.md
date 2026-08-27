@@ -30,7 +30,7 @@ build_slippage_ledger(path, ohlc) -> list[SlippageRow]
 
 ```csv
 signal_date,effective_date,strategy_id,stock_code,stock_name,action,signal_ref_price,signal_basis,fill_date,fill_time,fill_price,shares,source
-2026-08-24,2026-08-25,MARGIN,2637,慧洋-KY,BUY,97.1,NEXT_OPEN,2026-08-25,10:14:13,97.80,1000,owner_pasted_fill
+2026-01-09,2026-01-10,STRATEGY_A,DEMO-A,示例股票A,BUY,100.0,NEXT_OPEN,2026-01-10,10:00:00,100.8,100,synthetic_fixture
 ```
 
 ## 核心：方向要對
@@ -72,7 +72,7 @@ def basis_points(reference):
 （這一點目前的實作**還沒做到**，誠實記在這裡。）
 
 **陷阱 3：樣本 1 筆就下結論。**
-目前只有 2637 慧洋-KY 一筆。0.72% 這個數字現在**什麼都不代表**。
+若目前只有一筆去識別成交，即使算出 0.8%，這個數字也**不能代表穩定執行品質**。
 
 ## 為什麼這是整個系統最重要的一張表
 

@@ -28,8 +28,8 @@ updated: 2026-08-26
 
 ```csv
 trade_id,strategy_id,stock_code,stock_name,side,fill_date,fill_time,fill_price,shares,consideration_twd,fee_twd,tax_twd,cash_out_twd,cash_in_twd,currency,source
-X-02HV,YOY,3702,大聯大,BUY,2026-08-11,,126.5,546,69069,98,0,69167,0,TWD,20260820庫存表.xlsx
-X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,20260820庫存表.xlsx
+SYN-001,STRATEGY_A,DEMO-A,示例股票A,BUY,2026-01-02,,100.0,100,10000,20,0,10020,0,TWD,synthetic_fixture.csv
+SYN-002,STRATEGY_A,DEMO-A,示例股票A,SELL,2026-01-10,,95.0,100,9500,20,29,0,9451,TWD,synthetic_fixture.csv
 ```
 
 | 欄位 | 契約 |
@@ -43,7 +43,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 **關鍵：`cash_out` / `cash_in` 才是真相，不是 `fill_price × shares`。**
 所有損益計算都必須從這兩欄出發。用價差算出來的損益永遠比實際好看。
 
-**同一檔可以掛在不同策略。** 例如 1709 和益：3,644 股在 `BREAKOUT`、305 股在 `MARGIN`。所以持股要用 `(strategy_id, stock_code)` 當 key，不能只用 `stock_code`。
+**同一檔可以掛在不同策略。** 合成例：`DEMO-B` 有 100 股在 `STRATEGY_A`、20 股在 `STRATEGY_B`。所以持股要用 `(strategy_id, stock_code)` 當 key，不能只用 `stock_code`。
 
 ---
 
@@ -51,7 +51,7 @@ X-07P7,YOY,3702,大聯大,SELL,2026-08-19,,107,546,58422,83,175,0,58164,TWD,2026
 
 ```csv
 asof_date,stock_code,open,high,low,close,volume,market,source
-2026-08-25,2637,95.9,99.5,94.7,95.5,12345678,TWSE,TWSE_STOCK_DAY
+2026-01-10,DEMO-A,94.0,97.0,93.0,95.0,1000000,TWSE,SYNTHETIC_FIXTURE
 ```
 
 - 來源：TWSE `STOCK_DAY`、TPEx `daily_close_quotes`，都是官方公開 API
@@ -64,7 +64,7 @@ asof_date,stock_code,open,high,low,close,volume,market,source
 
 ```csv
 asof_date,effective_date,strategy_id,stock_code,stock_name,industry,entry_display,entry_price,close,magnitude_pct,direction,signed_return_pct,signal,source,quality_note
-2026-08-25,,MARGIN,6213,聯茂,電子零組件,424.0,424.0,530,24.8,+,24.8,抱,owner_strategy_card_2026-08-25,
+2026-01-10,,STRATEGY_A,DEMO-C,示例股票C,示例產業,90.0,90.0,95.0,5.6,+,5.6,抱,synthetic_strategy_card,
 ```
 
 - `magnitude_pct` 恆為正、`direction` 是 `+`/`-`、`signed_return_pct` 才是帶號的。這是為了如實保存卡面（卡面只印絕對值加符號）
@@ -83,13 +83,13 @@ PRINTED_PCT_VS_ENTRY_CLOSE_GAP:printed=37.8+,implied=+36.4
 
 ```csv
 stock_code,stock_name,strategy_id,track,market,note
-6213,聯茂,MARGIN,MAINLINE2,TWSE,融資卡成員；整戶零部位
-3702,大聯大,YOY,CLOSED,TWSE,已平倉；保留行情供成交落點對照
+DEMO-C,示例股票C,STRATEGY_A,MAINLINE2,TWSE,策略卡成員；整戶零部位
+DEMO-A,示例股票A,STRATEGY_A,CLOSED,TWSE,已平倉；保留行情供成交落點對照
 ```
 
 這個檔案解決一個真實踩到的洞：**持股清單驅動抓取時，一檔賣掉就等於資料斷線。**
 
-3702 平倉後從持股消失，行情停止更新，結果它的兩筆成交在成交落點分析裡完全對不到日線 —— 賣出樣本數是 0。加進 watchlist 後才補回來。
+`DEMO-A` 平倉後從持股消失，行情停止更新，結果它的兩筆合成成交在成交落點分析裡完全對不到日線。加進 watchlist 後才補回來。
 
 詳見 [`B06 watchlist 驅動抓取`](blocks/B06-watchlist-driven-fetch.md)。
 

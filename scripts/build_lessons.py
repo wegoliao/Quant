@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import html
 import json
+import posixpath
 import re
 from datetime import date
 from pathlib import Path
@@ -37,6 +38,14 @@ TRACK_LABEL = {
     "shared": "共用",
     "validation": "驗證",
     "strategy": "策略",
+}
+
+LEGACY_REDIRECTS = {
+    "codex/01-adversarial-audit-method.html": "../ox/01-adversarial-audit-method.html",
+    "codex/02-oddlot-auction-twse-rules.html": "../ox/02-oddlot-auction-twse-rules.html",
+    "codex/03-auth-chain-forgery.html": "../ox/03-auth-chain-forgery.html",
+    "codex/04-order-state-triptych.html": "../ox/04-order-state-triptych.html",
+    "codex/05-agent-review-workflow.html": "../ox/05-agent-review-workflow.html",
 }
 
 
@@ -274,6 +283,13 @@ def collect() -> list[dict]:
         meta, body = split_front_matter(path.read_text(encoding="utf-8"))
         rel = path.relative_to(LESSON).as_posix()
         parts = rel.split("/")
+        declared_status = meta.get("status", "draft")
+        verified_by = meta.get("verified_by", "")
+        effective_status = (
+            "unvalidated"
+            if declared_status == "verified" and not verified_by
+            else declared_status
+        )
         docs.append(
             {
                 "path": rel,
@@ -282,10 +298,14 @@ def collect() -> list[dict]:
                 "id": meta.get("id", path.stem),
                 "title": meta.get("title", path.stem),
                 "author_ai": meta.get("author_ai", "—"),
+                "intended_ai": meta.get("intended_ai", ""),
                 "track": meta.get("track", "context"),
-                "status": meta.get("status", "draft"),
-                "verified_by": meta.get("verified_by", ""),
+                "status": effective_status,
+                "declared_status": declared_status,
+                "verified_by": verified_by,
                 "updated": meta.get("updated", ""),
+                "source_repo": meta.get("source_repo", ""),
+                "notebooklm_tags": meta.get("notebooklm_tags", ""),
                 "body": body,
                 "html_path": rel[:-3] + ".html",
                 "site_url": f"{SITE_ORIGIN}/lesson/{rel[:-3]}.html",
@@ -303,11 +323,34 @@ def subtitle(doc: dict) -> str:
     return ""
 
 
+def bundle_body(doc: dict) -> str:
+    """Make relative links survive when a nested document is folded into ALL.md."""
+
+    base = posixpath.dirname(doc["path"])
+
+    def rewrite(match: re.Match[str]) -> str:
+        label, target = match.group(1), match.group(2)
+        if re.match(r"^[a-z]+://", target) or target.startswith(("#", "mailto:")):
+            return match.group(0)
+        path, marker, fragment = target.partition("#")
+        resolved = posixpath.normpath(posixpath.join(base, path))
+        absolute = f"{RAW_ORIGIN}/lesson/{resolved}"
+        if marker:
+            absolute += f"#{fragment}"
+        return f"[{label}]({absolute})"
+
+    return re.sub(r"\[([^\]]+)\]\(([^)]+)\)", rewrite, doc["body"])
+
+
 def author_of(group: list[dict], fallback: str) -> str:
+    if fallback == "_shared":
+        return "Cross-AI shared evidence"
+    authors: list[str] = []
     for doc in group:
-        if doc["author_ai"] not in {"—", ""}:
-            return doc["author_ai"]
-    return fallback
+        author = doc["author_ai"]
+        if author not in {"—", ""} and author not in authors:
+            authors.append(author)
+    return " + ".join(authors) if authors else fallback
 
 
 # ------------------------------------------------------------------------ build
@@ -337,11 +380,14 @@ def build() -> dict:
             f'<div class="crumb"><a href="{up}../index.html">Quant</a>'
             f' / <a href="{up}index.html">lesson</a>{trail} / {html.escape(doc["id"])}</div>'
         )
+        status_label = doc["status"]
+        if doc["declared_status"] == "verified" and doc["status"] == "unvalidated":
+            status_label = "unvalidated · declared verified but missing verified_by"
         badges = (
             f'<span class="badge ai">{html.escape(doc["author_ai"])}</span>'
             f'<span class="badge">{html.escape(TRACK_LABEL.get(doc["track"], doc["track"]))}</span>'
             f'<span class="badge {"ok" if doc["status"] == "verified" else ""}">'
-            f'{html.escape(doc["status"])}</span>'
+            f'{html.escape(status_label)}</span>'
         )
         verified = (
             f'<p class="crumb">驗證：<code>{html.escape(doc["verified_by"])}</code></p>'
@@ -390,7 +436,7 @@ def build() -> dict:
                 + (f" · verified_by: {doc['verified_by']}" if doc["verified_by"] else "")
                 + f" · source: lesson/{doc['path']}*",
                 "",
-                doc["body"].strip(),
+                bundle_body(doc).strip(),
                 "",
                 "---",
                 "",
@@ -478,7 +524,7 @@ def build() -> dict:
     (LESSON / "index.html").write_text(
         page(
             "lesson · 跨 AI 量化系統課程",
-            "Gemini、Claude、Codex 各自寫下的台股量化系統教學與可獨立抽用的積木庫。",
+            "Claude、Gemini、OpenAI Codex、OX 與 GLM-5.3 交接軌各自標示來源的台股量化系統教材。",
             hub_body,
             '<div class="crumb"><a href="../index.html">Quant</a> / lesson</div>',
             wide=True,
@@ -528,8 +574,8 @@ def build() -> dict:
         "generated": date.today().isoformat(),
         "site": SITE_ORIGIN,
         "raw": RAW_ORIGIN,
-        "source_system": "https://github.com/wegoliao/performance-accumulation-dashboard",
-        "disclaimer": "技術教學文件，不含投資建議、不含買賣訊號、不含委託路徑。",
+        "source_system": "Quant Grill Lab (sanitized public lesson extract)",
+        "disclaimer": "技術教學文件，不含投資建議、買賣訊號、credentials、可執行 broker code 或訂單授權。",
         "directories": [
             {
                 "dir": name,
@@ -540,10 +586,15 @@ def build() -> dict:
                     {
                         "id": d["id"],
                         "title": d["title"],
+                        "author_ai": d["author_ai"],
+                        "intended_ai": d["intended_ai"],
                         "track": d["track"],
                         "status": d["status"],
+                        "declared_status": d["declared_status"],
                         "verified_by": d["verified_by"],
                         "updated": d["updated"],
+                        "source_repo": d["source_repo"],
+                        "notebooklm_tags": d["notebooklm_tags"],
                         "raw": d["raw_url"],
                         "html": d["site_url"],
                     }
@@ -606,6 +657,24 @@ def build() -> dict:
         encoding="utf-8",
         newline="\n",
     )
+
+    # 7. Preserve published URLs after the 2026-08-27 authorship correction.
+    #    The X-series sources moved from codex/ to ox/ because their frontmatter
+    #    says ox-alpha. Old URLs remain explicit redirects instead of silently
+    #    serving stale, misattributed pages.
+    for old_path, target in LEGACY_REDIRECTS.items():
+        target_path = LESSON / old_path
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        target_path.write_text(
+            "<!doctype html><html lang=\"zh-Hant\"><head><meta charset=\"utf-8\">"
+            f"<meta http-equiv=\"refresh\" content=\"0;url={html.escape(target)}\">"
+            f"<link rel=\"canonical\" href=\"{html.escape(target)}\">"
+            "<title>作者歸屬已修正</title></head><body>"
+            "<p>這篇由 OX / ox-alpha 撰寫，已移至 "
+            f"<a href=\"{html.escape(target)}\">lesson/ox</a>。</p></body></html>\n",
+            encoding="utf-8",
+            newline="\n",
+        )
 
     return {
         "documents": len(docs),

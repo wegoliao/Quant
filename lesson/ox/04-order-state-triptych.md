@@ -6,7 +6,7 @@ track: execution
 status: verified
 updated: 2026-08-26
 source_repo: src/quant_grill_lab/execution/order_events.py + proposal_submit.py + REVIEW-005 S2/S3/E1–E3
-web_url: https://wegoliao.github.io/Quant/lesson/codex/04-order-state-triptych.html
+web_url: https://wegoliao.github.io/Quant/lesson/ox/04-order-state-triptych.html
 notebooklm_tags: [state-machine, order-lifecycle, dedup, journal, shioaji, deal-matching]
 ---
 

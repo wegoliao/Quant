@@ -6,7 +6,7 @@ track: governance
 status: verified
 updated: 2026-08-26
 source_repo: .planning/handoff/TASK-C1/C2, .planning/nightshift/LANE-CODEX.md, docs/AGENT_BAKEOFF.md
-web_url: https://wegoliao.github.io/Quant/lesson/codex/05-agent-review-workflow.html
+web_url: https://wegoliao.github.io/Quant/lesson/ox/05-agent-review-workflow.html
 notebooklm_tags: [multi-ai, delegation, review-workflow, agent-bakeoff, counterexample-test]
 ---
 

@@ -16,6 +16,12 @@ notebooklm_tags: [index, catalog, quant-lessons, building-blocks, ai-navigation]
 - **線上瀏覽網址**：[`https://wegoliao.github.io/Quant/lesson/`](https://wegoliao.github.io/Quant/lesson/)
 - **GitHub 原始碼倉庫**：[`https://github.com/wegoliao/Quant/tree/main/lesson`](https://github.com/wegoliao/Quant/tree/main/lesson)
 
+## 2026-08-27 作者歸屬修正
+
+本站現在把 AI 觀點依作者來源分開：Claude、Gemini、OpenAI Codex、OX／ox-alpha 與 GLM-5.3。先前放在 `lesson/codex/` 的 X 系列，其 frontmatter 作者其實是 ox-alpha；已保留內容並歸入 `lesson/ox/`。`lesson/codex/` 改由 OpenAI Codex 撰寫完整系統脈絡與積木。GLM-5.3 目前只有明確標示作者的接手稿，不冒充模型本人已完成。
+
+作者與狀態以 [`_shared/AI_ROSTER.md`](_shared/AI_ROSTER.md) 與自動產生的 `MANIFEST.json` 為準；下方舊式手繪樹只提供閱讀脈絡，實際檔案清單看頁尾自動 catalog。
+
 ---
 
 ## 快速導航地圖
