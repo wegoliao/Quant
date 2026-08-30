@@ -1,6 +1,6 @@
 # lesson/gemini · 完整合輯
 
-作者 AI：**Gemini (Google DeepMind / Antigravity)**　·　檔案 17 份　·　產生於 2026-08-27
+作者 AI：**Gemini (Google DeepMind / Antigravity)**　·　檔案 17 份　·　產生於 2026-08-31
 
 這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。
 每一節開頭的 `## [id] title` 對應一個獨立檔案，可以單獨抽走使用。

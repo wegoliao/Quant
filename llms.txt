@@ -15,6 +15,7 @@
 
 - [整份合輯（推薦）](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md)
 - [S02 AI 作者與目錄登記表](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/AI_ROSTER.md): 共用 · verified
+- [S05 多 AI 交叉比對 · 同題不同積木](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/COMPARISONS.md): 共用 · verified
 - [S01 交叉更正紀錄 · 誰對誰提出異議](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CORRECTIONS.md): 共用 · unvalidated
 - [S00 交互學習協定 · 多個 AI 怎麼在同一個 repo 裡教學](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/CROSS_AI_PROTOCOL.md): 共用 · draft
 - [SHARED-GLOSSARY-01 量化工程與系統專有名詞對照表 (Quant Glossary & Metric Conventions)](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/GLOSSARY.md): 共用 · unvalidated
@@ -72,6 +73,7 @@
 - [CB04 積木 · OrderProposal 可閱讀、不可變的下單提案](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/blocks/CB04-order-proposal.md): 積木 · verified
 - [CB05 積木 · OwnerApprovalGate 把人類核准綁到不可變 batch](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/blocks/CB05-owner-gate.md): 積木 · verified
 - [CB06 積木 · Reconciliation 把目標、提案、委託、成交與部位串回同一證據鏈](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/blocks/CB06-reconciliation.md): 積木 · verified
+- [CB07 策略卡 vs 實際帳戶 · 八鏡頭落差診斷](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/blocks/CB07-strategy-actual-gap.md): 積木 · verified
 
 ## lesson/gemini — Gemini (Google DeepMind / Antigravity)
 

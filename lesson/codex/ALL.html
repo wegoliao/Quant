@@ -62,7 +62,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <body><div class="wrap">
 <div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / <a href="index.html">codex</a> / 合輯</div>
 <h1>lesson/codex · 完整合輯</h1>
-<p>作者 AI：<strong>OpenAI Codex</strong>　·　檔案 15 份　·　產生於 2026-08-27</p>
+<p>作者 AI：<strong>OpenAI Codex</strong>　·　檔案 16 份　·　產生於 2026-08-31</p>
 <p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案，可以單獨抽走使用。</p>
 <hr>
 <h2>[CDX00] OpenAI Codex 全景脈絡 · 從綠地實驗室到雙主線量化系統</h2>
@@ -346,6 +346,49 @@ outputs:
 <p><code>WAITING_CALLBACK</code>、<code>PARTIAL_FILL</code>、<code>REJECTED</code>、<code>UNRESOLVED_BROKER_ID</code>、<code>UNVALIDATED_SLIPPAGE</code>、<code>POSITION_MISMATCH</code>。</p>
 <h2>組裝位置</h2>
 <p>它是安全鏈最後一個 module，也反饋研究的成本與容量模型；但回饋必須經新版本、重新驗證，不能偷偷改歷史研究結果。</p>
+<hr>
+<h2>[CB07] 策略卡 vs 實際帳戶 · 八鏡頭落差診斷</h2>
+<p>*track: block · status: verified · verified_by: D:/Quant_Grill_Lab/66.performance_accumulation_dashboard/tests/test_strategy_gap.py + output/build_receipt.json · source: lesson/codex/blocks/CB07-strategy-actual-gap.md*</p>
+<h1>CB07 · 策略卡 vs 實際帳戶</h1>
+<h2>先把兩個黑盒子拆開</h2>
+<p>策略卡與實際帳戶不是同一種報酬序列：</p>
+<div class="tw"><table><thead><tr><th style="text-align:left">物件</th><th style="text-align:left">分子</th><th style="text-align:left">分母／權重</th><th style="text-align:left">包含什麼</th></tr></thead><tbody><tr><td style="text-align:left">策略卡</td><td style="text-align:left">每檔顯示報酬</td><td style="text-align:left">當日成員等權</td><td style="text-align:left">訊號價到卡片現價；通常不含現金、費稅與實際成交</td></tr><tr><td style="text-align:left">實際 sleeve</td><td style="text-align:left">可變現價值與成交現金流</td><td style="text-align:left">固定策略預算</td><td style="text-align:left">實際股數、成交價、閒置現金、費稅、已實現與未實現</td></tr></tbody></table></div>
+<p>所以 <code>實際報酬 − 卡片報酬</code> 是 implementation gap，但不是 alpha，也不能直接解讀成「交易做差了」。</p>
+<h2>積木契約</h2>
+<pre><code class="lang-text">analyze(
+  bridge,
+  latest_signals,
+  actual_curves,
+  card_curves,
+  benchmark_curves,
+  slippage_rows,
+  asof,
+) -&gt; strategy_actual_gap_report</code></pre>
+<p>必要不變量：</p>
+<ul><li>每個策略的 <code>actual − card</code> 必須等於 bridge 三項加總，容許誤差小於 <code>1e-12</code>。</li><li>卡片有、帳戶沒有的標的只列為 <code>missing_codes</code>；不得產生 counterfactual P&amp;L。</li><li>計畫進出與實際成交分開；沒有 fill 就維持 <code>WAITING_ACTUAL_FILL</code>。</li><li>訊號成交樣本未滿 30 筆時，只報樣本與觀察值，不下執行品質結論。</li><li>benchmark 必須使用同一起訖日；日期對不上就回傳缺值。</li></ul>
+<h2>八個診斷鏡頭</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">鏡頭</th><th style="text-align:left">問題</th><th style="text-align:left">需要的資料</th><th style="text-align:left">能說什麼</th><th style="text-align:left">不能說什麼</th></tr></thead><tbody><tr><td style="text-align:left">成員覆蓋</td><td style="text-align:left">卡片成員買了幾檔？</td><td style="text-align:left">卡片、在庫</td><td style="text-align:left">缺席與離卡持有</td><td style="text-align:left">未買標的若買了會賺多少</td></tr><tr><td style="text-align:left">資金投入</td><td style="text-align:left">50 萬用了多少？</td><td style="text-align:left">在庫成本、預算</td><td style="text-align:left">現金曝險程度</td><td style="text-align:left">現金一定是錯誤</td></tr><tr><td style="text-align:left">訊號到成交</td><td style="text-align:left">實付相對參考價？</td><td style="text-align:left">可對上的 signal/fill</td><td style="text-align:left">執行落點</td><td style="text-align:left">最佳進場價</td></tr><tr><td style="text-align:left">費稅</td><td style="text-align:left">進出成本吃掉多少？</td><td style="text-align:left">cash in/out</td><td style="text-align:left">已發生成本</td><td style="text-align:left">未來固定成本率</td></tr><tr><td style="text-align:left">已／未實現</td><td style="text-align:left">錢已落袋還是在庫？</td><td style="text-align:left">FIFO lot、估值</td><td style="text-align:left">損益所在狀態</td><td style="text-align:left">把兩種分母直接平均</td></tr><tr><td style="text-align:left">貢獻</td><td style="text-align:left">哪些持股貢獻最大？</td><td style="text-align:left">股數、價格、預算</td><td style="text-align:left">帳戶貢獻集中度</td><td style="text-align:left">因果選股能力</td></tr><tr><td style="text-align:left">基準</td><td style="text-align:left">有沒有勝過市場？</td><td style="text-align:left">同期 TAIEX、0050</td><td style="text-align:left">同期相對報酬</td><td style="text-align:left">長期 alpha</td></tr><tr><td style="text-align:left">待成交</td><td style="text-align:left">哪些只是計畫？</td><td style="text-align:left">signal state、fills</td><td style="text-align:left">作業待辦與證據缺口</td><td style="text-align:left">把訊號冒充成交</td></tr></tbody></table></div>
+<h2>描述性 bridge</h2>
+<p>目前使用的 bridge 是代數恆等式：</p>
+<pre><code class="lang-text">gap
+= actual_return - card_return
+= (deployed_weight * held_return - deployed_weight * card_return)
+ + (deployed_weight - 1) * card_return
+ + realized_pnl / fixed_budget</code></pre>
+<p>三項可命名為：</p>
+<ol><li>在庫組合與進場</li><li>現金／未投入</li><li>已實現貢獻</li></ol>
+<p>它們會精確加總，但第一項混合了成員、權重、進場時點、成交價與估值成本。因此方法標籤必須是 <code>DESCRIPTIVE_EXACT_ALGEBRA_NOT_CAUSAL_ATTRIBUTION</code>。</p>
+<h2>去識別合成例</h2>
+<p>假設策略卡有 5 檔、顯示 +8%，帳戶只持有其中 2 檔，投入 40%，實際 sleeve +1%。正確說法是：</p>
+<ul><li>覆蓋率 2/5。</li><li>投入率 40%。</li><li>implementation gap 為 −7pp。</li><li>bridge 可指出現金與在庫組合是下一步檢查方向。</li></ul>
+<p>錯誤說法是：「沒買的三檔造成 −X 元損失。」因為那需要明確的下單時間、數量、成交規則與成本；現在並不存在這筆交易。</p>
+<h2>驗證方式</h2>
+<pre><code class="lang-powershell">cd D:\Quant_Grill_Lab\66.performance_accumulation_dashboard
+..\.venv\Scripts\python.exe -m pytest -q tests\test_strategy_gap.py
+..\.venv\Scripts\python.exe scripts\build_dashboard.py</code></pre>
+<p>驗收時同時檢查：代數恆等式、缺席標的不產生假損益、共同日期 benchmark、樣本門檻，以及 HTML 沒有未替換模板標記。</p>
+<h2>可直接丟給 AI 的提問</h2>
+<blockquote>請根據 strategy_actual_gap_report，依成員覆蓋、資金投入、訊號成交、費稅、已未實現、貢獻、benchmark、pending 八個鏡頭分析。先說資料口徑，再說差異；不得把卡片等權報酬當成可投資 NAV，不得替未成交標的建立假損益，也不得把描述性 bridge 寫成因果歸因。</blockquote>
 <hr>
 <footer>Markdown 版：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md">ALL.md</a></footer>
 </div></body>

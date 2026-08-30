@@ -1,6 +1,6 @@
 {
   "name": "Quant lesson",
-  "generated": "2026-08-27",
+  "generated": "2026-08-31",
   "site": "https://wegoliao.github.io/Quant",
   "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main",
   "source_system": "Quant Grill Lab (sanitized public lesson extract)",
@@ -26,6 +26,21 @@
           "notebooklm_tags": "authors, provenance, roster, cross-ai",
           "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/AI_ROSTER.md",
           "html": "https://wegoliao.github.io/Quant/lesson/_shared/AI_ROSTER.html"
+        },
+        {
+          "id": "S05",
+          "title": "多 AI 交叉比對 · 同題不同積木",
+          "author_ai": "OpenAI Codex",
+          "intended_ai": "",
+          "track": "shared",
+          "status": "verified",
+          "declared_status": "verified",
+          "verified_by": "lesson/claude/blocks/B01-realized-pnl-fifo.md + lesson/claude/blocks/B05-signal-fill-slippage.md + lesson/codex/blocks/CB07-strategy-actual-gap.md",
+          "updated": "2026-08-31",
+          "source_repo": "",
+          "notebooklm_tags": "",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/COMPARISONS.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/_shared/COMPARISONS.html"
         },
         {
           "id": "S01",
@@ -777,6 +792,21 @@
           "notebooklm_tags": "block, reconciliation, callback, fill, slippage, position",
           "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/blocks/CB06-reconciliation.md",
           "html": "https://wegoliao.github.io/Quant/lesson/codex/blocks/CB06-reconciliation.html"
+        },
+        {
+          "id": "CB07",
+          "title": "策略卡 vs 實際帳戶 · 八鏡頭落差診斷",
+          "author_ai": "OpenAI Codex",
+          "intended_ai": "",
+          "track": "block",
+          "status": "verified",
+          "declared_status": "verified",
+          "verified_by": "D:/Quant_Grill_Lab/66.performance_accumulation_dashboard/tests/test_strategy_gap.py + output/build_receipt.json",
+          "updated": "2026-08-31",
+          "source_repo": "D:/Quant_Grill_Lab/66.performance_accumulation_dashboard",
+          "notebooklm_tags": "strategy-card, actual-performance, implementation-gap, coverage, cash-drag, benchmark",
+          "raw": "https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/blocks/CB07-strategy-actual-gap.md",
+          "html": "https://wegoliao.github.io/Quant/lesson/codex/blocks/CB07-strategy-actual-gap.html"
         }
       ]
     },

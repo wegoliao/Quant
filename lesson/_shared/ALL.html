@@ -62,7 +62,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <body><div class="wrap">
 <div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / <a href="index.html">_shared</a> / 合輯</div>
 <h1>lesson/_shared · 完整合輯</h1>
-<p>作者 AI：<strong>Cross-AI shared evidence</strong>　·　檔案 5 份　·　產生於 2026-08-27</p>
+<p>作者 AI：<strong>Cross-AI shared evidence</strong>　·　檔案 6 份　·　產生於 2026-08-31</p>
 <p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案，可以單獨抽走使用。</p>
 <hr>
 <h2>[S02] AI 作者與目錄登記表</h2>
@@ -71,6 +71,13 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <div class="tw"><table><thead><tr><th style="text-align:left">目錄</th><th style="text-align:left">正式作者／用途</th><th style="text-align:left">目前狀態</th></tr></thead><tbody><tr><td style="text-align:left"><code>lesson/claude/</code></td><td style="text-align:left">Claude (Anthropic)</td><td style="text-align:left">已有績效與成交對帳教材；需逐篇檢查 <code>verified_by</code></td></tr><tr><td style="text-align:left"><code>lesson/gemini/</code></td><td style="text-align:left">Gemini</td><td style="text-align:left">已有研究治理與工程教材；多篇仍缺直接 <code>verified_by</code></td></tr><tr><td style="text-align:left"><code>lesson/codex/</code></td><td style="text-align:left">OpenAI Codex</td><td style="text-align:left">系統脈絡、證據階層、研究/執行、積木與未解問題</td></tr><tr><td style="text-align:left"><code>lesson/ox/</code></td><td style="text-align:left">OX / ox-alpha</td><td style="text-align:left">對 Codex 對抗性稽核成果的獨立整理</td></tr><tr><td style="text-align:left"><code>lesson/glm-5.3/</code></td><td style="text-align:left">預留給 GLM-5.3</td><td style="text-align:left">目前只有 Codex handoff，<code>WAITING_AI_CONTRIBUTION</code></td></tr><tr><td style="text-align:left"><code>lesson/_shared/</code></td><td style="text-align:left">交叉協議與更正</td><td style="text-align:left">不以投票決定真相，只看可重跑證據</td></tr></tbody></table></div>
 <h2>歸屬規則</h2>
 <p>目錄名稱不等於作者。真正作者以每篇 frontmatter 的 <code>author_ai</code> 為準；交接稿必須寫成「handoff to」，不能冒充目標 AI 已經產出。</p>
+<hr>
+<h2>[S05] 多 AI 交叉比對 · 同題不同積木</h2>
+<p>*track: shared · status: verified · verified_by: lesson/claude/blocks/B01-realized-pnl-fifo.md + lesson/claude/blocks/B05-signal-fill-slippage.md + lesson/codex/blocks/CB07-strategy-actual-gap.md · source: lesson/_shared/COMPARISONS.md*</p>
+<h1>多 AI 交叉比對</h1>
+<h2>Claude B01/B05/B08/B09 vs Codex CB07</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">面向</th><th style="text-align:left">Claude 版</th><th style="text-align:left">Codex 版</th><th style="text-align:left">怎麼一起用</th></tr></thead><tbody><tr><td style="text-align:left">已實現損益</td><td style="text-align:left">B01 深入 FIFO 與 settled cash</td><td style="text-align:left">CB07 把 realized 放回策略卡落差</td><td style="text-align:left">先用 B01 算真，再用 CB07 看它對固定預算的貢獻</td></tr><tr><td style="text-align:left">訊號成交</td><td style="text-align:left">B05 深入單筆 slippage 定義</td><td style="text-align:left">CB07 只彙總可確定配對的樣本</td><td style="text-align:left">B05 建 ledger；CB07 顯示策略層樣本與門檻</td></tr><tr><td style="text-align:left">樣本門檻</td><td style="text-align:left">B08 解釋為何少量樣本不能推論</td><td style="text-align:left">CB07 固定未滿 30 為不足</td><td style="text-align:left">以 B08 理解限制，以 CB07 在 UI 強制揭露</td></tr><tr><td style="text-align:left">主線二</td><td style="text-align:left">B09 從策略卡減去整戶持股</td><td style="text-align:left">CB07 分 covered、missing、stale、planned</td><td style="text-align:left">B09 產生追蹤名單；CB07 避免把 missing 算成假損益</td></tr><tr><td style="text-align:left">整體落差</td><td style="text-align:left">分散在四個專門積木</td><td style="text-align:left">八鏡頭與精確代數 bridge</td><td style="text-align:left">專題診斷讀 Claude；owner 總覽讀 Codex</td></tr></tbody></table></div>
+<p>兩邊沒有互相取代。Claude 版較適合打開單一黑盒；Codex 版較適合把多個已驗證積木接成可稽核的 owner 儀表板。代數 bridge 只是描述分類，不是因果模型，這是 Codex 版額外加上的限制。</p>
 <hr>
 <h2>[S01] 交叉更正紀錄 · 誰對誰提出異議</h2>
 <p>*track: shared · status: unvalidated · source: lesson/_shared/CORRECTIONS.md*</p>

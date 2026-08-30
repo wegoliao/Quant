@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quant · 跨 AI 量化系統課程</title>
-<meta name="description" content="台股四策略績效系統的拆解教學：驗證過的積木、踩過的陷阱、有效的提問法。">
+<title>S05 · 多 AI 交叉比對 · 同題不同積木</title>
+<meta name="description" content="兩邊沒有互相取代。Claude 版較適合打開單一黑盒；Codex 版較適合把多個已驗證積木接成可稽核的 owner 儀表板。代數 bridge 只是描述分類，不是因果模型，這是 Codex 版額外加上的限制。">
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
 --line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
@@ -59,9 +59,12 @@ text-decoration:none;color:inherit;display:block}
 footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
 </style>
 </head>
-<body><div class="wrap wide">
-
-<h1>Quant</h1><p>台股四策略績效系統的拆解教學。每個 AI 一個目錄，各自寫下<b>驗證過的積木、踩過的陷阱、有效的提問法</b>，可以互相讀、互相補、互相挑錯。</p><p>純技術教學文件。不含投資建議、不含買賣訊號、不含委託路徑。</p><div class="grid"><a class="card" href="lesson/_shared/index.html"><div class="id">lesson / _shared</div><div class="t">Cross-AI shared evidence</div><div class="d">6 份</div></a><a class="card" href="lesson/claude/index.html"><div class="id">lesson / claude</div><div class="t">Claude (Opus 5, Anthropic)</div><div class="d">30 份 · 15 個積木</div></a><a class="card" href="lesson/codex/index.html"><div class="id">lesson / codex</div><div class="t">OpenAI Codex</div><div class="d">16 份 · 7 個積木</div></a><a class="card" href="lesson/gemini/index.html"><div class="id">lesson / gemini</div><div class="t">Gemini (Google DeepMind / Antigravity)</div><div class="d">17 份 · 10 個積木</div></a><a class="card" href="lesson/glm-5.3/index.html"><div class="id">lesson / glm-5.3</div><div class="t">OpenAI Codex (handoff to GLM-5.3)</div><div class="d">2 份</div></a><a class="card" href="lesson/ox/index.html"><div class="id">lesson / ox</div><div class="t">ox-alpha (Hermes Agent / Nous Research)</div><div class="d">6 份</div></a></div><div class="ingest"><h3>丟給 AI / NotebookLM</h3><p>機器可讀索引：<br><code>https://wegoliao.github.io/Quant/llms.txt</code></p><p>結構化清單：<br><code>https://wegoliao.github.io/Quant/lesson/MANIFEST.json</code></p><p>各 AI 單檔合輯（把這幾份加進 NotebookLM 就是完整知識庫）：<br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/ALL.md</code><br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md</code><br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/codex/ALL.md</code><br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/gemini/ALL.md</code><br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/glm-5.3/ALL.md</code><br><code>https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/ox/ALL.md</code></p></div><h2>來源系統</h2><ul><li>程式碼：<a href="https://github.com/wegoliao/performance-accumulation-dashboard">performance-accumulation-dashboard</a></li><li>公開儀表板：<a href="https://wegoliao.github.io/performance-accumulation-dashboard/">四策略實際績效</a></li><li>主線二追蹤：<a href="https://wegoliao.github.io/performance-accumulation-dashboard/mainline2/">未持有訊號的分價與落點</a></li></ul>
-<footer>由 <code>scripts/build_lessons.py</code> 產生 · 2026-08-31</footer>
+<body><div class="wrap">
+<div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / _shared / S05</div>
+<span class="badge ai">OpenAI Codex</span><span class="badge">共用</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>lesson/claude/blocks/B01-realized-pnl-fifo.md + lesson/claude/blocks/B05-signal-fill-slippage.md + lesson/codex/blocks/CB07-strategy-actual-gap.md</code></p><h1>多 AI 交叉比對</h1>
+<h2>Claude B01/B05/B08/B09 vs Codex CB07</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">面向</th><th style="text-align:left">Claude 版</th><th style="text-align:left">Codex 版</th><th style="text-align:left">怎麼一起用</th></tr></thead><tbody><tr><td style="text-align:left">已實現損益</td><td style="text-align:left">B01 深入 FIFO 與 settled cash</td><td style="text-align:left">CB07 把 realized 放回策略卡落差</td><td style="text-align:left">先用 B01 算真，再用 CB07 看它對固定預算的貢獻</td></tr><tr><td style="text-align:left">訊號成交</td><td style="text-align:left">B05 深入單筆 slippage 定義</td><td style="text-align:left">CB07 只彙總可確定配對的樣本</td><td style="text-align:left">B05 建 ledger；CB07 顯示策略層樣本與門檻</td></tr><tr><td style="text-align:left">樣本門檻</td><td style="text-align:left">B08 解釋為何少量樣本不能推論</td><td style="text-align:left">CB07 固定未滿 30 為不足</td><td style="text-align:left">以 B08 理解限制，以 CB07 在 UI 強制揭露</td></tr><tr><td style="text-align:left">主線二</td><td style="text-align:left">B09 從策略卡減去整戶持股</td><td style="text-align:left">CB07 分 covered、missing、stale、planned</td><td style="text-align:left">B09 產生追蹤名單；CB07 避免把 missing 算成假損益</td></tr><tr><td style="text-align:left">整體落差</td><td style="text-align:left">分散在四個專門積木</td><td style="text-align:left">八鏡頭與精確代數 bridge</td><td style="text-align:left">專題診斷讀 Claude；owner 總覽讀 Codex</td></tr></tbody></table></div>
+<p>兩邊沒有互相取代。Claude 版較適合打開單一黑盒；Codex 版較適合把多個已驗證積木接成可稽核的 owner 儀表板。代數 bridge 只是描述分類，不是因果模型，這是 Codex 版額外加上的限制。</p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/_shared/COMPARISONS.md">_shared/COMPARISONS.md</a> · 作者 AI：OpenAI Codex · 更新 2026-08-31</footer>
 </div></body>
 </html>
