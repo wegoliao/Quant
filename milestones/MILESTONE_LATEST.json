@@ -1,10 +1,10 @@
 {
-  "milestone_id": "MS-SCHED-20260831-0415",
-  "timestamp_utc": "2026-08-30T20:15:25.874458+00:00",
+  "milestone_id": "MS-AUTO-ITER-001",
+  "timestamp_utc": "2026-08-30T21:00:50.622469+00:00",
   "mainline_1_status": {
     "active_champion": "S022_OPT_CHAMPION_V1",
     "candidate_pool_size": 129,
-    "hypotheses_evaluated": 3,
+    "hypotheses_evaluated": 5,
     "data_asof": "2026-08-28"
   },
   "mainline_2_status": {
@@ -24,7 +24,7 @@
       "probe_details": "Running natively inside Antigravity session (Scheduled/In-Turn).",
       "tokens_used_est": 0,
       "proposals_count": 0,
-      "last_call_utc": "2026-08-30T20:15:24.699073+00:00"
+      "last_call_utc": "2026-08-30T21:00:49.460735+00:00"
     },
     {
       "ai_name": "claude_code",
@@ -48,7 +48,7 @@
       "probe_details": "Hermes Agent CLI verified available.",
       "tokens_used_est": 0,
       "proposals_count": 0,
-      "last_call_utc": "2026-08-30T20:15:25.185101+00:00"
+      "last_call_utc": "2026-08-30T21:00:49.912988+00:00"
     }
   ],
   "waiting_owner_decisions": [
@@ -68,5 +68,5 @@
     }
   ],
   "sanitized_safe_for_remote": true,
-  "digest_hash": "be35d1aceb7c4fa9cbd1498595c910f630a6ecde1b60d98e5684c91dfeb1029d"
+  "digest_hash": "ee40dd9d24c09ed54877f562a68dde24b3e573191fffe67569e2dcaf489a7a38"
 }
