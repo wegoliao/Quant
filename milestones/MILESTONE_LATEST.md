@@ -1,7 +1,7 @@
-# Quant Grill Lab · 里程碑摘要 (MS-AUTO-ITER-005)
+# Quant Grill Lab · 里程碑摘要 (MS-AUTO-ITER-006)
 
-- **產生時間 (UTC)**: `2026-08-31T12:01:08.589091+00:00`
-- **摘要雜湊 (SHA-256)**: `c70b90e97e8584ff...`
+- **產生時間 (UTC)**: `2026-08-31T16:00:40.066348+00:00`
+- **摘要雜湊 (SHA-256)**: `949388864a6cf30b...`
 - **去敏與安全狀態**: `SANITIZED_SAFE_FOR_REMOTE` (無憑證、無真實資產/帳戶、無自動下單)
 
 ---
@@ -11,7 +11,7 @@
 ### 【主線一：FinLab 量化研究】
 - **目前 Owner 採用 Champion**: `NONE_CONFIRMED`
 - **磁碟實體策略檔總數**: `129` 支
-- **真實評估提案/假說數**: `20` 份
+- **真實評估提案/假說數**: `22` 份
 - **完成兩個獨立審查的 Layer 2 候選**: `0` 份
 - **資料截止時點 (`data_asof`)**: `UNKNOWN`
 - **第一道閘門 (`ResearchPromotionGate`)**: `HOLD_REVIEW_QUORUM`

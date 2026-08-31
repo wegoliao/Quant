@@ -1,10 +1,10 @@
 {
-  "milestone_id": "MS-AUTO-ITER-005",
-  "timestamp_utc": "2026-08-31T12:01:08.589091+00:00",
+  "milestone_id": "MS-AUTO-ITER-006",
+  "timestamp_utc": "2026-08-31T16:00:40.066348+00:00",
   "mainline_1_status": {
     "active_champion": null,
     "candidate_pool_size": 129,
-    "hypotheses_evaluated": 20,
+    "hypotheses_evaluated": 22,
     "layer_2_candidates": 0,
     "data_asof": null
   },
@@ -25,8 +25,8 @@
       "probe_details": "Antigravity lane has successful receipts; standalone Gemini CLI is AUTH blocked.",
       "tokens_reported": null,
       "token_observability": "UNKNOWN",
-      "proposals_count": 29,
-      "last_call_utc": "2026-08-31T19:01:43+08:00"
+      "proposals_count": 33,
+      "last_call_utc": "2026-08-31T23:03:59+08:00"
     },
     {
       "ai_name": "claude_code",
@@ -43,8 +43,8 @@
       "probe_details": "Codex App hourly gpt-5.6-sol automation is ACTIVE; Windows Task Scheduler CLI PATH is missing. Awaiting first hourly execution receipt.",
       "tokens_reported": null,
       "token_observability": "UNKNOWN",
-      "proposals_count": 6,
-      "last_call_utc": "2026-08-31T19:02:11+08:00"
+      "proposals_count": 9,
+      "last_call_utc": "2026-08-31T23:01:51+08:00"
     },
     {
       "ai_name": "deepseek_api",
@@ -52,11 +52,11 @@
       "probe_details": "Provider probe returned OK without detail.",
       "tokens_reported": null,
       "token_observability": "UNKNOWN",
-      "proposals_count": 3,
-      "last_call_utc": "2026-08-31T17:42:37+08:00"
+      "proposals_count": 4,
+      "last_call_utc": "2026-08-31T22:44:50+08:00"
     }
   ],
   "waiting_owner_decisions": [],
   "sanitized_safe_for_remote": true,
-  "digest_hash": "c70b90e97e8584ff76f42434895739de894492e81ac0ba6ce000395c626b561d"
+  "digest_hash": "949388864a6cf30b2ee2f08d6c9abd4b1648dbe4e7b3e6f26a4107caee3aac43"
 }
