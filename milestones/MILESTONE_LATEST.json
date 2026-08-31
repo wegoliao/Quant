@@ -1,10 +1,10 @@
 {
-  "milestone_id": "MS-SCHED-20260831-0615",
-  "timestamp_utc": "2026-08-30T22:15:55.620057+00:00",
+  "milestone_id": "MS-SCHED-20260831-0815",
+  "timestamp_utc": "2026-08-31T00:15:56.444593+00:00",
   "mainline_1_status": {
     "active_champion": "S022_OPT_CHAMPION_V1",
     "candidate_pool_size": 129,
-    "hypotheses_evaluated": 7,
+    "hypotheses_evaluated": 10,
     "data_asof": "2026-08-28"
   },
   "mainline_2_status": {
@@ -24,7 +24,7 @@
       "probe_details": "Running natively inside Antigravity session (Scheduled/In-Turn).",
       "tokens_used_est": 0,
       "proposals_count": 0,
-      "last_call_utc": "2026-08-30T22:15:54.541051+00:00"
+      "last_call_utc": "2026-08-31T00:15:55.088910+00:00"
     },
     {
       "ai_name": "claude_code",
@@ -48,7 +48,7 @@
       "probe_details": "Hermes Agent CLI verified available.",
       "tokens_used_est": 0,
       "proposals_count": 0,
-      "last_call_utc": "2026-08-30T22:15:54.968184+00:00"
+      "last_call_utc": "2026-08-31T00:15:55.629462+00:00"
     }
   ],
   "waiting_owner_decisions": [
@@ -68,5 +68,5 @@
     }
   ],
   "sanitized_safe_for_remote": true,
-  "digest_hash": "8016a51612196c08b80f4855c41d0e780173f80978e6adc8d9786762d404c76a"
+  "digest_hash": "6814b1d6bc6650f042b3063a1069b484b48fd972c26596f3203c8510ca10f43d"
 }
