@@ -1,7 +1,7 @@
-# Quant Grill Lab · 里程碑摘要 (MS-SCHED-20260831-0815)
+# Quant Grill Lab · 里程碑摘要 (MS-AUTO-ITER-002)
 
-- **產生時間 (UTC)**: `2026-08-31T00:15:56.444593+00:00`
-- **摘要雜湊 (SHA-256)**: `6814b1d6bc6650f0...`
+- **產生時間 (UTC)**: `2026-08-31T02:00:23.839015+00:00`
+- **摘要雜湊 (SHA-256)**: `7361fffad9950643...`
 - **去敏與安全狀態**: `SANITIZED_SAFE_FOR_REMOTE` (無憑證、無真實資產/帳戶、無自動下單)
 
 ---
@@ -9,16 +9,17 @@
 ## 1. 雙主線運行狀態 (Dual-Mainline Status)
 
 ### 【主線一：FinLab 量化研究】
-- **目前 Champion**: `S022_OPT_CHAMPION_V1`
+- **目前 Owner 採用 Champion**: `NONE_CONFIRMED`
 - **磁碟實體策略檔總數**: `129` 支
 - **真實評估提案/假說數**: `10` 份
-- **資料截止時點 (`data_asof`)**: `2026-08-28`
-- **第一道閘門 (`ResearchPromotionGate`)**: `RESEARCH_ACTIVE`
+- **完成兩個獨立審查的 Layer 2 候選**: `0` 份
+- **資料截止時點 (`data_asof`)**: `UNKNOWN`
+- **第一道閘門 (`ResearchPromotionGate`)**: `HOLD_REVIEW_QUORUM`
 
 ### 【主線二：即時觀察與執行草稿】
-- **目前採用的 Snapshot**: `SNP-NONE`
-- **第二道閘門 (`ExecutionIntakeGate`)**: `READY_FOR_DRAFT`
-- **活躍中的惰性草稿**: `0` 筆 (`READY_FOR_DRAFT`)
+- **目前採用的 Snapshot**: `NONE`
+- **第二道閘門 (`ExecutionIntakeGate`)**: `HOLD_NO_TARGET_SNAPSHOT`
+- **活躍中的惰性草稿**: `0` 筆（是否可建草稿以第二道閘門為準）
 - **真實委託送出**: `0` (硬限制：`real_order_transmitted = False`)
 
 ---
@@ -27,22 +28,16 @@
 
 | AI 工人 | 真實探針狀態 | 探針細節說明 | 真實消耗 Token |
 |---|---|---|---|
-| `gemini_3.7_flash` | `IN_SESSION_ACTIVE` | Running natively inside Antigravity session (Scheduled/In-Turn). | 0 |
-| `claude_code` | `AUTH_REQUIRED` | Claude CLI 2.1.76 (Claude Code) installed; Subshell headless login requires interactive session. | 0 |
-| `codex` | `EXHAUSTED` | CLI usage quota limit reached; pending reset window (07:59 AM). | 0 |
-| `deepseek_api` | `HEALTHY` | Hermes Agent CLI verified available. | 0 |
+| `gemini_3.7_flash` | `IN_SESSION_ACTIVE` | Antigravity lane has successful receipts; standalone Gemini CLI is AUTH blocked. | UNKNOWN |
+| `claude_code` | `GUARDED` | 超過 15s 沒有回應 | UNKNOWN |
+| `codex` | `IN_SESSION_ACTIVE` | Codex App hourly gpt-5.6-sol automation is ACTIVE; Windows Task Scheduler CLI PATH is missing. Awaiting first hourly execution receipt. | UNKNOWN |
+| `deepseek_api` | `GUARDED` | 超過 15s 沒有回應 | UNKNOWN |
 
 ---
 
 ## 3. 等待 Owner 裁決事項 (Pending Owner Decisions)
 
-### 【D-001】GitHub 里程碑推送遠端儲存庫確認 (急迫度: `HIGH`)
-- **建議處置**: 自動推送至 wegoliao/Quant (67.quant_lesson/milestones/) 供手機/遠端批註
-- **代價與權衡**: 公開去敏安全，無真實帳戶密鑰，保持遠端完全透明
-
-### 【D-002】Antigravity 每 5 小時原生排程確認 (急迫度: `HIGH`)
-- **建議處置**: 透過 Antigravity Daemon 排程每 5 小時自動執行研究、回測、五檔監控與推送
-- **代價與權衡**: 不依賴易遭斷線之外部 CLI，持續在 IDE 內安全運算
+目前無待決事項，系統處於自主學習運作中。
 
 ---
 

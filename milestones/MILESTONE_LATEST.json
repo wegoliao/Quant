@@ -1,72 +1,62 @@
 {
-  "milestone_id": "MS-SCHED-20260831-0815",
-  "timestamp_utc": "2026-08-31T00:15:56.444593+00:00",
+  "milestone_id": "MS-AUTO-ITER-002",
+  "timestamp_utc": "2026-08-31T02:00:23.839015+00:00",
   "mainline_1_status": {
-    "active_champion": "S022_OPT_CHAMPION_V1",
+    "active_champion": null,
     "candidate_pool_size": 129,
     "hypotheses_evaluated": 10,
-    "data_asof": "2026-08-28"
+    "layer_2_candidates": 0,
+    "data_asof": null
   },
   "mainline_2_status": {
-    "current_snapshot_id": "SNP-NONE",
-    "execution_intake_verdict": "READY_FOR_DRAFT",
+    "current_snapshot_id": null,
+    "execution_intake_verdict": "HOLD_NO_TARGET_SNAPSHOT",
     "active_drafts_count": 0,
     "real_order_transmitted": false
   },
   "gates_status": {
-    "gate_1_research_promotion": "RESEARCH_ACTIVE",
-    "gate_2_execution_intake": "READY_FOR_DRAFT"
+    "gate_1_research_promotion": "HOLD_REVIEW_QUORUM",
+    "gate_2_execution_intake": "HOLD_NO_TARGET_SNAPSHOT"
   },
   "ai_fleet_summary": [
     {
       "ai_name": "gemini_3.7_flash",
       "status": "IN_SESSION_ACTIVE",
-      "probe_details": "Running natively inside Antigravity session (Scheduled/In-Turn).",
-      "tokens_used_est": 0,
-      "proposals_count": 0,
-      "last_call_utc": "2026-08-31T00:15:55.088910+00:00"
+      "probe_details": "Antigravity lane has successful receipts; standalone Gemini CLI is AUTH blocked.",
+      "tokens_reported": null,
+      "token_observability": "UNKNOWN",
+      "proposals_count": 19,
+      "last_call_utc": "2026-08-31T09:03:39+08:00"
     },
     {
       "ai_name": "claude_code",
-      "status": "AUTH_REQUIRED",
-      "probe_details": "Claude CLI 2.1.76 (Claude Code) installed; Subshell headless login requires interactive session.",
-      "tokens_used_est": 0,
+      "status": "GUARDED",
+      "probe_details": "超過 15s 沒有回應",
+      "tokens_reported": null,
+      "token_observability": "UNKNOWN",
       "proposals_count": 0,
       "last_call_utc": null
     },
     {
       "ai_name": "codex",
-      "status": "EXHAUSTED",
-      "probe_details": "CLI usage quota limit reached; pending reset window (07:59 AM).",
-      "tokens_used_est": 0,
-      "proposals_count": 0,
-      "last_call_utc": null
+      "status": "IN_SESSION_ACTIVE",
+      "probe_details": "Codex App hourly gpt-5.6-sol automation is ACTIVE; Windows Task Scheduler CLI PATH is missing. Awaiting first hourly execution receipt.",
+      "tokens_reported": null,
+      "token_observability": "UNKNOWN",
+      "proposals_count": 2,
+      "last_call_utc": "2026-08-31T08:11:25+08:00"
     },
     {
       "ai_name": "deepseek_api",
-      "status": "HEALTHY",
-      "probe_details": "Hermes Agent CLI verified available.",
-      "tokens_used_est": 0,
-      "proposals_count": 0,
-      "last_call_utc": "2026-08-31T00:15:55.629462+00:00"
+      "status": "GUARDED",
+      "probe_details": "超過 15s 沒有回應",
+      "tokens_reported": null,
+      "token_observability": "UNKNOWN",
+      "proposals_count": 1,
+      "last_call_utc": "2026-08-31T07:45:36+08:00"
     }
   ],
-  "waiting_owner_decisions": [
-    {
-      "decision_id": "D-001",
-      "title": "GitHub 里程碑推送遠端儲存庫確認",
-      "recommended_action": "自動推送至 wegoliao/Quant (67.quant_lesson/milestones/) 供手機/遠端批註",
-      "tradeoff": "公開去敏安全，無真實帳戶密鑰，保持遠端完全透明",
-      "urgency": "HIGH"
-    },
-    {
-      "decision_id": "D-002",
-      "title": "Antigravity 每 5 小時原生排程確認",
-      "recommended_action": "透過 Antigravity Daemon 排程每 5 小時自動執行研究、回測、五檔監控與推送",
-      "tradeoff": "不依賴易遭斷線之外部 CLI，持續在 IDE 內安全運算",
-      "urgency": "HIGH"
-    }
-  ],
+  "waiting_owner_decisions": [],
   "sanitized_safe_for_remote": true,
-  "digest_hash": "6814b1d6bc6650f042b3063a1069b484b48fd972c26596f3203c8510ca10f43d"
+  "digest_hash": "7361fffad99506433d69aa878498594e15976ed45aad904fcd4451ebfd827ac9"
 }
