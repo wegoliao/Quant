@@ -1,11 +1,11 @@
 {
-  "milestone_id": "MS-AUTO-ITER-009",
-  "timestamp_utc": "2026-09-01T07:00:42.034758+00:00",
+  "milestone_id": "MS-AUTO-ITER-010",
+  "timestamp_utc": "2026-09-01T12:01:02.090066+00:00",
   "mainline_1_status": {
     "active_champion": "NONE_CONFIRMED",
     "candidate_pool_size": 129,
     "hypotheses_evaluated": 0,
-    "structurally_verified_proposals": 25,
+    "structurally_verified_proposals": 28,
     "layer_2_candidates": 0,
     "data_asof": "UNKNOWN"
   },
@@ -26,8 +26,8 @@
       "probe_details": "Antigravity lane has successful receipts; standalone Gemini CLI is AUTH blocked.",
       "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 39,
-      "last_call_utc": "2026-09-01T14:04:13+08:00",
+      "proposals_count": 44,
+      "last_call_utc": "2026-09-01T19:03:36+08:00",
       "current_task": "UNKNOWN"
     },
     {
@@ -43,11 +43,11 @@
     {
       "ai_name": "codex",
       "status": "HEALTHY",
-      "probe_details": "Hourly automation receipts on disk: 14; latest=RCP-SOL-20260901T050048Z.json.",
+      "probe_details": "Hourly automation receipts on disk: 16; latest=RCP-SOL-20260901T110536Z.json.",
       "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 25,
-      "last_call_utc": "2026-09-01T13:03:05+08:00",
+      "proposals_count": 27,
+      "last_call_utc": "2026-09-01T19:01:23+08:00",
       "current_task": "Hourly Sol audit and evidence validation"
     },
     {
@@ -56,12 +56,12 @@
       "probe_details": "Provider probe returned OK without detail.",
       "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 5,
-      "last_call_utc": "2026-09-01T13:45:31+08:00",
+      "proposals_count": 6,
+      "last_call_utc": "2026-09-01T18:42:49+08:00",
       "current_task": "UNKNOWN"
     }
   ],
   "waiting_owner_decisions": [],
   "sanitized_safe_for_remote": true,
-  "digest_hash": "4be2c7c48ea5cca8a9caba94d7cdd31709f108496da73a532acc056e7c148e0b"
+  "digest_hash": "ea1581a718ebcca17318d955631f8cb5a484cb46b3f02ad40895ea3d188646fc"
 }
