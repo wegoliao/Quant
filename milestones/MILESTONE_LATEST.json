@@ -1,15 +1,16 @@
 {
-  "milestone_id": "MS-AUTO-ITER-006",
-  "timestamp_utc": "2026-08-31T16:00:40.066348+00:00",
+  "milestone_id": "MS-AUTO-ITER-009",
+  "timestamp_utc": "2026-09-01T07:00:42.034758+00:00",
   "mainline_1_status": {
-    "active_champion": null,
+    "active_champion": "NONE_CONFIRMED",
     "candidate_pool_size": 129,
-    "hypotheses_evaluated": 22,
+    "hypotheses_evaluated": 0,
+    "structurally_verified_proposals": 25,
     "layer_2_candidates": 0,
-    "data_asof": null
+    "data_asof": "UNKNOWN"
   },
   "mainline_2_status": {
-    "current_snapshot_id": null,
+    "current_snapshot_id": "NONE",
     "execution_intake_verdict": "HOLD_NO_TARGET_SNAPSHOT",
     "active_drafts_count": 0,
     "real_order_transmitted": false
@@ -21,42 +22,46 @@
   "ai_fleet_summary": [
     {
       "ai_name": "gemini_3.7_flash",
-      "status": "IN_SESSION_ACTIVE",
+      "status": "HEALTHY",
       "probe_details": "Antigravity lane has successful receipts; standalone Gemini CLI is AUTH blocked.",
-      "tokens_reported": null,
+      "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 33,
-      "last_call_utc": "2026-08-31T23:03:59+08:00"
+      "proposals_count": 39,
+      "last_call_utc": "2026-09-01T14:04:13+08:00",
+      "current_task": "UNKNOWN"
     },
     {
       "ai_name": "claude_code",
-      "status": "UNAVAILABLE",
+      "status": "AUTH_REQUIRED",
       "probe_details": "Not logged in · Please run /login",
-      "tokens_reported": null,
+      "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
       "proposals_count": 0,
-      "last_call_utc": null
+      "last_call_utc": null,
+      "current_task": "UNKNOWN"
     },
     {
       "ai_name": "codex",
-      "status": "IN_SESSION_ACTIVE",
-      "probe_details": "Codex App hourly gpt-5.6-sol automation is ACTIVE; Windows Task Scheduler CLI PATH is missing. Awaiting first hourly execution receipt.",
-      "tokens_reported": null,
+      "status": "HEALTHY",
+      "probe_details": "Hourly automation receipts on disk: 14; latest=RCP-SOL-20260901T050048Z.json.",
+      "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 9,
-      "last_call_utc": "2026-08-31T23:01:51+08:00"
+      "proposals_count": 25,
+      "last_call_utc": "2026-09-01T13:03:05+08:00",
+      "current_task": "Hourly Sol audit and evidence validation"
     },
     {
       "ai_name": "deepseek_api",
       "status": "HEALTHY",
       "probe_details": "Provider probe returned OK without detail.",
-      "tokens_reported": null,
+      "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 4,
-      "last_call_utc": "2026-08-31T22:44:50+08:00"
+      "proposals_count": 5,
+      "last_call_utc": "2026-09-01T13:45:31+08:00",
+      "current_task": "UNKNOWN"
     }
   ],
   "waiting_owner_decisions": [],
   "sanitized_safe_for_remote": true,
-  "digest_hash": "949388864a6cf30b2ee2f08d6c9abd4b1648dbe4e7b3e6f26a4107caee3aac43"
+  "digest_hash": "4be2c7c48ea5cca8a9caba94d7cdd31709f108496da73a532acc056e7c148e0b"
 }
