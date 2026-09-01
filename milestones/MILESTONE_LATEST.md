@@ -1,7 +1,7 @@
-# Quant Grill Lab · 里程碑摘要 (MS-AUTO-ITER-010)
+# Quant Grill Lab · 里程碑摘要 (MS-AUTO-ITER-011)
 
-- **產生時間 (UTC)**: `2026-09-01T12:01:02.090066+00:00`
-- **摘要雜湊 (SHA-256)**: `ea1581a718ebcca1...`
+- **產生時間 (UTC)**: `2026-09-01T16:00:42.805874+00:00`
+- **摘要雜湊 (SHA-256)**: `3360490be85ae799...`
 - **去敏與安全狀態**: `SANITIZED_SAFE_FOR_REMOTE` (無憑證、無真實資產/帳戶、無自動下單)
 
 ---
@@ -12,7 +12,7 @@
 - **目前 Owner 採用 Champion**: `NONE_CONFIRMED`
 - **磁碟實體策略檔總數**: `129` 支
 - **完成獨立取證評估的提案/假說數**: `0` 份
-- **僅通過結構驗證的提案數**: `28` 份
+- **僅通過結構驗證的提案數**: `30` 份
 - **完成兩個獨立審查的 Layer 2 候選**: `0` 份
 - **資料截止時點 (`data_asof`)**: `UNKNOWN`
 - **第一道閘門 (`ResearchPromotionGate`)**: `HOLD_REVIEW_QUORUM`
@@ -31,14 +31,20 @@
 |---|---|---|---|
 | `gemini_3.7_flash` | `HEALTHY` | Antigravity lane has successful receipts; standalone Gemini CLI is AUTH blocked. | UNKNOWN |
 | `claude_code` | `AUTH_REQUIRED` | Not logged in · Please run /login | UNKNOWN |
-| `codex` | `HEALTHY` | Hourly automation receipts on disk: 16; latest=RCP-SOL-20260901T110536Z.json. | UNKNOWN |
+| `codex` | `HEALTHY` | Hourly automation receipts on disk: 20; latest=RCP-SOL-20260901T150850Z.json. | UNKNOWN |
 | `deepseek_api` | `HEALTHY` | Provider probe returned OK without detail. | UNKNOWN |
 
 ---
 
 ## 3. 等待 Owner 裁決事項 (Pending Owner Decisions)
 
-目前無待決事項，系統處於自主學習運作中。
+### 【OWNER-G030-LAYER-3】第三層採用維持等待 Owner (急迫度: `DEFERRED_UNTIL_SEP5`)
+- **建議處置**: 維持 WAITING_OWNER_RETURN；先取得兩個獨立 AI family 的 reviewer-owned 重跑 receipts，再由 Owner 決定 Champion、跨主線契約或 REAL 安全變更。
+- **代價與權衡**: 可避免未取證提案被自動升格；代價是 TargetPortfolioSnapshot 與主線二草稿繼續保持 HOLD。
+
+### 【OWNER-REMOTE-PUBLISH-SCOPE】GitHub 發布範圍尚未確認 (急迫度: `DEFERRED_UNTIL_SEP5`)
+- **建議處置**: Owner 回來後確認 remote、repo、public/private 與去敏發布範圍；確認前只保留本機 milestone。
+- **代價與權衡**: 可避免 dirty 主倉或敏感內容誤發布；代價是暫時無法遠端批註。
 
 ---
 

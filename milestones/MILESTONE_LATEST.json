@@ -1,11 +1,11 @@
 {
-  "milestone_id": "MS-AUTO-ITER-010",
-  "timestamp_utc": "2026-09-01T12:01:02.090066+00:00",
+  "milestone_id": "MS-AUTO-ITER-011",
+  "timestamp_utc": "2026-09-01T16:00:42.805874+00:00",
   "mainline_1_status": {
     "active_champion": "NONE_CONFIRMED",
     "candidate_pool_size": 129,
     "hypotheses_evaluated": 0,
-    "structurally_verified_proposals": 28,
+    "structurally_verified_proposals": 30,
     "layer_2_candidates": 0,
     "data_asof": "UNKNOWN"
   },
@@ -26,8 +26,8 @@
       "probe_details": "Antigravity lane has successful receipts; standalone Gemini CLI is AUTH blocked.",
       "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 44,
-      "last_call_utc": "2026-09-01T19:03:36+08:00",
+      "proposals_count": 14,
+      "last_call_utc": "2026-09-01T23:05:09+08:00",
       "current_task": "UNKNOWN"
     },
     {
@@ -43,11 +43,11 @@
     {
       "ai_name": "codex",
       "status": "HEALTHY",
-      "probe_details": "Hourly automation receipts on disk: 16; latest=RCP-SOL-20260901T110536Z.json.",
+      "probe_details": "Hourly automation receipts on disk: 20; latest=RCP-SOL-20260901T150850Z.json.",
       "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 27,
-      "last_call_utc": "2026-09-01T19:01:23+08:00",
+      "proposals_count": 9,
+      "last_call_utc": "2026-09-01T23:01:10+08:00",
       "current_task": "Hourly Sol audit and evidence validation"
     },
     {
@@ -56,12 +56,27 @@
       "probe_details": "Provider probe returned OK without detail.",
       "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 6,
-      "last_call_utc": "2026-09-01T18:42:49+08:00",
+      "proposals_count": 9,
+      "last_call_utc": "2026-09-01T23:41:59+08:00",
       "current_task": "UNKNOWN"
     }
   ],
-  "waiting_owner_decisions": [],
+  "waiting_owner_decisions": [
+    {
+      "decision_id": "OWNER-G030-LAYER-3",
+      "title": "第三層採用維持等待 Owner",
+      "recommended_action": "維持 WAITING_OWNER_RETURN；先取得兩個獨立 AI family 的 reviewer-owned 重跑 receipts，再由 Owner 決定 Champion、跨主線契約或 REAL 安全變更。",
+      "tradeoff": "可避免未取證提案被自動升格；代價是 TargetPortfolioSnapshot 與主線二草稿繼續保持 HOLD。",
+      "urgency": "DEFERRED_UNTIL_SEP5"
+    },
+    {
+      "decision_id": "OWNER-REMOTE-PUBLISH-SCOPE",
+      "title": "GitHub 發布範圍尚未確認",
+      "recommended_action": "Owner 回來後確認 remote、repo、public/private 與去敏發布範圍；確認前只保留本機 milestone。",
+      "tradeoff": "可避免 dirty 主倉或敏感內容誤發布；代價是暫時無法遠端批註。",
+      "urgency": "DEFERRED_UNTIL_SEP5"
+    }
+  ],
   "sanitized_safe_for_remote": true,
-  "digest_hash": "ea1581a718ebcca17318d955631f8cb5a484cb46b3f02ad40895ea3d188646fc"
+  "digest_hash": "3360490be85ae7994a464d11a32707b04db071b060a18dfc1c35fc6c4a775075"
 }
