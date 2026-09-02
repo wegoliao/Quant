@@ -1,6 +1,6 @@
 {
-  "milestone_id": "MS-AUTO-ITER-013",
-  "timestamp_utc": "2026-09-02T02:00:32.195253+00:00",
+  "milestone_id": "MS-AUTO-ITER-014",
+  "timestamp_utc": "2026-09-02T07:00:28.466486+00:00",
   "mainline_1_status": {
     "active_champion": "NONE_CONFIRMED",
     "candidate_pool_size": 129,
@@ -26,8 +26,8 @@
       "probe_details": "Antigravity lane has successful receipts; standalone Gemini CLI is AUTH blocked.",
       "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 16,
-      "last_call_utc": "2026-09-02T09:02:10+08:00",
+      "proposals_count": 17,
+      "last_call_utc": "2026-09-02T14:04:29+08:00",
       "current_task": "UNKNOWN"
     },
     {
@@ -56,8 +56,8 @@
       "probe_details": "Provider probe returned OK without detail.",
       "tokens_used_est": 0,
       "token_observability": "UNKNOWN",
-      "proposals_count": 11,
-      "last_call_utc": "2026-09-02T09:44:57+08:00",
+      "proposals_count": 12,
+      "last_call_utc": "2026-09-02T14:41:39+08:00",
       "current_task": "UNKNOWN"
     }
   ],
@@ -78,5 +78,5 @@
     }
   ],
   "sanitized_safe_for_remote": true,
-  "digest_hash": "ebd4c56f27871ba9908db00a92511ae95f3a9ab35d93128310feff66fe3e752e"
+  "digest_hash": "5860dfa7f575e7bb2c1d1ac0f98104307d07ea6ed8fa35a93d836a4a69c13daf"
 }
