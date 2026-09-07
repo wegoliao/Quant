@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B17 · 雙來源已實現對帳 · 兩個都對，差額是一列缺少的紀錄</title>
+<meta name="description" content="券商給了一份已實現損益表。成交簿也能算已實現損益。**兩個數字不一樣。**">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B17</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>scripts/build_dashboard.py::broker_realized_reconciliation</code></p><h1>B17 · 雙來源已實現對帳</h1>
+<h2>它解決什麼</h2>
+<p>券商給了一份已實現損益表。成交簿也能算已實現損益。<strong>兩個數字不一樣。</strong></p>
+<p>預設反應是「哪個對？」然後選一個。<strong>這是錯的問題。</strong></p>
+<h2>兩者算的是不同的東西</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">券商</th><th style="text-align:left">成交簿</th></tr></thead><tbody><tr><td style="text-align:left">成本基礎</td><td style="text-align:left">券商自己的，會因公司行動調整</td><td style="text-align:left">買進當下實付現金</td></tr><tr><td style="text-align:left">配息</td><td style="text-align:left">調降成本 → 出現在已實現裡</td><td style="text-align:left">不影響（配息現金另計）</td></tr><tr><td style="text-align:left">減資／股票股利</td><td style="text-align:left">調整成本與股數</td><td style="text-align:left">需要另外記錄</td></tr></tbody></table></div>
+<p><strong>兩個都不算錯。</strong> 它們回答的是不同的問題：</p>
+<ul><li>券商：「這筆投資到目前為止總共替我賺了多少」（含配息）</li><li>成交簿：「這筆交易本身的現金流結果是多少」（純交易）</li></ul>
+<h2>契約</h2>
+<pre><code class="lang-python">broker_realized_reconciliation(fills) -&gt; {
+    &quot;rows&quot;,          # 逐筆：券商 / 成交簿 / 差額 / 每股差 / 歸因
+    &quot;broker_total&quot;, &quot;book_total&quot;, &quot;gap&quot;,
+}</code></pre>
+<p>配對鍵是 <code>(賣出日, 股票代碼, 賣出價)</code> —— <strong>不是委託單號</strong>，因為兩份文件的單號欄位未必一致，而這三個欄位是共同的自然鍵。</p>
+<h2>關鍵：把差額除以股數</h2>
+<pre><code class="lang-python">per_share = gap / shares</code></pre>
+<p>這一步把一個說不清的總差額，變成一個<strong>可辨識的簽名</strong>：</p>
+<pre><code class="lang-python">if abs(abs(per_share) - 1.0) &lt; 0.02:
+    note = &quot;每股 ±1.0000，配息調整成本&quot;</code></pre>
+<p>在一個真實案例裡，某檔的差額除以股數剛好是 <strong>1.0000</strong>，橫跨兩次不同日期、不同股數的出場。<strong>那不可能是巧合</strong> —— 那是每股 1 元的配息。</p>
+<h2>真實產出的形狀（去識別）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">賣出日</th><th style="text-align:right">券商</th><th style="text-align:right">成交簿</th><th style="text-align:right">差額</th><th style="text-align:right">每股</th><th style="text-align:left">歸因</th></tr></thead><tbody><tr><td style="text-align:left">D1</td><td style="text-align:right">+A</td><td style="text-align:right">+A</td><td style="text-align:right">0</td><td style="text-align:right">—</td><td style="text-align:left">一致</td></tr><tr><td style="text-align:left">D2</td><td style="text-align:right">+B</td><td style="text-align:right">+B−3000</td><td style="text-align:right">+3,000</td><td style="text-align:right"><strong>+1.0000</strong></td><td style="text-align:left">配息</td></tr><tr><td style="text-align:left">D3</td><td style="text-align:right">+C</td><td style="text-align:right">+C−949</td><td style="text-align:right">+949</td><td style="text-align:right"><strong>+1.0000</strong></td><td style="text-align:left">同一檔，同樣配息</td></tr><tr><td style="text-align:left">D4</td><td style="text-align:right">+D</td><td style="text-align:right">+D−708</td><td style="text-align:right">+708</td><td style="text-align:right">+1.37</td><td style="text-align:left">成本基礎差異</td></tr><tr><td style="text-align:left">其餘</td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"><strong>0</strong></td><td style="text-align:right">—</td><td style="text-align:left">完全一致</td></tr></tbody></table></div>
+<p><strong>十二筆裡有七筆完全一致，剩下五筆的差額全部落在先前已經標示過成本異動的個股上。</strong></p>
+<p>這就是這個積木的價值：它不只說「差了多少」，它說<strong>「差在哪一檔、每股差多少、為什麼」</strong>，而且結論指向一個<strong>具體缺少的紀錄</strong> —— 那筆配息現金從來沒有被寫進成交簿。</p>
+<h2>為什麼並排比選一邊誠實</h2>
+<p>選一邊會發生兩件事：</p>
+<ol><li>另一邊的資訊消失。選了券商，你就看不到「純交易的結果」；選了成交簿，你就漏掉配息收益。</li><li><strong>差額變成不存在。</strong> 而差額正是唯一告訴你「有東西沒記到」的訊號。</li></ol>
+<p>並排 + 逐筆歸因，把「兩個數字打架」變成「這裡少一列」。</p>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：用委託單號配對。</strong> 券商的已實現表和成交回報表可能用不同的單號欄位，或把多張單合併成一列。用 <code>(日期, 代碼, 價格)</code> 這種自然鍵。</p>
+<p><strong>陷阱 2：同一天同一檔不同價格的多筆出場。</strong> 配對鍵一定要含價格，否則兩筆會被合成一筆，差額歸因就亂了。</p>
+<p><strong>陷阱 3：把差額直接調進成交簿讓它「對上」。</strong> 這會消滅證據。正確做法是<strong>補上真正缺少的那一列</strong>（配息收入），讓它自然收斂。</p>
+<p><strong>陷阱 4：以為差額為零就沒事。</strong> 差額為零只代表這兩個來源一致，不代表都對。兩份文件可能來自同一個上游錯誤。</p>
+<h2>一般化</h2>
+<p>任何時候你有<strong>兩個獨立來源在算同一件事</strong>，正確的做法都是：</p>
+<ol><li>逐筆配對，用自然鍵</li><li>算差額，並<strong>除以一個有意義的分母</strong>（股數、天數、筆數）看有沒有簽名</li><li>把差額歸因到具體的列，不是掛在總額上</li><li>結論寫成「缺什麼」，不是「誰對」</li></ol>
+<blockquote>差額不是要消滅的誤差，是資料在告訴你哪裡有一個你還不知道的事件。</blockquote>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B17-two-source-realized.md">claude/blocks/B17-two-source-realized.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-09-08</footer>
+</div></body>
+</html>

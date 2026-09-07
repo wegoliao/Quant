@@ -62,7 +62,7 @@ footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:v
 <body><div class="wrap">
 <div class="crumb"><a href="../../index.html">Quant</a> / <a href="../index.html">lesson</a> / <a href="index.html">claude</a> / 合輯</div>
 <h1>lesson/claude · 完整合輯</h1>
-<p>作者 AI：<strong>Claude (Opus 5, Anthropic)</strong>　·　檔案 30 份　·　產生於 2026-08-31</p>
+<p>作者 AI：<strong>Claude (Opus 5, Anthropic)</strong>　·　檔案 34 份　·　產生於 2026-09-08</p>
 <p>這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。 每一節開頭的 <code>## [id] title</code> 對應一個獨立檔案，可以單獨抽走使用。</p>
 <hr>
 <h2>[C00] 脈絡 · 這個系統到底在做什麼</h2>
@@ -1836,6 +1836,197 @@ spec.module_source()     # 完整原始碼，給人讀的</code></pre>
 <h2>記住</h2>
 <blockquote>契約的價值不在它擋下多少錯，而在它讓錯誤發生在<strong>寫的時候</strong>而不是<strong>讀報告的時候</strong>。前者花五分鐘，後者花三天。</blockquote>
 <p>相關：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/51-fake-validation.md">假驗證的四種形態</a>、<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/60-verification-harness.md">驗證流水線</a></p>
+<hr>
+<h2>[B15] 暫計出場 · 一筆待確認不該讓整頁空白</h2>
+<p>*track: block · status: verified · verified_by: scripts/build_dashboard.py::load_unrecorded_exits + provisional_banner · source: lesson/claude/blocks/B15-provisional-exit.md*</p>
+<h1>B15 · 暫計出場</h1>
+<h2>它解決什麼</h2>
+<p>庫存快照顯示某個部位不見了，但成交回報還沒到。<strong>賣出價格是真的不知道</strong> —— 快照只記還在手上的東西，賣出的現金流從裡面反推不出來。</p>
+<p>成交簿正確地拒絕對帳，然後<strong>整個儀表板建不出來</strong>。</p>
+<p>這是錯的失敗方式。一個待確認的數字，不該讓幾百個已經確認的數字一起消失。</p>
+<h2>兩種都不對的做法</h2>
+<p><strong>做法 A：猜一個價格填進去。</strong> 用收盤價當成交價寫進成交簿，然後假裝它是真的。三個月後沒有人記得那筆是猜的。</p>
+<p><strong>做法 B：整個 build 失敗。</strong> Owner 打開頁面看到 500，什麼都看不到。他不會因此更快拿到回報單，只會失去今天所有其他資訊。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">load_unrecorded_exits(path) -&gt; list[Fill]   # 帶 provisional=True 旗標
+provisional_banner(exits) -&gt; str            # 醒目、不可忽略的說明</code></pre>
+<p><code>unrecorded_events.csv</code> 的一列：</p>
+<pre><code class="lang-csv">detected_date,event,strategy_id,stock_code,stock_name,shares,
+last_known_cost_twd,session_open,session_high,session_low,session_close,status,note</code></pre>
+<p><code>status</code> 只有兩個值：<code>WAITING_FILL_CONFIRMATION</code> / <code>RESOLVED_BY_CONFIRMATION</code></p>
+<h2>做法：暫計 + 不確定區間</h2>
+<p>部位<strong>暫時以當日官方收盤價計價</strong>，並且：</p>
+<ol><li><strong>旗標隨資料跑。</strong> <code>provisional=True</code> 掛在 fill 上，FIFO 對沖時傳給 lot，每一個顯示它的表格都能標「暫計」</li><li><strong>印出當日高低區間</strong>，那才是它真正的不確定範圍</li><li><strong>排除在所有執行品質統計之外</strong> —— 履約落差、成交落點都不收它，因為那兩張表衡量的是執行，而這裡沒有執行紀錄可衡量</li><li><strong>頁面上寫明</strong>收盤價不是對成交價的猜測，是一個公開、中性的替代值</li></ol>
+<pre><code class="lang-python">consideration = shares * close
+fee = math.floor(consideration * 0.001425)
+tax = math.floor(consideration * 0.003)
+rows.append({
+    &quot;trade_id&quot;: f&quot;PROVISIONAL-{code}-{day:%Y%m%d}&quot;,
+    ...,
+    &quot;provisional&quot;: True,
+    &quot;range_low&quot;: low, &quot;range_high&quot;: high,   # 不確定帶
+})</code></pre>
+<h2>為什麼收盤價是可接受的替代值</h2>
+<p>它有三個性質：</p>
+<ul><li><strong>公開</strong>：任何人都能查證，不是我編的</li><li><strong>中性</strong>：不偏向對 owner 有利或不利的方向</li><li><strong>可被推翻</strong>：回報一到就換掉，而且看得出換掉了</li></ul>
+<p>猜一個「大概成交在這裡」的價格，三個性質一個都沒有。</p>
+<h2>驗證：它真的被推翻了</h2>
+<p>合成案例 <code>SYN-EXIT-1</code>：暫計用收盤 <code>C</code>，實際回報是 <code>C + 7.00</code>。</p>
+<p><strong>暫計低估了實收約 <code>7.00 × shares</code>。</strong></p>
+<p>這正是這個設計要的結果 —— 暫計值<strong>錯了</strong>，但它：</p>
+<ol><li>讓頁面能建</li><li>全程標著「待確認」</li><li>被真實資料取代，而不是被相信</li></ol>
+<blockquote>一個標著「暫計」而且後來被證明錯了的數字，比一個沒標、剛好對了的數字，價值高得多。 前者訓練你去追回報單；後者訓練你相信猜測。</blockquote>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：旗標沒有傳到底。</strong> FIFO 對沖會產生新的 lot 物件。如果 <code>provisional</code> 沒有跟著複製過去，逐筆平倉表就會把暫計顯示成已確認。這一條要寫測試。</p>
+<p><strong>陷阱 2：暫計進了執行品質統計。</strong> 成交落點、履約落差如果收了暫計值，等於在用收盤價評估你的下單技巧 —— 那是在量測一個從未發生的行為。</p>
+<p><strong>陷阱 3：<code>RESOLVED</code> 之後忘了刪暫計列。</strong> 真實回報寫進 <code>actual_fills.csv</code> 之後，<code>unrecorded_events.csv</code> 那一列的 status 必須改掉，否則會有兩筆賣出。</p>
+<h2>一般化</h2>
+<p>這個模式適用於<strong>任何「事件已確定發生、數值尚未到達」</strong>的情況：</p>
+<ul><li>配息已除息，但入帳金額還沒收到</li><li>交易已成交，但費用還沒結算</li><li>訂單已送出，但回報延遲</li></ul>
+<p>規則一樣：<strong>用一個公開中性的替代值、標記它、印出不確定範圍、排除在依賴精確值的統計之外、被真實資料取代時要看得出來。</strong></p>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
+<hr>
+<h2>[B16] 紀律帳 · 我的損益 vs 策略的損益</h2>
+<p>*track: block · status: verified · verified_by: scripts/build_dashboard.py::discipline_ledger · source: lesson/claude/blocks/B16-discipline-ledger.md*</p>
+<h1>B16 · 紀律帳</h1>
+<h2>它解決什麼</h2>
+<p>Owner 的原話：<strong>我沒有遵守策略。我看情勢不對，賣掉一堆策略沒叫我賣的賺錢部位。給我看我的成績，也給我看策略的成績。</strong></p>
+<p>這是每一個「有系統但會手動介入」的人最想知道、卻幾乎沒有人在量的東西：<strong>我的直覺到底是在加分還是扣分？</strong></p>
+<h2>為什麼這題可以精確回答</h2>
+<p>一般的反事實需要模型。<strong>這一題不需要。</strong></p>
+<p>股票已經賣掉了。「如果沒賣，現在值多少」不是預測，是一個查表題：</p>
+<pre><code>同樣股數 × 最新官方收盤 − 同一套出場費稅</code></pre>
+<p>沒有假設、沒有參數、沒有模型風險。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">discipline_ledger(fills, prices, asof) -&gt; {
+    &quot;rows&quot;,                   # 每筆平倉 + 分類 + 反事實
+    &quot;directed_realized&quot;,      # 有「出」訊號才賣的已實現
+    &quot;discretionary_realized&quot;, # 卡片仍寫「抱」時賣的已實現
+    &quot;strategy_open_pnl&quot;,      # 那些若沒賣，現在的未實現
+    &quot;decision_value&quot;,         # 實收 − 若持有到今天 = 決策價值
+}</code></pre>
+<h2>分類規則</h2>
+<p>一筆賣出是<strong>策略指示</strong>，若且唯若：</p>
+<pre><code class="lang-python">存在一筆 signal_history 紀錄，其 (strategy_id, stock_code) 相同、
+signal 的動作是「出」、且 asof_date &lt;= 賣出日</code></pre>
+<p>否則是<strong>自主決定</strong>。</p>
+<p>注意 <code>signal.strip(&amp;quot;()*&amp;quot;)</code> —— 卡片可能印出 <code>(出)</code>、<code>出*</code> 這種裝飾過的字形，分類要看動詞不看字形。詳見 <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B17-two-source-realized.md"><code>B17</code></a> 旁邊的同一個教訓。</p>
+<h2>決策價值</h2>
+<pre><code class="lang-python">decision_twd = proceeds_twd - hold_value_twd</code></pre>
+<ul><li><strong>正</strong> = 賣掉比抱著好（躲過下跌）</li><li><strong>負</strong> = 賣早了（少賺）</li></ul>
+<p>兩種用<strong>同一把尺</strong>。這一點必須寫在頁面上，因為一個只標示「賣錯」不標示「賣對」的表，會變成一個道德工具而不是量測工具。</p>
+<h2>真實產出的形狀（去識別）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:right">筆數</th><th style="text-align:right">已實現</th></tr></thead><tbody><tr><td style="text-align:left">策略指示</td><td style="text-align:right">少數</td><td style="text-align:right">小額</td></tr><tr><td style="text-align:left"><strong>自主決定</strong></td><td style="text-align:right"><strong>多數</strong></td><td style="text-align:right"><strong>絕大部分</strong></td></tr><tr><td style="text-align:left">若沒賣，現在的未實現</td><td style="text-align:right"></td><td style="text-align:right">較低</td></tr><tr><td style="text-align:left"><strong>決策價值</strong></td><td style="text-align:right"></td><td style="text-align:right"><strong>正</strong></td></tr></tbody></table></div>
+<p>在一個實際案例裡，<strong>96% 的已實現來自策略沒叫他賣的部位</strong>，而決策價值是正的。</p>
+<p>但逐筆看，好壞都有：最好的一筆和最差的一筆差了一個數量級，最差那筆是<strong>賣早了</strong>（賣出後續漲）。</p>
+<h2>三個一定要寫在頁面上的但書</h2>
+<p><strong>1. 這是記分，不是評判。</strong> 沒有這句話，這張表會被讀成「你不該手動介入」或「你的直覺很準」。它兩者都不是。</p>
+<p><strong>2. 樣本不足。</strong> 十幾筆自主賣出，不足以證明直覺長期優於策略。這個帳的價值在於<strong>它會一直記下去</strong>。</p>
+<p><strong>3. 決策價值會隨時間變。</strong> 今天賣對的，下個月可能變成賣早了。這張表是「截至今日」的快照，不是最終判決。用 <code>asof</code> 標明。</p>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：把「策略沒說話」當成「策略叫你抱」。</strong> 卡片上沒有「出」不等於它主動要你續抱 —— 可能只是那天沒更新。分類要基於<strong>明確出現的訊號</strong>，不是基於缺席。這是為什麼規則寫成「存在一筆出訊號」而不是「不存在出訊號就是抱」。</p>
+<p><strong>陷阱 2：反事實用進場價而不是實際成本。</strong> <code>hold_pnl = hold_value − cost_twd</code>，其中 <code>cost_twd</code> 必須是 FIFO 對沖後的<strong>實際帳面成本</strong>，不是策略卡的進場價。用卡片進場價會把選股差異混進決策價值裡。</p>
+<p><strong>陷阱 3：暫計出場混進來。</strong> <a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B15-provisional-exit.md"><code>B15</code></a> 的暫計成交沒有真實成交價，把它放進決策價值等於在評估一個沒發生的決策。</p>
+<h2>這個積木為什麼重要</h2>
+<p>大部分「系統交易 + 人工覆蓋」的組合，從來沒有人算過覆蓋本身的貢獻。結果是兩種失敗：</p>
+<ul><li>覺得自己很準 → 覆蓋越來越多 → 系統變成裝飾</li><li>覺得自己會壞事 → 完全不敢動 → 系統的盲點沒人補</li></ul>
+<p><strong>量出來之後，這個爭論就結束了</strong> —— 剩下的只是等樣本。</p>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
+<hr>
+<h2>[B17] 雙來源已實現對帳 · 兩個都對，差額是一列缺少的紀錄</h2>
+<p>*track: block · status: verified · verified_by: scripts/build_dashboard.py::broker_realized_reconciliation · source: lesson/claude/blocks/B17-two-source-realized.md*</p>
+<h1>B17 · 雙來源已實現對帳</h1>
+<h2>它解決什麼</h2>
+<p>券商給了一份已實現損益表。成交簿也能算已實現損益。<strong>兩個數字不一樣。</strong></p>
+<p>預設反應是「哪個對？」然後選一個。<strong>這是錯的問題。</strong></p>
+<h2>兩者算的是不同的東西</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:left">券商</th><th style="text-align:left">成交簿</th></tr></thead><tbody><tr><td style="text-align:left">成本基礎</td><td style="text-align:left">券商自己的，會因公司行動調整</td><td style="text-align:left">買進當下實付現金</td></tr><tr><td style="text-align:left">配息</td><td style="text-align:left">調降成本 → 出現在已實現裡</td><td style="text-align:left">不影響（配息現金另計）</td></tr><tr><td style="text-align:left">減資／股票股利</td><td style="text-align:left">調整成本與股數</td><td style="text-align:left">需要另外記錄</td></tr></tbody></table></div>
+<p><strong>兩個都不算錯。</strong> 它們回答的是不同的問題：</p>
+<ul><li>券商：「這筆投資到目前為止總共替我賺了多少」（含配息）</li><li>成交簿：「這筆交易本身的現金流結果是多少」（純交易）</li></ul>
+<h2>契約</h2>
+<pre><code class="lang-python">broker_realized_reconciliation(fills) -&gt; {
+    &quot;rows&quot;,          # 逐筆：券商 / 成交簿 / 差額 / 每股差 / 歸因
+    &quot;broker_total&quot;, &quot;book_total&quot;, &quot;gap&quot;,
+}</code></pre>
+<p>配對鍵是 <code>(賣出日, 股票代碼, 賣出價)</code> —— <strong>不是委託單號</strong>，因為兩份文件的單號欄位未必一致，而這三個欄位是共同的自然鍵。</p>
+<h2>關鍵：把差額除以股數</h2>
+<pre><code class="lang-python">per_share = gap / shares</code></pre>
+<p>這一步把一個說不清的總差額，變成一個<strong>可辨識的簽名</strong>：</p>
+<pre><code class="lang-python">if abs(abs(per_share) - 1.0) &lt; 0.02:
+    note = &quot;每股 ±1.0000，配息調整成本&quot;</code></pre>
+<p>在一個真實案例裡，某檔的差額除以股數剛好是 <strong>1.0000</strong>，橫跨兩次不同日期、不同股數的出場。<strong>那不可能是巧合</strong> —— 那是每股 1 元的配息。</p>
+<h2>真實產出的形狀（去識別）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left">賣出日</th><th style="text-align:right">券商</th><th style="text-align:right">成交簿</th><th style="text-align:right">差額</th><th style="text-align:right">每股</th><th style="text-align:left">歸因</th></tr></thead><tbody><tr><td style="text-align:left">D1</td><td style="text-align:right">+A</td><td style="text-align:right">+A</td><td style="text-align:right">0</td><td style="text-align:right">—</td><td style="text-align:left">一致</td></tr><tr><td style="text-align:left">D2</td><td style="text-align:right">+B</td><td style="text-align:right">+B−3000</td><td style="text-align:right">+3,000</td><td style="text-align:right"><strong>+1.0000</strong></td><td style="text-align:left">配息</td></tr><tr><td style="text-align:left">D3</td><td style="text-align:right">+C</td><td style="text-align:right">+C−949</td><td style="text-align:right">+949</td><td style="text-align:right"><strong>+1.0000</strong></td><td style="text-align:left">同一檔，同樣配息</td></tr><tr><td style="text-align:left">D4</td><td style="text-align:right">+D</td><td style="text-align:right">+D−708</td><td style="text-align:right">+708</td><td style="text-align:right">+1.37</td><td style="text-align:left">成本基礎差異</td></tr><tr><td style="text-align:left">其餘</td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"><strong>0</strong></td><td style="text-align:right">—</td><td style="text-align:left">完全一致</td></tr></tbody></table></div>
+<p><strong>十二筆裡有七筆完全一致，剩下五筆的差額全部落在先前已經標示過成本異動的個股上。</strong></p>
+<p>這就是這個積木的價值：它不只說「差了多少」，它說<strong>「差在哪一檔、每股差多少、為什麼」</strong>，而且結論指向一個<strong>具體缺少的紀錄</strong> —— 那筆配息現金從來沒有被寫進成交簿。</p>
+<h2>為什麼並排比選一邊誠實</h2>
+<p>選一邊會發生兩件事：</p>
+<ol><li>另一邊的資訊消失。選了券商，你就看不到「純交易的結果」；選了成交簿，你就漏掉配息收益。</li><li><strong>差額變成不存在。</strong> 而差額正是唯一告訴你「有東西沒記到」的訊號。</li></ol>
+<p>並排 + 逐筆歸因，把「兩個數字打架」變成「這裡少一列」。</p>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：用委託單號配對。</strong> 券商的已實現表和成交回報表可能用不同的單號欄位，或把多張單合併成一列。用 <code>(日期, 代碼, 價格)</code> 這種自然鍵。</p>
+<p><strong>陷阱 2：同一天同一檔不同價格的多筆出場。</strong> 配對鍵一定要含價格，否則兩筆會被合成一筆，差額歸因就亂了。</p>
+<p><strong>陷阱 3：把差額直接調進成交簿讓它「對上」。</strong> 這會消滅證據。正確做法是<strong>補上真正缺少的那一列</strong>（配息收入），讓它自然收斂。</p>
+<p><strong>陷阱 4：以為差額為零就沒事。</strong> 差額為零只代表這兩個來源一致，不代表都對。兩份文件可能來自同一個上游錯誤。</p>
+<h2>一般化</h2>
+<p>任何時候你有<strong>兩個獨立來源在算同一件事</strong>，正確的做法都是：</p>
+<ol><li>逐筆配對，用自然鍵</li><li>算差額，並<strong>除以一個有意義的分母</strong>（股數、天數、筆數）看有沒有簽名</li><li>把差額歸因到具體的列，不是掛在總額上</li><li>結論寫成「缺什麼」，不是「誰對」</li></ol>
+<blockquote>差額不是要消滅的誤差，是資料在告訴你哪裡有一個你還不知道的事件。</blockquote>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
+<hr>
+<h2>[B18] Sharpe 信賴區間 · 解鎖的那一刻最危險</h2>
+<p>*track: block · status: verified · verified_by: scripts/build_dashboard.py::sharpe_standard_error · source: lesson/claude/blocks/B18-sharpe-confidence-band.md*</p>
+<h1>B18 · Sharpe 信賴區間</h1>
+<h2>它解決什麼</h2>
+<p><a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B08-sample-size-gate.md"><code>B08 樣本量門檻</code></a> 擋住了「用 11 筆日報酬算 Sharpe」。門檻是 20 筆。</p>
+<p><strong>然後樣本到了 20 筆，門檻打開，Sharpe 印出一個數字。</strong></p>
+<p>那一刻比之前更危險。<code>N/A</code> 沒有人會拿去下注；<code>3.13</code> 會。而 20 筆的 Sharpe 3.13，和 0 在統計上分不出來。</p>
+<blockquote>門檻不是「這個數字現在可信了」，門檻是「這個數字現在最低限度可以計算了」。 中間的差距，就是這個積木。</blockquote>
+<h2>契約</h2>
+<pre><code class="lang-python">sharpe_standard_error(curve) -&gt; {
+    &quot;sharpe&quot;, &quot;stderr&quot;, &quot;low&quot;, &quot;high&quot;, &quot;n&quot;, &quot;covers_zero&quot;
+} | None</code></pre>
+<p><strong>低於門檻回傳 <code>None</code></strong> —— 這個積木永遠不能替一個頁面正在拒絕顯示的數字化妝。</p>
+<h2>公式（Lo 2002，IID 假設）</h2>
+<p>在報酬的原始頻率上：</p>
+<pre><code>SE(SR) = sqrt( (1 + SR² / 2) / n )</code></pre>
+<p>然後用同一個 √252 年化：</p>
+<pre><code class="lang-python">daily  = mean(returns) / stdev(returns)
+annual = daily * sqrt(252)
+se_daily  = sqrt((1 + 0.5 * daily**2) / n)
+se_annual = se_daily * sqrt(252)
+ci = (annual - 1.96 * se_annual, annual + 1.96 * se_annual)</code></pre>
+<h2>數字有多可怕</h2>
+<p><code>n = 20</code>、年化 Sharpe <code>3.13</code>：</p>
+<pre><code>daily SR  = 3.13 / √252 = 0.197
+SE(daily) = √((1 + 0.5 × 0.197²) / 20) = 0.226
+SE(年化)  = 0.226 × √252 = 3.58
+95% 區間  = 3.13 ± 1.96 × 3.58 = −3.90 ~ 10.15</code></pre>
+<p><strong>標準誤比估計值本身還大。區間涵蓋 0。</strong></p>
+<p>翻譯成人話：<strong>以目前樣本，這個 Sharpe 還無法和運氣區分。</strong></p>
+<h2>需要多少樣本才收斂</h2>
+<p>固定 <code>SR = 3.13</code>（年化），看 SE 怎麼縮：</p>
+<div class="tw"><table><thead><tr><th style="text-align:right">n（日報酬）</th><th style="text-align:right">SE（年化）</th><th style="text-align:right">95% 區間下界</th></tr></thead><tbody><tr><td style="text-align:right">20</td><td style="text-align:right">3.58</td><td style="text-align:right">−3.90</td></tr><tr><td style="text-align:right">60</td><td style="text-align:right">2.07</td><td style="text-align:right">−0.93</td></tr><tr><td style="text-align:right">126（半年）</td><td style="text-align:right">1.43</td><td style="text-align:right">+0.33</td></tr><tr><td style="text-align:right">252（一年）</td><td style="text-align:right">1.01</td><td style="text-align:right">+1.15</td></tr><tr><td style="text-align:right">504（兩年）</td><td style="text-align:right">0.71</td><td style="text-align:right">+1.73</td></tr></tbody></table></div>
+<p><strong>要到大約半年，區間下界才離開 0。</strong> 要到一年，才能說「這個策略的 Sharpe 大於 1」。</p>
+<p>這張表值得印在任何報 Sharpe 的頁面旁邊。</p>
+<h2>頁面上要怎麼寫</h2>
+<p>不是把 CI 藏在附註，是<strong>取代點估計的地位</strong>：</p>
+<pre><code>Sharpe 3.13，標準誤 ±3.58（Lo 2002，n=20）。
+95% 區間 −3.90 ~ 10.15。
+區間涵蓋 0 —— 以目前樣本，這個 Sharpe 還無法和運氣區分。
+樣本越長區間才會收斂；在那之前，點估計是最容易被誤讀的一個數字。</code></pre>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：IID 假設不成立。</strong> Lo 的公式假設報酬獨立同分布。真實報酬有自相關（尤其是流動性差的標的），自相關為正時真實 SE 更大。<strong>所以這個區間是樂觀的下限</strong>，不是保守估計。要寫明。</p>
+<p><strong>陷阱 2：用 CI 當作「還可以」的藉口。</strong> 「區間上界有 10.15，所以說不定很好」是誤用。區間涵蓋 0 的正確結論是<strong>不知道</strong>，不是「可能很棒」。</p>
+<p><strong>陷阱 3：只對合計算，不對各策略算。</strong> 單一策略的樣本和合計一樣長，但波動更大 → Sharpe 更不穩。各條線都該有自己的區間。</p>
+<p><strong>陷阱 4：Deflated Sharpe 是另一回事。</strong> 這個區間處理的是<strong>樣本雜訊</strong>。如果你試了 200 組參數才挑出這一組，還有<strong>選擇偏誤</strong>要扣，那是 DSR 的工作。兩個要一起做，見 Gemini 目錄的 <code>GB10</code>。</p>
+<h2>一句話</h2>
+<blockquote><code>N/A</code> 保護你不被小樣本騙。 門檻打開之後，保護你的是區間。 中間那段沒有人守的時間，是大部分過度自信的來源。</blockquote>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
 <hr>
 <footer>Markdown 版：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/ALL.md">ALL.md</a></footer>
 </div></body>

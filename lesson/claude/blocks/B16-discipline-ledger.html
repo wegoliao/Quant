@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B16 · 紀律帳 · 我的損益 vs 策略的損益</title>
+<meta name="description" content="Owner 的原話：**我沒有遵守策略。我看情勢不對，賣掉一堆策略沒叫我賣的賺錢部位。給我看我的成績，也給我看策略的成績。**">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--raise:#1c2430;--ink:#e6edf3;--muted:#8b949e;
+--line:#26303b;--accent:#58a6ff;--gold:#d29922;--green:#3fb950}
+:root[data-theme="light"]{--bg:#f6f8fa;--panel:#fff;--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;
+--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f8fa;--panel:#fff;
+--raise:#f0f3f6;--ink:#1f2328;--muted:#59636e;--line:#d8dee4;--accent:#0969da;--gold:#9a6700;--green:#1a7f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
+font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+-webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:28px 20px 90px}
+.wide{max-width:1080px}
+a{color:var(--accent)}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:20px}
+.crumb a{text-decoration:none}
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:3px 11px;
+color:var(--muted);margin-right:6px;font-weight:700}
+.badge.ai{color:var(--accent);border-color:var(--accent)}
+.badge.ok{color:var(--green);border-color:var(--green)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-.02em;line-height:1.25;margin:14px 0 8px}
+h2{font-size:22px;margin:42px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:17px;margin:30px 0 8px;color:var(--ink)}
+p{margin:0 0 15px}
+code{background:var(--raise);padding:1.5px 6px;border-radius:5px;font-size:.87em;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;
+overflow-x:auto;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:12.7px;line-height:1.65}
+blockquote{margin:0 0 18px;padding:12px 18px;border-left:3px solid var(--gold);
+background:rgba(210,153,34,.07);border-radius:0 8px 8px 0;color:var(--ink)}
+ul,ol{margin:0 0 16px;padding-left:23px}
+li{margin-bottom:7px}
+hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+.tw{overflow-x:auto;margin:0 0 18px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:.04em;font-weight:700;
+border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .id{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:.08em}
+.card .t{font-size:15.5px;font-weight:650;margin:5px 0 6px;line-height:1.4}
+.card .d{font-size:12.5px;color:var(--muted);line-height:1.55}
+.ingest{background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin:24px 0}
+.ingest h3{margin:0 0 10px;font-size:15px;color:var(--accent)}
+.ingest p{font-size:13.5px;margin-bottom:9px}
+.ingest code{word-break:break-all}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="crumb"><a href="../../../index.html">Quant</a> / <a href="../../index.html">lesson</a> / claude / B16</div>
+<span class="badge ai">Claude (Opus 5, Anthropic)</span><span class="badge">積木</span><span class="badge ok">verified</span><p class="crumb">驗證：<code>scripts/build_dashboard.py::discipline_ledger</code></p><h1>B16 · 紀律帳</h1>
+<h2>它解決什麼</h2>
+<p>Owner 的原話：<strong>我沒有遵守策略。我看情勢不對，賣掉一堆策略沒叫我賣的賺錢部位。給我看我的成績，也給我看策略的成績。</strong></p>
+<p>這是每一個「有系統但會手動介入」的人最想知道、卻幾乎沒有人在量的東西：<strong>我的直覺到底是在加分還是扣分？</strong></p>
+<h2>為什麼這題可以精確回答</h2>
+<p>一般的反事實需要模型。<strong>這一題不需要。</strong></p>
+<p>股票已經賣掉了。「如果沒賣，現在值多少」不是預測，是一個查表題：</p>
+<pre><code>同樣股數 × 最新官方收盤 − 同一套出場費稅</code></pre>
+<p>沒有假設、沒有參數、沒有模型風險。</p>
+<h2>契約</h2>
+<pre><code class="lang-python">discipline_ledger(fills, prices, asof) -&gt; {
+    &quot;rows&quot;,                   # 每筆平倉 + 分類 + 反事實
+    &quot;directed_realized&quot;,      # 有「出」訊號才賣的已實現
+    &quot;discretionary_realized&quot;, # 卡片仍寫「抱」時賣的已實現
+    &quot;strategy_open_pnl&quot;,      # 那些若沒賣，現在的未實現
+    &quot;decision_value&quot;,         # 實收 − 若持有到今天 = 決策價值
+}</code></pre>
+<h2>分類規則</h2>
+<p>一筆賣出是<strong>策略指示</strong>，若且唯若：</p>
+<pre><code class="lang-python">存在一筆 signal_history 紀錄，其 (strategy_id, stock_code) 相同、
+signal 的動作是「出」、且 asof_date &lt;= 賣出日</code></pre>
+<p>否則是<strong>自主決定</strong>。</p>
+<p>注意 <code>signal.strip(&amp;quot;()*&amp;quot;)</code> —— 卡片可能印出 <code>(出)</code>、<code>出*</code> 這種裝飾過的字形，分類要看動詞不看字形。詳見 <a href="B17-two-source-realized.md"><code>B17</code></a> 旁邊的同一個教訓。</p>
+<h2>決策價值</h2>
+<pre><code class="lang-python">decision_twd = proceeds_twd - hold_value_twd</code></pre>
+<ul><li><strong>正</strong> = 賣掉比抱著好（躲過下跌）</li><li><strong>負</strong> = 賣早了（少賺）</li></ul>
+<p>兩種用<strong>同一把尺</strong>。這一點必須寫在頁面上，因為一個只標示「賣錯」不標示「賣對」的表，會變成一個道德工具而不是量測工具。</p>
+<h2>真實產出的形狀（去識別）</h2>
+<div class="tw"><table><thead><tr><th style="text-align:left"></th><th style="text-align:right">筆數</th><th style="text-align:right">已實現</th></tr></thead><tbody><tr><td style="text-align:left">策略指示</td><td style="text-align:right">少數</td><td style="text-align:right">小額</td></tr><tr><td style="text-align:left"><strong>自主決定</strong></td><td style="text-align:right"><strong>多數</strong></td><td style="text-align:right"><strong>絕大部分</strong></td></tr><tr><td style="text-align:left">若沒賣，現在的未實現</td><td style="text-align:right"></td><td style="text-align:right">較低</td></tr><tr><td style="text-align:left"><strong>決策價值</strong></td><td style="text-align:right"></td><td style="text-align:right"><strong>正</strong></td></tr></tbody></table></div>
+<p>在一個實際案例裡，<strong>96% 的已實現來自策略沒叫他賣的部位</strong>，而決策價值是正的。</p>
+<p>但逐筆看，好壞都有：最好的一筆和最差的一筆差了一個數量級，最差那筆是<strong>賣早了</strong>（賣出後續漲）。</p>
+<h2>三個一定要寫在頁面上的但書</h2>
+<p><strong>1. 這是記分，不是評判。</strong> 沒有這句話，這張表會被讀成「你不該手動介入」或「你的直覺很準」。它兩者都不是。</p>
+<p><strong>2. 樣本不足。</strong> 十幾筆自主賣出，不足以證明直覺長期優於策略。這個帳的價值在於<strong>它會一直記下去</strong>。</p>
+<p><strong>3. 決策價值會隨時間變。</strong> 今天賣對的，下個月可能變成賣早了。這張表是「截至今日」的快照，不是最終判決。用 <code>asof</code> 標明。</p>
+<h2>陷阱</h2>
+<p><strong>陷阱 1：把「策略沒說話」當成「策略叫你抱」。</strong> 卡片上沒有「出」不等於它主動要你續抱 —— 可能只是那天沒更新。分類要基於<strong>明確出現的訊號</strong>，不是基於缺席。這是為什麼規則寫成「存在一筆出訊號」而不是「不存在出訊號就是抱」。</p>
+<p><strong>陷阱 2：反事實用進場價而不是實際成本。</strong> <code>hold_pnl = hold_value − cost_twd</code>，其中 <code>cost_twd</code> 必須是 FIFO 對沖後的<strong>實際帳面成本</strong>，不是策略卡的進場價。用卡片進場價會把選股差異混進決策價值裡。</p>
+<p><strong>陷阱 3：暫計出場混進來。</strong> <a href="B15-provisional-exit.md"><code>B15</code></a> 的暫計成交沒有真實成交價，把它放進決策價值等於在評估一個沒發生的決策。</p>
+<h2>這個積木為什麼重要</h2>
+<p>大部分「系統交易 + 人工覆蓋」的組合，從來沒有人算過覆蓋本身的貢獻。結果是兩種失敗：</p>
+<ul><li>覺得自己很準 → 覆蓋越來越多 → 系統變成裝飾</li><li>覺得自己會壞事 → 完全不敢動 → 系統的盲點沒人補</li></ul>
+<p><strong>量出來之後，這個爭論就結束了</strong> —— 剩下的只是等樣本。</p>
+<hr>
+<p><strong>作者：Claude (Opus 5, Anthropic)</strong></p>
+<footer>原始 Markdown：<a href="https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B16-discipline-ledger.md">claude/blocks/B16-discipline-ledger.md</a> · 作者 AI：Claude (Opus 5, Anthropic) · 更新 2026-09-08</footer>
+</div></body>
+</html>

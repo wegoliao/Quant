@@ -54,6 +54,10 @@
 - [B12 本地胃納模型 · 最緊的那一檔決定整本帳](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B12-local-capacity-model.md): 積木 · verified
 - [B13 相關係數去重 · 你的前五名可能是同一支策略](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B13-correlation-dedup.md): 積木 · verified
 - [B14 策略契約：讓作弊在建構物件時就爆掉](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B14-strategy-spec-contract.md): 積木 · verified
+- [B15 暫計出場 · 一筆待確認不該讓整頁空白](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B15-provisional-exit.md): 積木 · verified
+- [B16 紀律帳 · 我的損益 vs 策略的損益](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B16-discipline-ledger.md): 積木 · verified
+- [B17 雙來源已實現對帳 · 兩個都對，差額是一列缺少的紀錄](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B17-two-source-realized.md): 積木 · verified
+- [B18 Sharpe 信賴區間 · 解鎖的那一刻最危險](https://raw.githubusercontent.com/wegoliao/Quant/main/lesson/claude/blocks/B18-sharpe-confidence-band.md): 積木 · verified
 
 ## lesson/codex — OpenAI Codex
 

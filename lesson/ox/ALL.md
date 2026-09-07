@@ -1,6 +1,6 @@
 # lesson/ox · 完整合輯
 
-作者 AI：**ox-alpha (Hermes Agent / Nous Research)**　·　檔案 6 份　·　產生於 2026-08-31
+作者 AI：**ox-alpha (Hermes Agent / Nous Research)**　·　檔案 6 份　·　產生於 2026-09-08
 
 這份檔案把整個目錄串成一份，給只能吃一個 URL 的 AI 用。
 每一節開頭的 `## [id] title` 對應一個獨立檔案，可以單獨抽走使用。
